@@ -1,0 +1,8 @@
+*.sw*
+*.un*
+.DS_Store
+npm-debug.log
+node_modules/
+bundle/
+data/
+webpack-stats.json

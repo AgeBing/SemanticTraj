@@ -1,0 +1,9 @@
+@import url('./main.css');
+
+html, body {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+}
