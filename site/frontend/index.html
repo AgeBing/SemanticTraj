@@ -1,14 +1,47 @@
+<!-- {% load render_bundle from webpack_loader %} -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <title>semanticTraj</title>
   <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="assets/css/app.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/map.css">
+
+
+      <!-- leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+   integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+   integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+   crossorigin=""></script>
+
+
 </head>
 
 <body>
-  helloworld!
-  <script src="bundle.js"></script>
+
+	<div class="contain">
+		
+		<div class="sub_contain up">
+			<div class="panel left" id="map_container">
+			</div>
+			<div class="panel right"></div>			
+		</div>
+
+
+		<div class="sub_contain down">
+			<div class="panel left" id="topic-vis">
+				<!-- <div id="topic-rect-container">
+				</div> -->
+			</div>
+			<div class="panel right"></div>	
+		</div>
+	</div>
+
+  <!-- {% render_bundle 'main' %} -->
+  <script type="text/javascript" src="bundle.js"></script>
 </body>
 
 </html>

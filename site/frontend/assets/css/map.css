@@ -1,0 +1,7 @@
+.leaflet-overlay-pane svg path{
+    pointer-events: auto !important;
+}
+
+#map_container svg{
+	cursor: auto !important;
+}
