@@ -5,3 +5,11 @@
 #map_container svg{
 	cursor: auto !important;
 }
+
+
+rect.selection {
+    stroke          : gray;
+    stroke-dasharray: 4px;
+    stroke-opacity  : 0.9;
+    fill            : transparent;
+}

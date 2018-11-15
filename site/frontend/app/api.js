@@ -46,12 +46,19 @@ async function _fetch(url = '', data = {}, type = 'GET', method = 'fetch'){
 
 }
 
+// 来自本地 Pyhton 后端
 export const apiTestGet = (data) => _fetch(urlBase + '/demo/test_get', data);
 
 export const getTrajs = (data) => _fetch(urlBase  + '/data/trajs', data);
 export const getTopics = (data) => _fetch(urlBase + '/data/topics', data);
 
+
+// 后端来自之前的 Node 后端 
+// 待改写。。
 export const _getApi = () => _fetch(urlBase2 + '/api');
+export const _getData = (data) => _fetch(urlBase2 + '/api/data',data,'POST');
+export const _getHighlight = (data) => _fetch(urlBase2 + '/api/getHL',data,'POST');
+
 
 
 
