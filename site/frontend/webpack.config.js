@@ -6,7 +6,7 @@ module.exports = {
     path: __dirname + '/bundle',
     filename: 'bundle.js'
   },
-  entry: 'app.js',
+  entry: ['babel-polyfill' , 'app.js'],
   devServer: {
     inline: true
   },
@@ -17,8 +17,8 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015', 'react']
-        }
+                "presets": ["react", "es2015", "stage-3"]
+        },
       },
       {
         test: /\.css$/,
