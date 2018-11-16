@@ -5,10 +5,12 @@
 /**
  * @fileoverview
  *
- * @author Yali Zhu
- * Copied by Shengjie Gao.
+ * @author Shengjie Gao.
  */
 import $ from 'jquery';
 import * as d3 from 'd3';
+import * as queryview from 'newqueryview'
+import * as datamanager from 'datamanager'
 
-console.log('hello world! ST')
+datamanager.init()
+  .then(o => queryview.init())

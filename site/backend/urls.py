@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import include, url
+# from .consumers import ws_message
 
 from . import views
 from . import get_data
@@ -25,5 +26,5 @@ get_data_api = [
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^data/', include(get_data_api))
+    url(r'^data/', include(get_data_api)),
 ]

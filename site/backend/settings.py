@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'backend',
     'webpack_loader',
     'corsheaders',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -114,14 +115,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+ASGI_APPLICATION = 'backend.routing.application'
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/2')],
+#         },
+#         # 配置路由的路径
+#         "ROUTING": "backend.routing.channel_routing",
+#     },
+# }
+
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
+        },
     }
 }
 
