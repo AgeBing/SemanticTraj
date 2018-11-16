@@ -1,0 +1,24 @@
+#group-map-div {
+  display: inline-block;
+  height: 419px;
+  width: 44%;
+  float: left;
+  background-color: white;
+  border: 1px solid #878d94;
+  /*margin-right: 0.1%;*/
+}
+
+.bottomrow-title {
+  height: 17px;
+  color: white;
+  background-color: #878D94;
+  font-size: 18px;
+  text-align: center;
+  line-height: 1;
+  position: relative;
+}
+
+#group-map {
+  height: 390px;
+  width: 100%;
+}

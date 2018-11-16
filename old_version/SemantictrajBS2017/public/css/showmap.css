@@ -1,0 +1,19 @@
+#map {
+  height: 100%;
+  width: 100%;
+  background-color: grey;
+}
+
+.mappoielement {
+  cursor: pointer;
+}
+
+g .mappoirect {
+  fill: rgba(255,255,255,0.9);
+  stroke: #ff776b;
+  stroke-width: 1;
+}
+
+g .mappoitext {
+  font-size: 14px;
+}

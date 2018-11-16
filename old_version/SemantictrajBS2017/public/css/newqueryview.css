@@ -1,0 +1,345 @@
+#leftcolumn {
+  position: absolute;
+  float: left;
+  left: 0px;
+  width: 0;
+  padding: 0px;
+  background-color: white;
+  z-index: 1000;
+  top: 10px;
+  /*width: 400px;*/
+  /*height: 50%;*/
+}
+.ui-slider-range {
+      background: #cdd5e0  !important;
+}
+
+.topic-filter-text {
+  text-align: center;
+  color: #3F3F40;
+  background-color: #dedede;
+  /*margin: 6px 6px;*/
+}
+
+#inputcontainer {
+  position: relative;
+  width: 1033px;
+  top: -7px;
+    left: 10px;
+}
+
+.inputtext {
+  display: none;
+}
+
+#inputBar {
+  position: relative;
+  display: inline-block;
+  width: 96%;
+  vertical-align: top;
+}
+
+#inputquerycontainer {
+  position: relative;
+  display: inline-block;
+}
+#inputquery {
+  /*background-image: url(../images/query.svg);*/
+  /*background: url(../images/query.svg) 50% 50% / 100% 100% no-repeat;*/
+  cursor: pointer;
+  width: 29px;
+  height: 29px;  
+  background-color: white;
+  /*border-radius: 5px;*/
+}
+
+#inputBar .bootstrap-tagsinput {
+  margin-bottom: 0px;
+  background-color: #878d94;
+  border-radius: 0px !important;
+  padding: 0px !important;
+}
+
+.pass_spantext {
+  background-color: #1fafed !important;
+}
+
+.normal_spantext {
+  background-color: #1fafed !important;
+}
+
+.conjunction_spantext {
+  background-color: #215c98 !important;
+}
+
+.during_spantext {
+  background-color: #7fc9e2 !important;
+}
+
+.time_spantext {
+  background-color: #7fc9e2 !important;
+}
+
+.searchicon {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background: url(../images/icon.svg) 50% 50% / 100% 100% no-repeat;
+  padding: 14px 11px 11px 6px;
+}
+
+.searchtexttext {
+  transform: translateY(-10px);
+  display: inline-block;
+  background-color: white;
+  padding-top: 8px;
+  padding-bottom: 5px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.searchtext {
+  /*border-radius: 4px;*/
+  background-color: #ebedef;
+  color: #7b8996;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  overflow: hidden;
+  margin: 3px 2px 3px 4px;
+  line-height: 15px;
+  height: 23px;
+  /*padding: 6px 21px 6px 0;*/
+  -webkit-transition: .25s linear;
+  transition: .25s linear;
+}
+
+.bootstrap-tagsinput .tag:hover {
+  padding-right: 21px;
+  padding-left: 21px;
+}
+
+.conditionpopup {
+  width: 305px;
+  height: 362px;
+  background-color: white;
+  position: relative;
+  /*opacity: 0.7;*/
+  overflow-y: auto;
+}
+
+/*.poilistcontainer::-webkit-scrollbar {
+  width: 4px !important;
+  height: 7px;
+}*/
+
+.vectorparameters {
+  position: relative;
+  height: 157px;
+  width: 606px;
+  background-color: white;
+}
+
+.customervector {
+  width: 115px;
+  float: left;
+  position: relative; 
+}
+
+.conditiontimepopup {
+  width: 243px;
+  height:  0px;
+  background-color: white;
+  position: relative;
+  /*opacity: 0.7;*/
+}
+
+.poilistcontainer {
+  height: 285px;
+  /*overflow-y: auto;*/
+}
+
+.poilistlayer .isselect:after {
+    line-height: 35px;
+    height: 12px;
+    width: 12px;
+    -webkit-font-smoothing: antialiased;
+    background: #FFD969;
+    transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
+    background: url(../images/checked.svg) 50% 50% / 100% 100% no-repeat;
+    border: 0;
+    top: -4px;
+}
+
+.poilistelement:after {
+    content: " ";
+    display: block;
+    margin-top: -10px;
+    background: #ffffff;
+    border-radius: 50%;
+    top: -4px;
+    left: -33px;
+    position: relative;
+    float: left;
+    height: 12px;
+    width: 12px;
+    -webkit-font-smoothing: antialiased;
+    transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
+    background: url(../images/uncheck.svg) 50% 50% / 100% 100% no-repeat;
+    border: 0;
+}
+
+.poilistelement {
+    font-weight: 500;
+    margin-top: 0px;
+    padding: 5px 9px 5px 45px;
+    cursor: pointer;
+    text-align: left;
+    background-size: 100% 100%;
+    font-size: 12px;
+    color: #6D6D6D;
+    position: relative;
+    transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
+}
+.poilistelement:hover {
+    color: #b2182b;
+    content: "\e60a";
+    background-color: #f6f6f6;
+    cursor: point;
+}
+
+.customervectorname {
+  cursor: default;
+  height: 20px;
+  /*padding: 8px 0px;*/
+  /*background: white;*/
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.customervectorname:hover {
+  background-color: #f6f6f6;
+}
+
+.customervectorname input {
+  float: right;
+  position: relative;
+  right: 0;
+  width: 18%;
+  font-weight: 300;
+  top: -9px;
+  text-align: center;
+  width: 30%;
+  height: 17px;
+  padding: 2px 12px;
+  font-size: 14px;
+  margin-top: 10px;
+  line-height: 1.42857143;
+  /*color: #555;*/
+  color: black;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+  /*border-bottom: 1px solid #3280ff;*/
+  box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.2) inset;
+  /*background-color: #b3b3b3;*/
+}
+
+.queryviewselects {
+  position: relative;
+  height: 30px;
+}
+
+.queryviewselects select {
+  position: absolute;
+  left: 4px;
+  width: 107px;
+  height: 26px;
+  -webkit-border-radius: 0px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Lato";
+  text-align: left;
+  background: rgba(255, 255, 255, 0.83);
+  border: 1px solid #979799;
+  float: left;
+  padding-left: 2px;
+}
+.queryviewselect:hover {
+  border: 2px solid #c5c4c6 !important;
+}
+.queryviewselect:after {
+  border: 2px solid #c5c4c6 !important;
+}
+.queryviewselect:focus {
+  border: 2px solid #c5c4c6 !important;
+}
+
+.queryviewslide {
+  position: relative;
+  width: 160px;
+  left: 126px;
+  top: 9px;
+  height: 7px !important;
+  margin-bottom: 0px;
+}
+
+.queryviewslide span {
+  height: 14px !important;
+  width: 14px !important;
+  background: #fff !important;
+  border: 0.5px solid #ccc !important;
+}
+
+.queryviewselects .begincursortxt2 {
+  position: relative;
+  top: -11px;
+  left: 121px;
+  height: 10px;
+  width: 10px;
+}
+.queryviewselect .endcursortxt2 {
+  position: relative;
+  top: -19px;
+  left: 269px;
+  height: 10px;
+  width: 10px;
+}
+
+.timemoment {
+  padding-top: 3px;
+}
+
+.timemoment a {
+  border-width: 0px;
+}
+
+.timemoment span {
+  border-radius: 7px;
+}
+
+#hourspinner {
+  width: 32px;
+  height: 15px;
+}
+
+#minutespinner {
+  width: 17px;
+  height: 15px;
+}
+
+#secondspinner {
+  width: 17px;
+  height: 15px;
+}
+
+#timerangeslider {
+  height: 7px !important;
+}
+
+#timerangeslider span {
+  height: 14px !important;
+  width: 14px !important;
+}

@@ -1,0 +1,9 @@
+#tsne-panel {
+  display: inline-block;
+  height: 100%;
+  width: 19.4%;
+  float: left;
+  background-color: white;
+  border: 1px solid #b3b3b3;
+  /*margin-right: 0.1%;*/
+}

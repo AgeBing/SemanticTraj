@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>add-condition</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#8876F6" offset="0%"></stop>
+            <stop stop-color="#7D78F8" offset="32.8423948%"></stop>
+            <stop stop-color="#3280FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-5" transform="translate(-92.000000, -25.000000)" fill="url(#linearGradient-1)">
+            <path d="M99.5,32.5 L96,32.5 L96,33.5 L99.5,33.5 L99.5,37 L100.5,37 L100.5,33.5 L104,33.5 L104,32.5 L100.5,32.5 L100.5,29 L99.5,29 L99.5,32.5 Z M100,41 C95.581722,41 92,37.418278 92,33 C92,28.581722 95.581722,25 100,25 C104.418278,25 108,28.581722 108,33 C108,37.418278 104.418278,41 100,41 Z" id="Combined-Shape"></path>
+        </g>
+    </g>
+</svg>

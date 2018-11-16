@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="34px" viewBox="0 0 22 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>location</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#8876F6" offset="0%"></stop>
+            <stop stop-color="#7D78F8" offset="32.8423948%"></stop>
+            <stop stop-color="#3280FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-5" transform="translate(-112.000000, -16.000000)" stroke="#FFFFFF" stroke-width="1" fill="url(#linearGradient-1)" fill-rule="nonzero">
+            <path d="M132.998203,26.8453116 C132.998203,21.4082664 128.523503,17 122.999084,17 C117.477077,17 113,21.4082664 113,26.8453116 C113,28.6411013 113.497029,30.3181968 114.348507,31.7677546 L114.337771,31.7677546 L122.839891,48.6823887 C122.868979,48.7403172 122.928929,48.7800007 122.998161,48.7800007 C123.067359,48.7800007 123.127343,48.7403518 123.156432,48.6824233 L131.662872,31.7677546 L131.650648,31.7677546 C132.50507,30.3181622 132.998203,28.6410667 132.998203,26.8453116 M123.000039,31.7667616 C120.239565,31.7667616 118.000533,29.5623793 118.000533,26.8438584 C118.000533,24.1268253 120.239568,21.92145 123.000039,21.92145 C125.763489,21.92145 127.999579,24.1268253 127.999579,26.8438584 C127.999617,29.5623793 125.763489,31.7667616 123.000039,31.7667616" id="location"></path>
+        </g>
+    </g>
+</svg>

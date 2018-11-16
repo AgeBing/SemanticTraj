@@ -1,0 +1,33 @@
+#new-semanticlist-list {
+  width: 24.1%;
+  height: 100%;
+  font-family: "Roboto";
+  /*overflow-x: scroll;*/
+  /*overflow-y: auto;*/
+  display: block;
+  padding-bottom: 6px;
+  float: left;
+  margin-left: 0.2%;
+  border: 1px solid #878d94;
+  /*-webkit-scrollbar-track-piece {
+    background: white;
+  }*/
+}
+
+#new-semanticlist-list-container {
+  position: relative;
+  height: 399px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.single-semantic {
+  width: 100%;
+  height: 120px;
+  display: block;
+}
+
+.semantic-text {
+  font-size: 9px;
+  fill: red;
+}
