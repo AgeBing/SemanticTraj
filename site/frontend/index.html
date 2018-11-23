@@ -7,6 +7,8 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="assets/css/app.css">
   <link rel="stylesheet" type="text/css" href="assets/css/map.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/queryview.css">
+
 
 
       <!-- leaflet -->
@@ -21,10 +23,8 @@
 </head>
 
 <body>
-<<<<<<< HEAD
   <div id='leftcolumn'>
   </div>
-  <script src="bundle.js"></script>
   <!-- <script src="static/bundle/bundle.js"></script> -->
 
 	<div class="contain">
@@ -32,21 +32,43 @@
 		<div class="sub_contain up">
 			<div class="panel left" id="map_container">
 			</div>
-			<div class="panel right"></div>			
+			<div class="panel right" id="topic-vis"></div>			
 		</div>
 
 
+
 		<div class="sub_contain down">
-			<div class="panel left" id="topic-vis">
-				<!-- <div id="topic-rect-container">
-				</div> -->
+			<div class="panel left" >
+            <div class="control-box">
+              <span >透明度</span>    
+              <input id='range1'  type="range" name="进度条" min="0.1" max="1" step="0.05" value="0.2">
+              <span id="valBox1"> 0.2 </span>  
+            </div>
+            
+            <div class="control-box">
+              <span >地图拖拽 </span>    
+              <input id='range2'  type="checkbox" checked>
+            </div>
+              
+
+            <div class="control-box">
+              <span >框选阈值 | min </span>    
+              <input id='range3'  type="range" name="进度条" min="0.001" max="5" step="0.01" value="1">
+              <span id="valBox3"> 1 </span>  
+            </div>
+            <div class="control-box">
+              <span >框选阈值 | max </span>    
+              <input id='range4'  type="range" name="进度条" min="0.05" max="10" step="0.01" value="4">
+              <span id="valBox4"> 4 </span>  
+            </div>
+
 			</div>
 			<div class="panel right"></div>	
 		</div>
 	</div>
 
   <!-- {% render_bundle 'main' %} -->
-  <script type="text/javascript" src="bundle.js"></script>
+  <script src="bundle.js"></script>
 </body>
 
 </html>

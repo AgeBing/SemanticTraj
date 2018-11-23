@@ -2,8 +2,8 @@
 import * as d3 from 'd3';
 
 
-import { draw as draw_t,selectPeriod } from 'DrawTrajLines'
-import { draw as draw_h } from 'DrawHeatMap'
+import { draw as draw_t,selectPeriod } from 'drawtrajlines'
+import { draw as draw_h } from 'drawheatmap'
 
 
 
@@ -30,10 +30,11 @@ function draw_trajs(data) {
 
 	//  两种一起画的时候有问题 
 	//  zoom  resize svg 等  
-	let containers1 = { map,svg,g:g2 }
-	draw_t(containers1,data)
+	// let containers1 = { map,svg,g:g2 }
+	// draw_t(containers1,data)
+
 	let containers2 = { map,svg,g }
-	draw_h(containers2)
+	draw_h(containers2,data)
 
 }
 

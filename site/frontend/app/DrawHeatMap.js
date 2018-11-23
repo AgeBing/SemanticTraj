@@ -3,53 +3,106 @@ import * as d3 from 'd3';
 
 import { _getData,_getHighlight } from 'api'
 
+
+import { getData,getHighLight,getTrajsThroughHL  } from  './util/matrix_process'
+
+import { init,topicZoomRect ,registr_select_func  } from 'topicpanel'
+
+
+import { draw as draw_t ,selectPeriod } from 'drawtrajlines'
+
 let map,svg,g   //containers
 let rects        //色块
 
 let func_frameSelect  //callback func
+let lines_data  //轨迹数据
+let trans = {}  //偏移 xy
 
-// let th = {
-// 	max: document.getElementById("range2").value,
-// 	min: document.getElementById("range3").value
-// } //阈值
+// 数据格式转换
+function dataAdapter(_lines_data){
+	let lines_data = _lines_data.map((line) => {
+
+		let ps = line.traj.map((p) => {
+			return 	{
+					date : p.time.split(' ')[0],
+					time : p.time.split(' ')[1],
+					coor : {
+						lat : p.latitude ,
+						lon : p.longitude
+					},
+					topics : p.topics
+				}
+		})
+
+		return {
+			id : line.pid,
+			points : ps,
+
+		}
+	})
+
+	return lines_data
+
+}
 
 
+// Main function 
+function draw(containers,_lines_data){
+	lines_data = dataAdapter(_lines_data)
 
-function draw(containers){
 	map = containers.map
  	svg = containers.svg
  	g   = containers.g
 
+
  	map.on("moveend", () => {
-		_resize()
+		_resize(lines_data)
 	});
 	map.on("zoomend", () => {
-		_resize()
+		_resize(lines_data)
 	});
 
-	map.dragging.disable()	
-
-	_resize()
-
+	_resize(lines_data)
 	console.log('draw_h')
 }
 
-async function _resize(){
+async function _resize(lines_data){
 	// 获取视图边界
 	let bottomLeft = map.getBounds().getSouthWest();
 	let topRight = map.getBounds().getNorthEast();
 	let boundry = { bottomLeft,topRight }
-	
-	// 取得数据
-	let res_getData  = await _getData({boundry:boundry})
 
+	// 取得数据
+	let res_getData  = getData(lines_data,bottomLeft,topRight)
 
 	// 视图偏移
-	_setBottomLayer(boundry)
+	_setBottomLayer( boundry )
 	// 绘制色块
-	_drawRects(res_getData)
-	// 添加 事件listener 
-	_addSelectEvent()
+	_drawRects( res_getData )
+
+ 	let map_dragable = document.getElementById("range2").checked
+ 	if(!map_dragable){
+		map.dragging.disable()	
+		// 添加 事件listener 
+		_addSelectEvent()
+	}
+
+
+	//透明度
+	document.getElementById('range2').addEventListener('change',(e)=>{
+	  	
+	  	let map_dragable = e.target.checked;
+	 	if(!map_dragable){
+			map.dragging.disable()	
+			// 添加 事件listener 
+			_addSelectEvent()
+		}else{
+			map.dragging.enable()	
+			_removeSelectEvent()
+		}
+
+	})
+
 
 }
 
@@ -69,6 +122,9 @@ function _setBottomLayer(boundry){
     g.attr("transform",
     	"translate(" + - xy_bottomLeft.x + ","+ - xy_topRight.y+")"
     )
+
+    trans.x = xy_bottomLeft.x
+    trans.y = xy_topRight.y
     // console.log("trans",xy_bottomLeft.x,xy_topRight.y)
 }
 
@@ -89,8 +145,7 @@ function _drawRects(data){
 	let x_num = data.summery.x_num
 	
 	// 透明度显示系数 (0,1) 
-	// let v = document.getElementById("range1").value
-   	let v = 1
+	let v = document.getElementById("range1").value
 
 	rects.attr('x',d => _l2v(d).x)
 		.attr('y', d => _l2v(d).y)
@@ -102,10 +157,12 @@ function _drawRects(data){
 			let op = linear(d.val)
 			return op
 		})
-		.on("click",function(d,i){
-			 let y = Math.floor(i / x_num)
- 			let x = i % x_num
-		})
+
+	_addControlPanel(maxval)
+		// .on("click",function(d,i){
+		// 	 let y = Math.floor(i / x_num)
+ 	// 		let x = i % x_num
+		// })
 
 }
 
@@ -114,6 +171,10 @@ function _addSelectEvent(){
 	// 创建 选择框
 	svg.on( "mousedown", function() {
 	    var v_p = d3.mouse( this);
+	    v_p[0]+= trans.x
+	    v_p[1]+= trans.y
+
+
 	    g.append( "rect")
 	    	.attr('class','selection')
 	    	.attr('x',v_p[0])
@@ -123,6 +184,7 @@ function _addSelectEvent(){
 	    	.attr('width',3)
 	    	.attr('height',3)
 
+	    g.selectAll('path').remove()
 	})
 
 	// 选择框 移动
@@ -131,6 +193,11 @@ function _addSelectEvent(){
 	    if(s.empty()) return
 
         let p = d3.mouse(this)
+    	console.log(p)
+    	p[0]+= trans.x
+	    p[1]+= trans.y
+    	console.log(p)
+
         let d = {
             x       : parseInt( s.attr("x"), 10),
             y       : parseInt( s.attr("y"), 10),
@@ -138,8 +205,8 @@ function _addSelectEvent(){
             height  : parseInt( s.attr("height"), 10)
         }
         let move = {
-            x : p[0] - d.x,
-            y : p[1] - d.y
+            x : p[0]  - d.x,
+            y : p[1]  - d.y
         }
 
         if( move.x < 1 || (move.x*2 < d.width)) {
@@ -155,7 +222,8 @@ function _addSelectEvent(){
         } else {
             d.height = move.y;       
         }
-        s.attr("x",d.x)
+
+        s.attr("x",d.x )
         	.attr("y",d.y)
         	.attr("width",d.width)
         	.attr("height",d.height)
@@ -182,20 +250,16 @@ function _addSelectEvent(){
 
         	//控制系数 
         	let th = {
-        		max : 0.2,
-        		min : 0.05
+        		max : document.getElementById("valBox4").innerHTML,
+        		min : document.getElementById("valBox3").innerHTML
         	}
-        	let req = {
-        		boundry: select_boundry,
-        		th: th
-        	}
-			// 取得数据
-			let res_getData   = await _getHighlight(req)
-			let data = res_getData
-			console.log(data)
 
-			let x_num = data.x_num
-			let ps = data.ps
+
+			// 取得数据 色块区域
+			let hightLight_coor   = getHighLight(th,topLeft,bottomRight)
+			console.log(hightLight_coor)
+			let x_num = hightLight_coor.x_num
+			let ps = hightLight_coor.ps
 			rects.attr("fill",function(di,i){
  				let y = Math.floor(i / x_num)
  				let x = i % x_num
@@ -205,6 +269,27 @@ function _addSelectEvent(){
 	        	}
 	        	return "steelblue"
 	        })
+
+			//获得经过这些区域的轨迹   
+			let selected_trajs = getTrajsThroughHL( lines_data , hightLight_coor.ps )
+			//渲染 Topics
+
+			console.log(selected_trajs)
+	
+			let  visBox = document.getElementById("topic-vis");
+			let  h = visBox.offsetHeight; //高度
+			let  w = visBox.offsetWidth; //宽度
+		
+			init(selected_trajs.timeRange)
+			for(let i = 0;i < 5 ;i++){
+				let r = new topicZoomRect()
+				r._init(50,w*0.8,visBox,selected_trajs.ps[i],i)
+				r._render()
+			}
+
+
+			registr_select_func(selectPeriod)
+			draw_t({map,svg,g},selected_trajs.ps.slice(0,5))
 
 		}
 	})
@@ -218,8 +303,56 @@ function _addSelectEvent(){
 	})
 
 }
+function _removeSelectEvent(){
+	svg.on( "mousedown",null)
+	svg.on( "mousemove",null)
+	svg.on( "mouseup",null)
+
+}
+
+function _addControlPanel(maxval){
+
+	//透明度
+	document.getElementById('range1').addEventListener('change',(e)=>{
+	  	
+	  	let v = e.target.value;
+	 	document.getElementById("valBox1").innerHTML = v;
+
+	 	rects.attr("opacity", (d,i) => {
+			let linear = d3.scaleLinear().domain([0,maxval*v]).range([0,1])	
+			let op = linear(d.val)
+			return op
+		})
+
+	})
 
 
+ 	document.getElementById('range3').setAttribute('max',maxval)
+ 	document.getElementById('range3').setAttribute('value',maxval * 0.1)
+ 	document.getElementById("valBox3").innerHTML = maxval * 0.1
+
+ 	document.getElementById('range4').setAttribute('max',maxval)
+ 	document.getElementById('range4').setAttribute('value',maxval * 0.5)
+ 	document.getElementById("valBox4").innerHTML = maxval * 0.5;
+
+
+	// 框选阈值 min 
+	document.getElementById('range3').addEventListener('change',(e)=>{
+	  	
+	  	let v = e.target.value;
+	 	document.getElementById("valBox3").innerHTML = v;
+	 	func_frameSelect()
+	})
+
+	// 框选阈值 max 
+	document.getElementById('range4').addEventListener('change',(e)=>{
+	  	
+	  	let v = e.target.value;
+	 	document.getElementById("valBox4").innerHTML = v;
+	 	func_frameSelect()
+	})
+
+}
 
 
 // 数据转换

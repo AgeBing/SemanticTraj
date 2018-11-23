@@ -285,6 +285,8 @@ export function handleTraj() {
   loadMatchingTraj();
   updateTrajPatternAndSet();
   // myKMeans.clusterDataByKMeans();
+
+  
 }
 
 function detectTrajStopPoint() {
@@ -334,6 +336,8 @@ function detectTrajMatchLocation() {
   });
   console.log('match traj location done!', peopleTraj.size, drawTraj.length);
   console.log(drawTraj, ' drawTraj')
+
+  console.log(sites,' sites')
 }
 
 function loadMatchingTraj() {
@@ -430,6 +434,8 @@ function updateTrajPatternAndSet() {
   console.log('pattern:', pattern);
   console.log('trajPatternSet:', trajPatternSet);
   console.log('patternTime:', patternTime); 
+
+  console.log('siteTopic:', siteTopic); 
   // GroupMap.run(pattern);
 }
 

@@ -9,42 +9,25 @@
  */
 import $ from 'jquery';
 import * as d3 from 'd3';
+
 import * as queryview from 'newqueryview'
 import * as datamanager from 'datamanager'
 
-import { getTrajs,getTopics,_getApi } from 'api'
-import { draw_trajs,selectPeriod } from 'MapPanel'
-import { topicZoomRect  } from 'TopicPanel'
-
-datamanager.init()
-  .then(o => queryview.init())
-
-function cb(id,period){
-	console.log('cb:',id,period)
-}
-
-async function data_prepare(argument) {
-	let traj_data = await getTrajs()
-	let topic_data = await getTopics()
+// datamanager.init()
+//   .then(o => queryview.init())
+//   .then(()=>{
+//  //  	//模拟点击
+// 	// document.getElementById("inputquery").click();
+//   })
 
 
-	console.log("getTrajs : ",traj_data)
-	console.log("getTopics : ",topic_data)
+// import { getTrajs,getTopics,_getApi } from 'api'
+import { draw_trajs,selectPeriod } from 'mappanel'
 
 
-	let  visBox = document.getElementById("topic-vis");
-	let  h = visBox.offsetHeight; //高度
-	let  w = visBox.offsetWidth; //宽度
-
-	let r = new topicZoomRect()
-	r._init(50,w*0.8,visBox,topic_data.data[0])
-	r._regisCallback('selectPeriod',selectPeriod)
-	r._render()
-
-	draw_trajs(traj_data.data)
-
-	let getAPi = await _getApi()
-	console.log(getAPi)
-}	
-
-data_prepare()
+// 查询框 查询数据略慢，暂且用上一次查询数据存到 localstorage 
+var storage=window.localStorage;
+var json=storage.getItem("DM");
+var jsonObj=JSON.parse(json);
+console.log(jsonObj)
+draw_trajs(jsonObj)

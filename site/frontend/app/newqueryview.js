@@ -56,11 +56,14 @@ export function init() {
       // .attr('src', '../images/query.svg');
   addInputListener(searchInput);
   addSearchListener(searchButton);
+
+
   // //test 
   $('#inputbox').val('pass trainstation during [2014-1-14]');
   updateTag(searchInput, {keyCode: '32'})
   updateConditionQueue();
   updateData();
+
 }
 
 function addInputListener(o) {
@@ -98,12 +101,39 @@ function addSearchListener(o) {
         .then(result => QueryDb.getTrajByPid(result))
         .then(result => DataManager.setPeopleTraj(result))
         .then(result => DataManager.handleTraj())
+        .then(result => dataTrans_YKJ() )
         .catch(function(error) {
           console.log(error);
         })
         // .then(result => ConfigPanel.init())
         // .then(result => MapRender.reRendering())
   });
+
+
+}
+// modified by ykj
+function dataTrans_YKJ(){
+    let trajs = DataManager.drawTraj
+    let sites = DataManager.sites
+    let siteTopic = DataManager.siteTopic
+
+    trajs.forEach((traj) => {
+      let _traj = traj.traj 
+      _traj.forEach((p) => {
+        let s = p.site
+        let site = sites.get(+s)
+        let sitetopic = siteTopic.get(s)
+
+        p.latitude = site.latitude
+        p.longitude = site.longitude
+        p.topics = sitetopic
+      })
+    })
+
+    var storage=window.localStorage;
+    var d=JSON.stringify(trajs);
+    storage.setItem("DM",d);
+    console.log(storage['DM'])
 }
 
 function updateTag(node, e) {

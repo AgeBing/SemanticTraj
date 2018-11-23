@@ -5,15 +5,66 @@ let map,svg,g
 let linesSvg = [] , lines_data = []
 
 
+
+// 数据格式转换
+// function dataAdapter(_lines_data){
+// 	let lines_data = _lines_data.map((line) => {
+
+// 		let ps = line.traj.map((p) => {
+// 			return 	{
+// 					date : p.time.split(' ')[0],
+// 					time : p.time.split(' ')[1],
+// 					coordinates : {
+// 						lat : p.latitude ,
+// 						lon : p.longitude
+// 					}
+// 				}
+// 		})
+
+// 		return {
+// 			id : line.pid,
+// 			ps : ps
+// 		}
+// 	})
+
+// 	return lines_data
+// }
+function dataAdapter(_lines_data){
+	let lines_data = _lines_data.map((line) => {
+
+		let ps = line.points.map((p) => {
+			return 	{
+					date : p.date,
+					time : p.time,
+					coordinates : {
+						lat : p.coor.lat ,
+						lon : p.coor.lon
+					}
+				}
+		})
+
+		return {
+			id : line.id,
+			ps : ps
+		}
+	})
+
+	return lines_data
+}
+
+
+// Main function
 function draw(containers,_lines_data) {
  	map = containers.map
  	svg = containers.svg
  	g   = containers.g
 
+	g.selectAll('path').remove()
 
-	lines_data = _lines_data
+	lines_data = dataAdapter(_lines_data)
+	console.log(lines_data)
 
-	_lines_data.forEach((line) =>{
+	lines_data.forEach((line) =>{
 		let lineSvg = g.append("path")   //一条轨迹
 			.datum(line.ps)
 			.attr('id','_id'+line.id)
@@ -23,11 +74,6 @@ function draw(containers,_lines_data) {
 			.attr("stroke-linejoin", "round")
 			.attr("stroke-linecap", "round")
 			.attr("stroke-width", 5)
-			.on("click",function(){
-					d3.select(this)
-						.style("opacity", 1)
-						.style("stroke","red")
-			})
 		
 		linesSvg.push(lineSvg)
 	})
@@ -75,8 +121,16 @@ function _resize(){
 
 
 function selectPeriod(id,time_period) {
+	console.log(id,time_period)
+
+
+	console.log(g.selectAll("path"))
+	g.selectAll("path")
+			.style("stroke", "steelblue")
+			.style("opacity", 0.6)
+
 	d3.select("#_id"+id)
-			.style("opacity", 0.41)
+			.style("opacity", 0.78)
 			.style("stroke","red")
 
  	lines_data.forEach((line)=>{
