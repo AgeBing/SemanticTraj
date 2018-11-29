@@ -64,10 +64,17 @@ function getVal(arr,r,xy,weight){
 	return p
 }
 
-function gaussian_blur(matrix){  //r 模糊半径
+function gaussian_blur(_matrix){  //r 模糊半径
 	// console.log("gb",matrix)
-	let width = matrix.length
-	let height =  matrix[0].length
+	let width = _matrix.length
+	let height =  _matrix[0].length
+
+	let matrix = new Array(width)
+	for(let  i = 0 ; i < width;i++){
+		matrix[i] = _matrix[i].slice(0,height)
+	}
+	
+
 	let r = 2
 	let weight = getWeight(r)
 	// console.log(r,matrix)

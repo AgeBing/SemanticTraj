@@ -71,6 +71,12 @@ html, body {
 .listener-svg{
 	position: absolute;
 }
+.zoom-rect-container-container{
+	display: flex;
+	flex-direction: column;
+	padding: 10px 0;
+	overflow: overlay;
+}
 .zoom-rect-container{
 	/*background-color: grey;*/
 	display: inline-block;
@@ -78,13 +84,13 @@ html, body {
 	position: relative;
 }
 .topic-rect-container{
-	left: 12px;
+	left: 0px;
 	top:  0;
 	position: absolute;
 	display: inline-block;
 	white-space: nowrap;   /*white-space这个属性防止父容器内容换行， */
 	overflow : hidden      /*防止子元素溢出 ,前提是本身需要设置 width */;
-	pointer-events: none;
+	box-shadow: 0px 2px 6px 0px;
 }
 .topic-rect{
 	/*该元素不能有 padding 或 border  长度为0情况下总长度需要为0*/
@@ -133,6 +139,36 @@ html, body {
 .right-box .precent-text{
 	margin: 2px auto;
 	font-size: 15px;
+}
+
+.topAxis-container{
+	margin: 4px auto;
+	position: relative;
+	height: 35px;
+
+    border-bottom: 1px solid;
+	background-color: #e6f7ff;
+    opacity: 0.7;
+}
+.axis--top .tick line{
+	opacity: 0
+}
+.axis--x{
+	opacity: 0
+}
+.tick-line{
+	position: absolute;
+	pointer-events: none;
+}
+.tick-line line{
+	stroke:rgb(255,0,0);
+	stroke-width:2;
+}
+.site-polygon{
+	fill: #ffec3d;
+	opacity: 0.6;
+	stroke:purple;
+	stroke-width: 1px;
 }
 
 

@@ -2,8 +2,8 @@ import * as d3 from 'd3';
 
 let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hotel","Life","Finance","Traffic","Enterprise","Scenicspot","Government"]
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
-let colorList =["#b8ffd0","#ecffc1","#ffe6cc","#dfbaf7","#ffcd3c","#35d0ba","#dcb5ff","#a5bdfd","#77529e","#fb929e","#ffdfdf","#fff6f6","#aedefc","#ff7657"]
-
+// let colorList =["#b8ffd0","#ecffc1","#ffe6cc","#dfbaf7","#ffcd3c","#35d0ba","#dcb5ff","#a5bdfd","#77529e","#fb929e","#ffdfdf","#fff6f6","#aedefc","#ff7657"]
+let colorList = [ '#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928',"#fff6f6","#aedefc","#ff7657","#fff6f6" ]
 let topicThemes = {}
 
 topicNameList.forEach((topic,i)=>{
@@ -18,12 +18,10 @@ let topicThemesConfig = {
 	max_width : 100	   // 显示 比例
 }
 
-var visBox = document.getElementById("topic-vis");
-
+const visBox = document.getElementById("topic-vis");
 let  h = visBox.offsetHeight; //高度
 let  w = visBox.offsetWidth; //宽度
-
-let vRectHeight = 50
+let  vRectHeight = 50
 
 // 数据格式转换
 function dataAdapter(_line_data){
@@ -37,7 +35,6 @@ function dataAdapter(_line_data){
 		}
 	})
 
-
 	return {
 			id : _line_data.id,
 			ps : ps
@@ -46,22 +43,23 @@ function dataAdapter(_line_data){
 
 
 
-let timeScale,timeScale2   //两个 timeScale 
-let register_func_list  //注册的 zoom 时触发的函数 列表
+let timeScale,timeScale2     //两个 timeScale 
+let register_func_list      //注册的 zoom 时触发的函数 列表
 let register_click_list = new Map()  //用于 click 时选择
+let traj_select_func  		//线 轨迹的 callback 函数 
 
-let  traj_select_func  //线 轨迹的 callback 函数 
+
+// for all instances 
 function init(timeRange){
 	d3.select('#topic-vis')
 		.selectAll('*')
 		.remove() 
 
-	appendListenRect(timeRange)
 	register_func_list	= []
-	
+	_appendWidgets(timeRange)
 }
 
-function appendListenRect(timeRange){
+function _appendWidgets(timeRange){
 	let  vHeight = h ,vWidth = w
 
 	// scales 
@@ -82,60 +80,100 @@ function appendListenRect(timeRange){
 			return func_zoomed()
 		})
 
+
+	// 顶部时间轴 
+	let topAxis =  d3.axisBottom(timeScale)
+	let tr = d3.timeMinute.range(timeRange[0],timeRange[1],10)
+	topAxis.tickValues(tr)
+	  	.tickSizeOuter(0)
+	  	.tickPadding(10)
+		.tickFormat(function(d, i) { 
+			let interval = Math.ceil(60 / (timeScale(tr[1]) - timeScale(tr[0])))
+			let r = ''
+			if(i % interval == 0){
+				if( (i>0) && d.toDateString() != tr[i-1].toDateString())
+					r += d.toLocaleDateString()+' '
+				r += d.toTimeString().slice(0,8)
+			}
+			return r 
+		});	
+	let AxisTop =  d3.select('#topic-vis')
+			.append('div')
+			.attr('class','topAxis-container')
+			.append('svg')
+				.attr('width',vWidth * 0.9)
+			.append("g")
+		      .attr("class", "axis axis--top")
+		      .call(topAxis);
+
+		function syncAsix(){
+			d3.select('.axis--top').call(topAxis)
+		}
+
+	register_zoom_func(  syncAsix ,null )
+
+
+	// 中间的 toipcs
+	d3.select('#topic-vis').append('div')
+		.attr('class','zoom-rect-container-container')
+
+
+	// 底部的 zoom 监听svg
 	let listenerRect = d3.select('#topic-vis').append('svg')
-			.attr('width',vWidth)
-			.attr('height',vHeight)
+			.attr('width',vWidth - 10)
+			.attr('height',40)
 			.attr('class','listener-svg')
 		.append('rect')
 			.attr('class','listener-rect')
 			.attr('x',0)
 			.attr('y',0)
 			.attr('width',vWidth)
-			.attr('height',vHeight)
-		.on('click',() =>{
+			.attr('height',40)
+		.on('mousemove',() =>{
 			let x = d3.event.offsetX
-			let y = d3.event.offsetY
-			// this._selectPeriod(x,y)
-			console.log(x,y)
 
-			// 计算是第几个
-			let v_one_h = 78 + 4 * 2
-			let _th = Math.floor( y / v_one_h )
-
-			// 计算 margin  ex. 39.3594px
-			let margin_left = d3.select('.zoom-rect-container').style('margin-left')
-			margin_left = +margin_left.split('px')[0]
-
-			func_clicked(_th,x - margin_left - 12)
+			if(x <= vWidth * 0.05 || x >= vWidth * 0.95){
+				d3.select('#topic-vis').selectAll('.tick-line').remove()
+			}else{
+				on_tick_move(x)
+			}
+		})
+		.on('mouseleave',()=>{
+			d3.select('#topic-vis').selectAll('.tick-line').remove()
 		})
 
 	listenerRect.call(zoom)
 		// .on("mousedown.zoom", null)   //拖动
-
 }
 
 function func_zoomed(){
 	let t = d3.event.transform
 	timeScale.domain(t.rescaleX(timeScale2).domain())   //  timeScal2 不变
 
-	register_func_list.forEach((f) =>  f.func.call(f.whos) )
+
+	register_func_list.forEach((f) =>  {
+		if(f.whos)
+			f.func.call(f.whos) 
+		else
+			f.func()
+	})
 } 
 
 function register_zoom_func(func, whos){
-	register_func_list.push(
-		{ func ,whos }
-	)
+	if(whos)
+		register_func_list.push(
+			{ func ,whos }
+		)
+	else
+		register_func_list.push(
+			{ func  }
+		)
 }
 
 function func_clicked(_th,x){
 	let whos = register_click_list.get(_th)
-
 	let tr = whos.func.call( whos.who , x) 
-
 	traj_select_func(whos.who.id , tr.period_time)
-
-	console.log(_th)
-	// console.log('timerange :',tr)
 }
 
 // func => _caltime_period
@@ -150,18 +188,38 @@ function registr_select_func(func){
 }
 
 
+function on_tick_move(x){
+	d3.select('#topic-vis').selectAll('.tick-line').remove()
+
+	let tickLine = d3.select('#topic-vis')
+		.insert('svg','.listener-svg')
+			.attr('class','tick-line')
+			.attr('width',w - 10)
+			.attr('height',h)
+		.append('line')
+			.attr('y1',15)
+			.attr('y2',h - 15)
+
+	tickLine.attr('x1',x)
+			.attr('x2',x)
+
+}
+
+
+//  一个 instance 代表一个 方块
 
 class topicZoomRect {
-	_init(vHeight,vWidth,container,data,index){
+	_init(container,data,index){
 		data = dataAdapter(data)
 
 		let _el = document.createElement('div')
 		_el.className = 'zoom-rect-container th' + index
 		this.rootEl = _el
-		this.vHeight = vHeight
-		this.vWidth = vWidth
+		this.vHeight = vRectHeight
+		this.vWidth =  w * 0.9
 
-		container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
+		document.getElementsByClassName('zoom-rect-container-container')[0].appendChild(_el)
+		// container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
 		
 		this.data = data
 		this.index = index   //第几个
@@ -172,8 +230,8 @@ class topicZoomRect {
 		let { vHeight,vWidth,tLeft,tTop,index } = this
 		let svg = d3.select('#topic-vis').select('.th'+index)  //选择有隐患
 				.append('svg')
-				.attr('width',vWidth + 24) 
-				.attr('height',vHeight + 25)
+				.attr('width',vWidth) 
+				.attr('height',vHeight)
 
 		let chart = svg.append('g')
 				.attr('class','chart')
@@ -186,15 +244,12 @@ class topicZoomRect {
 	_setAxis(){
 		let { data } = this
 
-
 		let ps = data.ps
 		let id = data.id 
-
 
 		let dates = ps.map((el) => {
 			return new Date(el.date + 'T' + el.time)
 		})
-
 
 		let xAxis = d3.axisBottom(timeScale)
 		xAxis.tickValues(dates.map((el)=>{
@@ -266,7 +321,7 @@ class topicZoomRect {
 	}
 
 	_appendTopicRect(){
-		let { rects,vHeight,vWidth,index } = this
+		let { rects,vHeight,vWidth,index,id } = this
 
 		let topicContainer =  
 			d3.select('.th'+index)
@@ -275,11 +330,20 @@ class topicZoomRect {
 			  .style('height',vHeight + 'px')
 			  .style('width',vWidth   + 'px')
 
+		rects.each(function(t){
 
-
-		rects.each(function(){
 			topicContainer.append('div')
 						.attr('class','topic-rect')
+						.on('mouseenter',function(){
+							d3.selectAll('.topic-rect').style('opacity',0.2)
+							d3.select(this).style('opacity',1)
+							traj_select_func(id,t)
+							// console.log(id,t)
+						})
+						.on('mouseleave',function(){
+							d3.selectAll('.topic-rect').style('opacity',1)
+						})
+
 		})
 
 		this.topicContainer = topicContainer

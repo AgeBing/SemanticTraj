@@ -9,6 +9,8 @@ let last_matrix   //矩阵缓存，存储上一次的矩阵数据
 
 let matrix_xy2Traj_id = new Map()   //2纬 Map 
 
+let max_val = 0 // 全局值的最大值 
+
 function getData(data,bottom_left,top_right) {
 	v_boundry = { bottom_left,top_right }   //更新全局变量
 	// console.log(v_boundry)
@@ -21,10 +23,11 @@ function getData(data,bottom_left,top_right) {
 	data.forEach((one_traj) => {
 		ps = ps.concat(_genePoints(one_traj['points'],one_traj['id']))
 	})
-	console.log(ps)
 	let matrix_added =  _addToMatrix(matrix,ps)
 
+	// console.log("matrix_before_blur",matrix_added)
 	let matrix_added_blured = blur(matrix_added)    // 高斯模糊
+	// console.log("matrix_after_blured",matrix_added_blured)
 
 	let latlngPointsSequence = _matrix2Sequence(matrix_added_blured)
 
@@ -32,7 +35,7 @@ function getData(data,bottom_left,top_right) {
 	
 	last_matrix = matrix_added_blured
 
-	console.log(matrix_xy2Traj_id)
+	// console.log(matrix_xy2Traj_id)
 
 	return latlngPointsSequence
 }
@@ -63,7 +66,6 @@ function _create_matrix(){
 			matrix_xy2Traj_id.get(i).set( j  , new Set() )
 		}
 	}
-	console.log(matrix_xy2Traj_id)
 	return matrix
 }
 // function _import_data(){
@@ -179,10 +181,13 @@ function _matrix2Sequence(matrix){
 		}
 	}
 
+
+	max_val = ( maxval > max_val ) ? maxval : max_val
+
 	let reObj = {
 		sequence : sequence,
 		summery: {
-			maxval : maxval,
+			maxval : max_val,
 			x_num : matrix[0].length,
 			y_num : matrix.length
 		}
@@ -247,7 +252,7 @@ function _v2l(xy){		// [x,y]
 */
 function getHighLight(th,topLeft,bottomRight){
 	let matrix = last_matrix
-	console.log(matrix)
+	// console.log(matrix)
 	let v_top_left = _l2v([topLeft['lat'],topLeft['lng']])
 	let v_bottom_right = _l2v([bottomRight['lat'],bottomRight['lng']])
 

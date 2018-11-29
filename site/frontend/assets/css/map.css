@@ -8,8 +8,8 @@
 
 
 rect.selection {
-    stroke          : gray;
+    stroke: black;
     stroke-dasharray: 4px;
-    stroke-opacity  : 0.9;
     fill            : transparent;
+    stroke-width: 1px;
 }

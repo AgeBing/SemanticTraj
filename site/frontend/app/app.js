@@ -21,13 +21,16 @@ import * as datamanager from 'datamanager'
 //   })
 
 
-// import { getTrajs,getTopics,_getApi } from 'api'
-import { draw_trajs,selectPeriod } from 'mappanel'
+import { draw_trajs } from 'mappanel'
 
 
 // 查询框 查询数据略慢，暂且用上一次查询数据存到 localstorage 
 var storage=window.localStorage;
 var json=storage.getItem("DM");
-var jsonObj=JSON.parse(json);
-console.log(jsonObj)
-draw_trajs(jsonObj)
+var trajs_data = JSON.parse(json);
+console.log(trajs_data)
+draw_trajs(trajs_data)
+
+//  正常情况下
+//  let trajs_data = api.getTrajsData()   
+//  draw_trajs(trajs_data)
