@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hotel","Life","Finance","Traffic","Enterprise","Scenicspot","Government"]
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
 // let colorList =["#b8ffd0","#ecffc1","#ffe6cc","#dfbaf7","#ffcd3c","#35d0ba","#dcb5ff","#a5bdfd","#77529e","#fb929e","#ffdfdf","#fff6f6","#aedefc","#ff7657"]
-let colorList = [ '#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928',"#fff6f6","#aedefc","#ff7657","#fff6f6" ]
+let colorList = [ '#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#c7b87c','#b15928',"#6897bb","#aedefc","#ff7657","#fff6f6" ]
 let topicThemes = {}
 
 topicNameList.forEach((topic,i)=>{
@@ -12,7 +12,7 @@ topicNameList.forEach((topic,i)=>{
 		color : colorList[i]
 	}
 })
-let iconSrcUrl = './assets/icons/'
+let iconSrcUrl = './assets/icons_/'
 let topicThemesConfig = {
 	min_width : 50,    // 显示 icon
 	max_width : 100	   // 显示 比例
@@ -26,12 +26,10 @@ let  vRectHeight = 50
 // 数据格式转换
 function dataAdapter(_line_data){
 	let ps = _line_data.points.map((line) => {
-
-		let topic = ( line.topics == undefined ) ? 'Beauty' :line.topics[0].topic 
 		return {
 			date : line.date,
 			time : line.time,
-			topic : topic
+			topics : line.topics
 		}
 	})
 
@@ -220,9 +218,13 @@ class topicZoomRect {
 
 		document.getElementsByClassName('zoom-rect-container-container')[0].appendChild(_el)
 		// container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
-		
+		console.log(data)
 		this.data = data
 		this.index = index   //第几个
+	}
+	bind(select_outer,un_select_outer){
+		this.un_select_outer = un_select_outer
+		this.select_outer = select_outer
 	}
 	// 需要当 rootEl 挂载后再 append
 	_appenSVG(){
@@ -322,7 +324,7 @@ class topicZoomRect {
 
 	_appendTopicRect(){
 		let { rects,vHeight,vWidth,index,id } = this
-
+		let self = this
 		let topicContainer =  
 			d3.select('.th'+index)
 			  .insert('div')
@@ -339,9 +341,10 @@ class topicZoomRect {
 							d3.select(this).style('opacity',1)
 							traj_select_func(id,t)
 							// console.log(id,t)
+							self.select(false)
 						})
 						.on('mouseleave',function(){
-							d3.selectAll('.topic-rect').style('opacity',1)
+							self.un_select(false)
 						})
 
 		})
@@ -365,8 +368,22 @@ class topicZoomRect {
 			//移除 child elements 
 			_rect.selectAll('div').remove() 
 
-			let _topic = data.ps[i].topic
+			if(!data.ps[i].topics){
+				console.log('null,no topics')
+				return
+			}
 
+			let topic_top = data.ps[i].topics[0]
+			let topic_top_name = topic_top.topic
+			let topic_top_val =  Math.round(+topic_top.val * 100)+ '%'
+
+			let topic_2rd = data.ps[i].topics[1]
+			let topic_2rd_name = topic_2rd.topic.toLowerCase()
+			let topic_2rd_val =  Math.round(+topic_2rd.val * 100)+ '%'
+
+			let topic_3rd = data.ps[i].topics[2]
+			let topic_3rd_name = topic_3rd.topic.toLowerCase()
+			let topic_3rd_val =  Math.round(+topic_3rd.val * 100)+ '%'
 
 			if(+width  <  topicThemesConfig.min_width){
 
@@ -374,10 +391,10 @@ class topicZoomRect {
 				let box = _rect.append('div')
 							.attr('class','mid-box')
 					box.append('img')		
-						.attr('src',iconSrcUrl + topicThemes[_topic].icon)
+						.attr('src',iconSrcUrl + topicThemes[topic_top_name].icon)
 					box.append('div')
 						.attr('class','precent-text')
-						.html('25%')	
+						.html(topic_top_val)	
 			}else{
 				let left_box = _rect.append('div')
 							.attr('class','left-box')
@@ -385,24 +402,24 @@ class topicZoomRect {
 							.attr('class','right-box')
 
 					left_box.append('img')		
-						.attr('src',iconSrcUrl + topicThemes[_topic].icon)
+						.attr('src',iconSrcUrl + topicThemes[topic_top_name].icon)
 					left_box.append('div')
 						.attr('class','precent-text')
-						.html('25%')
+						.html(topic_top_val)
 
 					right_box.append('div')
 						.attr('class','precent-text')
-						.html('25%')
+						.html(topic_2rd_name + ' : ' + topic_2rd_val)
 					right_box.append('div')
 						.attr('class','precent-text')
-						.html('25%')
+						.html(topic_3rd_name + ' : ' + topic_3rd_val)
 			}
 
 			_rect.style('width',width+'px')
 				.style('height',height+'px')
 				.style('left',x  + 'px')
 				.style('top',y + 'px')
-				.style('background-color',topicThemes[_topic].color)
+				.style('background-color',topicThemes[topic_top_name].color)
 
 		})
 
@@ -455,6 +472,24 @@ class topicZoomRect {
 			let _rect = topicContainer.select('.topic-rect:nth-child('+(i+1)+')')
 			_rect.style('opacity',1)
 		}
+	}
+
+	select(fromOuter = true){
+		let { index } = this
+
+		if(fromOuter){
+			d3.selectAll('.topic-rect').style('opacity',0.2)
+			d3.select('.zoom-rect-container-container').select('.th'+index).select('.topic-rect-container')
+				.selectAll('.topic-rect')
+				.style('opacity',1)
+		}
+		if(!fromOuter) this.select_outer(index,'hexa')
+	}
+	un_select(fromOuter = true){
+		let { index } = this
+		
+		d3.selectAll('.topic-rect').style('opacity',1)
+		if(!fromOuter) this.un_select_outer(index,'hexa')
 	}
 }
 

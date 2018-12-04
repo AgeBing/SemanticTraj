@@ -34,3 +34,17 @@ draw_trajs(trajs_data)
 //  正常情况下
 //  let trajs_data = api.getTrajsData()   
 //  draw_trajs(trajs_data)
+
+
+// import { draw } from 'forcepanel'
+
+// import { init,topicHexa } from  'hexagonpanel'
+
+// init()
+// let topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
+// let h = new topicHexa()
+// h.prepareHexagonData(topicNames)
+// h.drawHexagon()
+// let innerDatas = [1,2,3,4,5]
+// h.prepareInnerData(innerDatas)
+// h.drawInner()

@@ -5,9 +5,10 @@ import * as d3 from 'd3';
 
 
 import { getData,getHighLight,getTrajsThroughHL  } from  './util/matrix_process'
-import { init,topicZoomRect ,registr_select_func  } from 'topicpanel'
+import { init as topic_init,topicZoomRect ,registr_select_func  } from 'topicpanel'
 import { draw as draw_t ,selectPeriod } from 'drawtrajlines'
-
+import { init as hexa_init,topicHexa }  from 'hexagonpanel' 
+const topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
 
 let map,svg,g   //containers
 let rects        //色块
@@ -23,6 +24,7 @@ let state = {}    //用户操作 状态  select_rect -> 框选
 
 // 数据格式转换
 function _dataAdapter(_lines_data){
+
 	let lines_data = _lines_data.map((line) => {
 
 		let ps = line.traj.map((p) => {
@@ -50,7 +52,7 @@ function _dataAdapter(_lines_data){
 // Main function 
 function draw(containers,_lines_data){
 	lines_data = _dataAdapter(_lines_data)
-
+	console.log(lines_data)
 	map = containers.map
  	svg = containers.svg
  	g   = containers.g
@@ -69,6 +71,7 @@ async function _resize(lines_data){
 	let bottomLeft = map.getBounds().getSouthWest();
 	let topRight = map.getBounds().getNorthEast();
 	let boundry = { bottomLeft,topRight }
+	// console.log(boundry)
 	Boundry = boundry
 	// 取得数据
 	let res_getData  = getData(lines_data,bottomLeft,topRight)	
@@ -244,6 +247,20 @@ function _addSelectEvent(){
 
 }
 
+// 选择联动
+let selectArr = {
+	'topic': [],
+	'hexa' : []
+}
+function select_outer(i,outerName){
+	selectArr[outerName][i].select()
+}
+// 选中离开时触发
+function un_select_outer(i,outerName){
+	selectArr[outerName][i].un_select()
+}
+
+
 // 框选后 重新渲染自动识别 的色块
 async function func_frameSelect(){
 
@@ -290,6 +307,7 @@ async function func_frameSelect(){
 	let selected_trajs = getTrajsThroughHL( lines_data , hightLight_coor.ps )
 
 
+
 	if(selected_trajs.ps.length == 0){
 		console.log('no trajs available~')
 		return
@@ -300,20 +318,48 @@ async function func_frameSelect(){
 	let  h = visBox.offsetHeight; //高度
 	let  w = visBox.offsetWidth; //宽度
 
-	init(selected_trajs.timeRange)
 
-	let l_n = 10
+
+
+	topic_init(selected_trajs.timeRange)
+	hexa_init()
+
+	let l_n = +document.getElementById("range6").value
 	for(let i = 0;i < l_n ;i++){
 		let r = new topicZoomRect()
+		let h = new  topicHexa()
+
+		h.init(topicNames,selected_trajs.ps[i],i)
+		h.bind(select_outer,un_select_outer)
+		h.render()
+
 		r._init(visBox,selected_trajs.ps[i],i)
+		r.bind(select_outer,un_select_outer)
 		r._render()
+
+		selectArr['topic'].push(r)
+		selectArr['hexa'].push(h)
+
 	}
 
+	
 	registr_select_func(selectPeriod)
+
 
 	// 绘制轨迹
 	draw_t({map,svg,g},selected_trajs.ps.slice(0,l_n))
 }
+
+
+
+
+// let topic_select_func , hexa_select_func
+// let topic_un_select_func , hexa_un_select_func
+// // 选中时触发
+
+
+
+
 function _removeSelectEvent(){
 	svg.on( "mousedown",null)
 	svg.on( "mousemove",null)
@@ -365,6 +411,12 @@ function _addControlPanel(maxval){
 	  	
 	  	let v = e.target.value;
 	 	document.getElementById("valBox4").innerHTML = v;
+	 	func_frameSelect()
+	})
+
+
+	document.getElementById('range6').addEventListener('change',(e)=>{
+	  	let v = e.target.value;
 	 	func_frameSelect()
 	})
 

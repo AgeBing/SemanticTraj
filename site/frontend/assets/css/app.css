@@ -26,7 +26,7 @@ html, body {
 	margin: 15px 10px;
 }
 .up{
-	height: 70%;
+	height: 60%;
 }
 .down{
 	/*height: 30%;*/
@@ -43,6 +43,7 @@ html, body {
 .right{
 	float: right;
 	width: 48%;
+	height: 100%;
 }
 
 
@@ -105,13 +106,15 @@ html, body {
 	margin: auto;
 }
 .mid-box img{
-	width: 30px;
-	height: 30px;
-	margin: 5px auto 2px;
+	width: 25px;
+	height: 25px;
+	margin: 4px auto 4px;
 }
 .mid-box .precent-text{
 	display: inline-block;
-    margin: auto;
+	margin: auto;
+	color: #fff;
+	font-size: 3px;
 }
 
 .topic-rect .left-box{
@@ -121,13 +124,15 @@ html, body {
 	float: left;
 }
 .left-box img{
-	width: 30px;
-	height: 30px;
-	margin: 5px auto 2px;
+	width: 25px;
+	height: 25px;
+	margin: 4px auto 4px;
 }
 .left-box .precent-text{
 	display: inline-block;
     margin: auto;
+    color: #fff;
+	font-size: 3px;
 }
 .topic-rect .right-box{
 	width: calc(100% - 60px);
@@ -137,8 +142,9 @@ html, body {
 	padding: 5px 0;
 }
 .right-box .precent-text{
-	margin: 2px auto;
-	font-size: 15px;
+	margin: 4px auto;
+	color: #fff;
+	font-size: 3px;
 }
 
 .topAxis-container{
@@ -175,4 +181,67 @@ html, body {
 
 .control-box{
 	margin: 10px
+}
+.control-box #range6{
+	margin: 0 20px;
+	width: 40px;
+}
+
+
+
+
+
+#hexagon-container{
+	height: 260px;
+	margin: 0 15%;
+}
+.node-nomal{
+	fill: #4DB4CC;
+	opacity: 1;
+	r : 5;
+}
+.link-nomal{
+	stroke: gray;
+	opacity: 1;
+	width: 4px;
+}
+.title-nomal{
+	font-size: 15px
+}
+.node-mid{
+	opacity: 0.5;
+	r : 4;
+}
+.nodes .selected{
+	fill: red;
+	opacity: 1
+}
+
+.link-mid{
+	stroke: gray;
+	opacity: 1;
+	width: 4px;
+}
+.title-mid{
+	font-size: 9px;
+}
+.link-item{
+	stroke: gray;
+	opacity: 0.5;
+	width: 4px;
+}
+.select-group{
+	opacity: 1;
+	fill: red;
+}
+.pie path {
+	fill: orange;
+	stroke: white;
+}
+.pie text {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  fill: white;
+  text-anchor: middle;
 }
