@@ -16,8 +16,9 @@ function init() {
 
 	svg = d3.select('#hexagon-container')
 		.append('svg')
-		.attr('width',w)
+		.attr('width',w*0.5)
 		.attr('height',h)
+		.style('left',w*0.25+'px')
 }
 
 function print(index,id,link){
@@ -45,14 +46,14 @@ class topicHexa{
 	}
 	bindEventListener(){
 		let self = this
-		document.getElementById('range5').addEventListener('change',(e)=>{
+		document.getElementById('range5').addEventListener('input',(e)=>{
 		  	let v = e.target.value;
 		 	document.getElementById("valBox5").innerHTML = v;
 		 	SK = v
 		 	self.render()
 		})
 
-		document.getElementById('range7').addEventListener('change',(e)=>{
+		document.getElementById('range7').addEventListener('input',(e)=>{
 		  	let v = e.target.value;
 		 	document.getElementById("valBox7").innerHTML = v;
 		 	console.log(v)

@@ -8,6 +8,8 @@ import { getData,getHighLight,getTrajsThroughHL  } from  './util/matrix_process'
 import { init as topic_init,topicZoomRect ,registr_select_func  } from 'topicpanel'
 import { draw as draw_t ,selectPeriod } from 'drawtrajlines'
 import { init as hexa_init,topicHexa }  from 'hexagonpanel' 
+
+
 const topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
 
 let map,svg,g   //containers
@@ -52,7 +54,7 @@ function _dataAdapter(_lines_data){
 // Main function 
 function draw(containers,_lines_data){
 	lines_data = _dataAdapter(_lines_data)
-	console.log(lines_data)
+
 	map = containers.map
  	svg = containers.svg
  	g   = containers.g
@@ -307,14 +309,24 @@ async function func_frameSelect(){
 	let selected_trajs = getTrajsThroughHL( lines_data , hightLight_coor.ps )
 
 
-
+	removeDefaultWords()
 	if(selected_trajs.ps.length == 0){
 		console.log('no trajs available~')
+
+		d3.select('#topic-container').selectAll('*').remove()
+		d3.select('#hexagon-container').selectAll('*').remove()
+		
+
+		d3.select('#topic-container')
+			.append('div').attr('class','default-word').append('span').text('返回结果为空')
+		d3.select('#hexagon-container')
+			.append('div').attr('class','default-word').append('span').text('返回结果为空')
+
 		return
 	}
 
 	// TOPIC PANEL
-	let  visBox = document.getElementById("topic-vis");
+	let  visBox = document.getElementById("topic-container");
 	let  h = visBox.offsetHeight; //高度
 	let  w = visBox.offsetWidth; //宽度
 
@@ -359,6 +371,9 @@ async function func_frameSelect(){
 
 
 
+function removeDefaultWords(){
+	d3.selectAll('.default-word').remove()
+}
 
 function _removeSelectEvent(){
 	svg.on( "mousedown",null)
@@ -462,7 +477,7 @@ function _v2l( xy ){		// [x,y]
 	let lng_width = topRight['lng'] - bottomLeft['lng']   //精度  -> x
 	let lat_width = topRight['lat'] - bottomLeft['lat']   //纬度  -> y
 
-	var visBox = document.getElementById("map_container");
+	var visBox = document.getElementById("map-container");
 	let  h = visBox.offsetHeight; //高度
 	let  w = visBox.offsetWidth; //宽度
 

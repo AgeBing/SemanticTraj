@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hotel","Life","Finance","Traffic","Enterprise","Scenicspot","Government"]
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
 // let colorList =["#b8ffd0","#ecffc1","#ffe6cc","#dfbaf7","#ffcd3c","#35d0ba","#dcb5ff","#a5bdfd","#77529e","#fb929e","#ffdfdf","#fff6f6","#aedefc","#ff7657"]
-let colorList = [ '#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#c7b87c','#b15928',"#6897bb","#aedefc","#ff7657","#fff6f6" ]
+let colorList = ['#8dd3c7','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#80b1d3','#fdb462','#b3de69','#fccde5']
 let topicThemes = {}
 
 topicNameList.forEach((topic,i)=>{
@@ -18,7 +18,7 @@ let topicThemesConfig = {
 	max_width : 100	   // 显示 比例
 }
 
-const visBox = document.getElementById("topic-vis");
+const visBox = document.getElementById("topic-container");
 let  h = visBox.offsetHeight; //高度
 let  w = visBox.offsetWidth; //宽度
 let  vRectHeight = 50
@@ -49,7 +49,7 @@ let traj_select_func  		//线 轨迹的 callback 函数
 
 // for all instances 
 function init(timeRange){
-	d3.select('#topic-vis')
+	d3.select('#topic-container')
 		.selectAll('*')
 		.remove() 
 
@@ -95,9 +95,9 @@ function _appendWidgets(timeRange){
 			}
 			return r 
 		});	
-	let AxisTop =  d3.select('#topic-vis')
+	let AxisTop =  d3.select('#topic-container')
 			.append('div')
-			.attr('class','topAxis-container')
+			.attr('class','top-axis-container')
 			.append('svg')
 				.attr('width',vWidth * 0.9)
 			.append("g")
@@ -112,12 +112,12 @@ function _appendWidgets(timeRange){
 
 
 	// 中间的 toipcs
-	d3.select('#topic-vis').append('div')
-		.attr('class','zoom-rect-container-container')
+	d3.select('#topic-container').append('div')
+		.attr('class','rect-group')
 
 
 	// 底部的 zoom 监听svg
-	let listenerRect = d3.select('#topic-vis').append('svg')
+	let listenerRect = d3.select('#topic-container').append('svg')
 			.attr('width',vWidth - 10)
 			.attr('height',40)
 			.attr('class','listener-svg')
@@ -131,13 +131,13 @@ function _appendWidgets(timeRange){
 			let x = d3.event.offsetX
 
 			if(x <= vWidth * 0.05 || x >= vWidth * 0.95){
-				d3.select('#topic-vis').selectAll('.tick-line').remove()
+				d3.select('#topic-container').selectAll('.tick-line').remove()
 			}else{
 				on_tick_move(x)
 			}
 		})
 		.on('mouseleave',()=>{
-			d3.select('#topic-vis').selectAll('.tick-line').remove()
+			d3.select('#topic-container').selectAll('.tick-line').remove()
 		})
 
 	listenerRect.call(zoom)
@@ -187,9 +187,9 @@ function registr_select_func(func){
 
 
 function on_tick_move(x){
-	d3.select('#topic-vis').selectAll('.tick-line').remove()
+	d3.select('#topic-container').selectAll('.tick-line').remove()
 
-	let tickLine = d3.select('#topic-vis')
+	let tickLine = d3.select('#topic-container')
 		.insert('svg','.listener-svg')
 			.attr('class','tick-line')
 			.attr('width',w - 10)
@@ -211,12 +211,12 @@ class topicZoomRect {
 		data = dataAdapter(data)
 
 		let _el = document.createElement('div')
-		_el.className = 'zoom-rect-container th' + index
+		_el.className = 'rect-container th' + index
 		this.rootEl = _el
 		this.vHeight = vRectHeight
 		this.vWidth =  w * 0.9
 
-		document.getElementsByClassName('zoom-rect-container-container')[0].appendChild(_el)
+		document.getElementsByClassName('rect-group')[0].appendChild(_el)
 		// container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
 		console.log(data)
 		this.data = data
@@ -230,7 +230,7 @@ class topicZoomRect {
 	_appenSVG(){
 
 		let { vHeight,vWidth,tLeft,tTop,index } = this
-		let svg = d3.select('#topic-vis').select('.th'+index)  //选择有隐患
+		let svg = d3.select('#topic-container').select('.th'+index)  //选择有隐患
 				.append('svg')
 				.attr('width',vWidth) 
 				.attr('height',vHeight)
@@ -354,7 +354,7 @@ class topicZoomRect {
 	_syncTopicRect(){
 		let { rects,topicContainer,data,selectedIndex } = this
 
-		let  _rects = d3.selectAll('.zoom-rect-container:last-child .topic-rect')
+		let  _rects = d3.selectAll('.rect-container:last-child .topic-rect')
 		let  _rect 
 		rects.each(function(d,i){
 			let rect = d3.select(this)
@@ -479,7 +479,7 @@ class topicZoomRect {
 
 		if(fromOuter){
 			d3.selectAll('.topic-rect').style('opacity',0.2)
-			d3.select('.zoom-rect-container-container').select('.th'+index).select('.topic-rect-container')
+			d3.select('.rect-group').select('.th'+index).select('.topic-rect-container')
 				.selectAll('.topic-rect')
 				.style('opacity',1)
 		}
