@@ -1,7 +1,17 @@
-#Prepare
+﻿#Prepare
 
 + python: 3.6.3
 + django: 1.11.1
++ vc++ 14.0
+
+
+#依赖
+pip install django-webpack-loader
+
+pip install django-cors-headers
+
+pip install channels
+pip install pypiwin32
 
 #Build
 
