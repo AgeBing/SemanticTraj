@@ -6,3 +6,4 @@ node_modules/
 bundle/
 data/
 webpack-stats.json
+package-lock.json
