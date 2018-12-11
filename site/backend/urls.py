@@ -18,13 +18,8 @@ from django.conf.urls import include, url
 # from .consumers import ws_message
 
 from . import views
-from . import get_data
 
-get_data_api = [
-    url(r'^bus', get_data.get_bus),
-]
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^data/', include(get_data_api)),
+    url(r'^$', views.index, name='index')
 ]

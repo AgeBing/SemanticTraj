@@ -9,42 +9,50 @@
  */
 import $ from 'jquery';
 import * as d3 from 'd3';
+
 import * as queryview from 'newqueryview'
 import * as datamanager from 'datamanager'
+import { draw_trajs } from 'mappanel'
 
-import { getTrajs,getTopics,_getApi } from 'api'
-import { draw_trajs,selectPeriod } from 'MapPanel'
-import { topicZoomRect  } from 'TopicPanel'
 
+console.log('Waiting~')
 datamanager.init()
   .then(o => queryview.init())
-
-function cb(id,period){
-	console.log('cb:',id,period)
-}
-
-async function data_prepare(argument) {
-	let traj_data = await getTrajs()
-	let topic_data = await getTopics()
-
-
-	console.log("getTrajs : ",traj_data)
-	console.log("getTopics : ",topic_data)
+  .then(()=>{
+  	var storage=window.localStorage;
+	var json=storage.getItem("DM");
+	var trajs_data = JSON.parse(json);
+	console.log(trajs_data)
+	if(trajs_data){
+		draw_trajs(trajs_data)
+	}
+  })
 
 
-	let  visBox = document.getElementById("topic-vis");
-	let  h = visBox.offsetHeight; //高度
-	let  w = visBox.offsetWidth; //宽度
 
-	let r = new topicZoomRect()
-	r._init(50,w*0.8,visBox,topic_data.data[0])
-	r._regisCallback('selectPeriod',selectPeriod)
-	r._render()
 
-	draw_trajs(traj_data.data)
 
-	let getAPi = await _getApi()
-	console.log(getAPi)
-}	
+// 查询框 查询数据略慢，暂且用上一次查询数据存到 localstorage 
+// var storage=window.localStorage;
+// var json=storage.getItem("DM");
+// var trajs_data = JSON.parse(json);
+// console.log(trajs_data)
+// draw_trajs(trajs_data)
 
-data_prepare()
+//  正常情况下
+//  let trajs_data = api.getTrajsData()   
+//  draw_trajs(trajs_data)
+
+
+// import { draw } from 'forcepanel'
+
+// import { init,topicHexa } from  'hexagonpanel'
+
+// init()
+// let topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
+// let h = new topicHexa()
+// h.prepareHexagonData(topicNames)
+// h.drawHexagon()
+// let innerDatas = [1,2,3,4,5]
+// h.prepareInnerData(innerDatas)
+// h.drawInner()

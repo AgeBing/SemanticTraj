@@ -1,15 +1,37 @@
+/* 
+	穿透
+	使得 svg 能接受到 事件
+*/
 .leaflet-overlay-pane svg path{
     pointer-events: auto !important;
 }
 
+/*
+	鼠标 手指->箭头
+*/
 #map_container svg{
-	cursor: auto !important;
+	cursor: auto;
+}
+
+/*
+	地图上的 框选框 
+*/
+rect.selection {
+    stroke: black;
+    fill: transparent;
+    stroke-dasharray: 4px;
+    stroke-width: 1px;
 }
 
 
-rect.selection {
-    stroke          : gray;
-    stroke-dasharray: 4px;
-    stroke-opacity  : 0.9;
-    fill            : transparent;
+
+
+/*
+	drawtrajlines 部分
+*/
+.site-polygon{
+	fill: #ffec3d;
+	opacity: 0.6;
+	stroke:purple;
+	stroke-width: 1px;
 }

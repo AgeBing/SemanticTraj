@@ -67,12 +67,14 @@ export function getPidByCondition(siteList, conditionNum, time1 =
     table: "phonetrajectory_index_bysite",
     limit:`where datetime in (${timeCondition}) and ${siteCondition}`,
   };
+  console.log('getPidByCondition ... ')
   return pquery(data)
       .then(result => getPidByResult(result, siteList, conditionNum))
 }
 
 // 合并people id : 经过所有要查找的点的pid
 function getPidByResult(result, siteList, conditionNum) {
+  console.log('getPidByCondition',result)
   const siteCondition = DataManager.siteCondition;
   const ans = new Set();
   const pidSites = new Map();
@@ -114,7 +116,12 @@ function getPidByResult(result, siteList, conditionNum) {
 export function getTrajByPid(pidList, time1 = '2014-01-14 00:00:00.00', 
     time2 = '2014-01-14 00:20:00.00') {
   let pCondition = '';
-  for (let pid of pidList) {
+  // for (let pid of pidList) {
+  //   pCondition += "'" + pid + "',";
+  // }
+
+  //*************  for Test *************   
+  for (let pid of pidList.slice(0,100)) {
     pCondition += "'" + pid + "',";
   }
   pCondition = pCondition.substring(0, pCondition.length - 1);
@@ -134,11 +141,13 @@ export function getTrajByPid(pidList, time1 = '2014-01-14 00:00:00.00',
     table: 'phonetrajectory_sortbyid',
     limit: `where date in (${dateCondition}) and peopleid in (${pCondition})`
   };
+  console.log(data)
   return pquery(data)
       .then(result => parseTraj(result));
 }
 
 function parseTraj(result) {
+  console.log('traj',result)
   const ans = new Map();
   for (let data of result) {
     if (!ans.has(data.peopleid)) {

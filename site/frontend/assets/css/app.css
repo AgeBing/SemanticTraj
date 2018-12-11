@@ -1,6 +1,5 @@
 /*@import './map.css'*/
 
-
 html{
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -11,79 +10,58 @@ html{
 }
 
 html, body {
-  height: 100%;
-  font-size: 7px;
+  height: 95%;
+  font-size: 2px;
   font-family: Arial, Helvetica, sans-serif;
   background-color: #fafafa;
+  margin:0;
 }
 
 .contain {
-	height: 100%;
+	position: relative;
+	height: 99%;
+	top: 0;
 }
-.sub_contain{
-	margin: 15px 10px;
+.sub-contain{
+	margin:20px 10px;
+	min-width: 580px;
 }
-.up{
+.up-contain{
 	height: 60%;
 }
-.down{
-	/*height: 30%;*/
+.down-contain{
+	height: 38%;
+	min-height: 270px;
 }
+
 .panel{
 	background-color: #ffffff;
 	height: 100%;
+	border: 1px solid #e8e8e8;
 }
-.left{
+.left-panel{
 	float: left;
-	width: 80%;
+	width: 50%;
 }
-.right{
+.right-panel{
 	float: right;
-	width: 18%;
+	width: 48%;
+	height: 100%;
 }
 
 
 
-.show-rects{
-	/*stroke: black;*/
+.default-word{
+	width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.default-word span{
+	font-weight: 500;
+    color: #5c6b77;
+    font-size: 32px;
+    font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
 }
 
-.listener-rect{
-	/*fill: none;*/
-	pointer-events: all;
-	opacity: 0
-}
-
-
-
-#topic-vis{
-	display: flex;
-	flex-direction: column;
-	padding: 10px 0;
-}
-.zoom-rect-container{
-	/*background-color: grey;*/
-	display: inline-block;
-	margin: 4px auto;
-	position: relative;
-}
-.topic-rect-container{
-	left: 12px;
-	top:  0;
-	position: absolute;
-	display: inline-block;
-	white-space: nowrap;   /*white-space这个属性防止父容器内容换行， */
-	overflow : hidden      /*防止子元素溢出 ,前提是本身需要设置 width */;
-	pointer-events: none;
-}
-.topic-rect{
-	/*该元素不能有 padding 或 border  长度为0情况下总长度需要为0*/
-	display: inline-block;
-	opacity: 0.2;
-	position: absolute;   /* 左右移动  设置 left top (xy)*/
-}
-.topic-rect img{
-	width: 50px;
-    height: 50px;
-    display: inherit;
-}

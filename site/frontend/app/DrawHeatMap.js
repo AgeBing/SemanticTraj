@@ -1,60 +1,94 @@
 import * as d3 from 'd3';
 
 
-import { _getData,_getHighlight } from 'api'
+// import { _getData,_getHighlight } from 'api'
+
+
+import { getData,getHighLight,getTrajsThroughHL  } from  './util/matrix_process'
+import { init as topic_init,topicZoomRect ,registr_select_func  } from 'topicpanel'
+import { draw as draw_t ,selectPeriod } from 'drawtrajlines'
+import { init as hexa_init,topicHexa }  from 'hexagonpanel' 
+
+
+const topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
 
 let map,svg,g   //containers
 let rects        //色块
+let lines_data  //轨迹数据
 
-let func_frameSelect  //callback func
+let trans = {}  //偏移 xy
+let numX , numY , Boundry  
 
-// let th = {
-// 	max: document.getElementById("range2").value,
-// 	min: document.getElementById("range3").value
-// } //阈值
+let  quantile = d3.scaleQuantile()
+    .range(d3.range(5).map(function(i) { return  i * 0.25  }));  //用于透明度的比例尺
+
+let state = {}    //用户操作 状态  select_rect -> 框选
+
+// 数据格式转换
+function _dataAdapter(_lines_data){
+
+	let lines_data = _lines_data.map((line) => {
+
+		let ps = line.traj.map((p) => {
+			return 	{
+					date : p.time.split(' ')[0],
+					time : p.time.split(' ')[1],
+					coor : {
+						lat : p.latitude ,
+						lon : p.longitude
+					},
+					topics : p.topics
+				}
+		})
+
+		return {
+			id : line.pid,
+			points : ps,
+
+		}
+	})
+	return lines_data
+}
 
 
+// Main function 
+function draw(containers,_lines_data){
+	lines_data = _dataAdapter(_lines_data)
 
-function draw(containers){
 	map = containers.map
  	svg = containers.svg
  	g   = containers.g
 
  	map.on("moveend", () => {
-		_resize()
+		_resize(lines_data)
 	});
 	map.on("zoomend", () => {
-		_resize()
+		_resize(lines_data)
 	});
-
-	map.dragging.disable()	
-
-	_resize()
-
-	console.log('draw_h')
+	_resize(lines_data)
 }
 
-async function _resize(){
+async function _resize(lines_data){
 	// 获取视图边界
 	let bottomLeft = map.getBounds().getSouthWest();
 	let topRight = map.getBounds().getNorthEast();
 	let boundry = { bottomLeft,topRight }
-	
+	// console.log(boundry)
+	Boundry = boundry
 	// 取得数据
-	let res_getData  = await _getData({boundry:boundry})
-
-
+	let res_getData  = getData(lines_data,bottomLeft,topRight)	
 	// 视图偏移
-	_setBottomLayer(boundry)
+	_setLayer( boundry )
 	// 绘制色块
-	_drawRects(res_getData)
-	// 添加 事件listener 
-	_addSelectEvent()
+	_drawRects( res_getData )
 
+	_addControlPanel(res_getData.summery.maxval)
+
+	_drawSelection()
 }
 
 
-function _setBottomLayer(boundry){
+function _setLayer(boundry){
 	let { bottomLeft,topRight } = boundry 
 
 	let xy_bottomLeft = map.latLngToLayerPoint(bottomLeft)
@@ -69,7 +103,9 @@ function _setBottomLayer(boundry){
     g.attr("transform",
     	"translate(" + - xy_bottomLeft.x + ","+ - xy_topRight.y+")"
     )
-    // console.log("trans",xy_bottomLeft.x,xy_topRight.y)
+
+    trans.x = xy_bottomLeft.x
+    trans.y = xy_topRight.y
 }
 
 
@@ -87,10 +123,12 @@ function _drawRects(data){
 	let vGap = _vGap(data)
 	let maxval = data.summery.maxval
 	let x_num = data.summery.x_num
-	
-	// 透明度显示系数 (0,1) 
-	// let v = document.getElementById("range1").value
-   	let v = 1
+	numX = x_num
+	numY = data.summery.y_num
+
+	//透明度 scale domain 
+	let v = document.getElementById("range1").value
+	quantile.domain( d3.range(maxval * v) ) 
 
 	rects.attr('x',d => _l2v(d).x)
 		.attr('y', d => _l2v(d).y)
@@ -98,22 +136,25 @@ function _drawRects(data){
 		.attr('height',vGap.y)
 		.attr("fill",'steelblue')
 		.attr("opacity", (d,i) => {
-			let linear = d3.scaleLinear().domain([0,maxval*v]).range([0,1])	
-			let op = linear(d.val)
+			let op = quantile(d.val)
 			return op
-		})
-		.on("click",function(d,i){
-			 let y = Math.floor(i / x_num)
- 			let x = i % x_num
 		})
 
 }
 
 
+
+//添加 框选 操作
 function _addSelectEvent(){
+	g.selectAll( "rect.selection").remove();
+
 	// 创建 选择框
 	svg.on( "mousedown", function() {
 	    var v_p = d3.mouse( this);
+	    v_p[0]+= trans.x
+	    v_p[1]+= trans.y
+
+
 	    g.append( "rect")
 	    	.attr('class','selection')
 	    	.attr('x',v_p[0])
@@ -123,6 +164,7 @@ function _addSelectEvent(){
 	    	.attr('width',3)
 	    	.attr('height',3)
 
+	    g.selectAll('path').remove()
 	})
 
 	// 选择框 移动
@@ -131,6 +173,11 @@ function _addSelectEvent(){
 	    if(s.empty()) return
 
         let p = d3.mouse(this)
+    	// console.log(p)
+    	p[0]+= trans.x
+	    p[1]+= trans.y
+    	// console.log(p)
+
         let d = {
             x       : parseInt( s.attr("x"), 10),
             y       : parseInt( s.attr("y"), 10),
@@ -138,8 +185,8 @@ function _addSelectEvent(){
             height  : parseInt( s.attr("height"), 10)
         }
         let move = {
-            x : p[0] - d.x,
-            y : p[1] - d.y
+            x : p[0]  - d.x,
+            y : p[1]  - d.y
         }
 
         if( move.x < 1 || (move.x*2 < d.width)) {
@@ -155,7 +202,8 @@ function _addSelectEvent(){
         } else {
             d.height = move.y;       
         }
-        s.attr("x",d.x)
+
+        s.attr("x",d.x )
         	.attr("y",d.y)
         	.attr("width",d.width)
         	.attr("height",d.height)
@@ -169,58 +217,254 @@ function _addSelectEvent(){
         	}
         	return "steelblue"
         })
-
-        // 框选后 重新渲染自动识别 的色块
-        func_frameSelect =  async function(){
-			let v_topLeft = [ d.x,d.y ]
-			let v_bottomRight = [ d.x +d.width , d.y+d.height ]    
-
-        	let topLeft = map.layerPointToLatLng(v_topLeft)
-        	let bottomRight = map.layerPointToLatLng(v_bottomRight)
-
-        	let select_boundry = { topLeft,bottomRight }
-
-        	//控制系数 
-        	let th = {
-        		max : 0.2,
-        		min : 0.05
-        	}
-        	let req = {
-        		boundry: select_boundry,
-        		th: th
-        	}
-			// 取得数据
-			let res_getData   = await _getHighlight(req)
-			let data = res_getData
-			console.log(data)
-
-			let x_num = data.x_num
-			let ps = data.ps
-			rects.attr("fill",function(di,i){
- 				let y = Math.floor(i / x_num)
- 				let x = i % x_num
-
-	        	if( ps[y] && ps[y].indexOf(x) != -1 ){ 
-	        		return "red"
-	        	}
-	        	return "steelblue"
-	        })
-
-		}
 	})
 
 
 	// 选择结束 
 	svg.on( "mouseup", function() {
         let p = d3.mouse(this)
-	    g.selectAll( "rect.selection").remove();
-	    func_frameSelect()
+	    
+	    
+	    // 删除框选操作
+		map.dragging.enable()	
+		_removeSelectEvent()
+		document.getElementById('range8').disabled = false
+
+		// 记录框选状态
+		let s = d3.select( "rect.selection");
+		let s_x1 = s.attr('x')
+		let s_y1 = s.attr('y')
+		let s_x2 = +s.attr('x') + +s.attr('width')
+		let s_y2 = +s.attr('y') + +s.attr('height')
+
+		let p_tl =  _v2l( [s_x1,s_y1] )
+		let p_br =  _v2l( [s_x2,s_y2] )
+
+		state.select_rect = {
+			p_tl , p_br 
+		}
+		func_frameSelect()
+
 	})
 
 }
 
+// 选择联动
+let selectArr = {
+	'topic': [],
+	'hexa' : []
+}
+function select_outer(i,outerName){
+	selectArr[outerName][i].select()
+}
+// 选中离开时触发
+function un_select_outer(i,outerName){
+	selectArr[outerName][i].un_select()
+}
 
 
+// 框选后 重新渲染自动识别 的色块
+async function func_frameSelect(){
+
+	let { p_tl , p_br  } = state.select_rect
+
+	let p1 = _l2v( p_tl )
+	let p2 = _l2v( p_br )
+
+	let v_topLeft = [ p1.x,p1.y ]
+	let v_bottomRight = [ p2.x,p2.y ]   
+
+	// let v_topLeft = [ d.x,d.y ]
+	// let v_bottomRight = [ d.x +d.width , d.y+d.height ]    
+
+	let topLeft = map.layerPointToLatLng(v_topLeft)
+	let bottomRight = map.layerPointToLatLng(v_bottomRight)
+
+	let select_boundry = { topLeft,bottomRight }
+
+	//控制系数 
+	let th = {
+		max : document.getElementById("valBox4").innerHTML,
+		min : document.getElementById("valBox3").innerHTML
+	}
+
+
+	// 取得数据 高亮 色块区域
+	let hightLight_coor   = getHighLight(th,topLeft,bottomRight)
+
+	let x_num = hightLight_coor.x_num
+	let ps = hightLight_coor.ps
+
+	rects.attr("fill",function(di,i){
+			let y = Math.floor(i / x_num)
+			let x = i % x_num
+
+    	if( ps[y] && ps[y].indexOf(x) != -1 ){ 
+    		return "#fa541c"
+    	}
+    	return "steelblue"
+    })
+
+	//获得经过这些区域的轨迹   
+	let selected_trajs = getTrajsThroughHL( lines_data , hightLight_coor.ps )
+
+
+	removeDefaultWords()
+	if(selected_trajs.ps.length == 0){
+		console.log('no trajs available~')
+
+		d3.select('#topic-container').selectAll('*').remove()
+		d3.select('#hexagon-container').selectAll('*').remove()
+		
+
+		d3.select('#topic-container')
+			.append('div').attr('class','default-word').append('span').text('返回结果为空')
+		d3.select('#hexagon-container')
+			.append('div').attr('class','default-word').append('span').text('返回结果为空')
+
+		return
+	}
+
+	// TOPIC PANEL
+	let  visBox = document.getElementById("topic-container");
+	let  h = visBox.offsetHeight; //高度
+	let  w = visBox.offsetWidth; //宽度
+
+
+
+
+	topic_init(selected_trajs.timeRange)
+	hexa_init()
+
+	let l_n = +document.getElementById("range6").value
+	for(let i = 0;i < l_n ;i++){
+		let r = new topicZoomRect()
+		let h = new  topicHexa()
+
+		h.init(topicNames,selected_trajs.ps[i],i)
+		h.bind(select_outer,un_select_outer)
+		h.render()
+
+		r._init(visBox,selected_trajs.ps[i],i)
+		r.bind(select_outer,un_select_outer)
+		r._render()
+
+		selectArr['topic'].push(r)
+		selectArr['hexa'].push(h)
+
+	}
+
+	
+	registr_select_func(selectPeriod)
+
+
+	// 绘制轨迹
+	draw_t({map,svg,g},selected_trajs.ps.slice(0,l_n))
+}
+
+
+
+
+// let topic_select_func , hexa_select_func
+// let topic_un_select_func , hexa_un_select_func
+// // 选中时触发
+
+
+
+function removeDefaultWords(){
+	d3.selectAll('.default-word').remove()
+}
+
+function _removeSelectEvent(){
+	svg.on( "mousedown",null)
+	svg.on( "mousemove",null)
+	svg.on( "mouseup",null)
+
+}
+
+function _addControlPanel(maxval){
+
+	//透明度
+	document.getElementById('range1').addEventListener('input',(e)=>{
+	  	let v = e.target.value;
+	 	document.getElementById("valBox1").innerHTML = v;
+		quantile.domain( d3.range(maxval * v) ) 
+
+	 	rects.attr("opacity", (d,i) => {
+			let op = quantile(d.val)
+			return op
+		})
+
+	})
+
+ 	//框选操作 添加
+ 	document.getElementById('range8').addEventListener('click',(e)=>{
+ 		document.getElementById('range8').disabled = true
+		map.dragging.disable()	
+		_addSelectEvent()
+ 	})
+
+
+ 	document.getElementById('range3').setAttribute('max',maxval)
+ 	document.getElementById('range3').setAttribute('value',maxval * 0.1)
+ 	document.getElementById("valBox3").innerHTML = maxval * 0.1
+
+ 	document.getElementById('range4').setAttribute('max',maxval)
+ 	document.getElementById('range4').setAttribute('value',maxval * 0.5)
+ 	document.getElementById("valBox4").innerHTML = maxval * 0.5;
+
+
+	// 框选阈值 min 
+	document.getElementById('range3').addEventListener('change',(e)=>{
+	  	let v = e.target.value;
+	 	document.getElementById("valBox3").innerHTML = v;
+	 	func_frameSelect()
+	})
+
+	// 框选阈值 max 
+	document.getElementById('range4').addEventListener('change',(e)=>{
+	  	
+	  	let v = e.target.value;
+	 	document.getElementById("valBox4").innerHTML = v;
+	 	func_frameSelect()
+	})
+
+
+	document.getElementById('range6').addEventListener('change',(e)=>{
+	  	let v = e.target.value;
+	 	func_frameSelect()
+	})
+
+}
+
+function _drawSelection(){
+
+	if(state.select_rect){
+		let { p_tl , p_br  } = state.select_rect
+		// console.log('draw',p_tl,p_br)
+		let p1 = _l2v( p_tl )
+		let p2 = _l2v( p_br )
+		// console.log(p1,p2) 
+		
+		let s = d3.select( "rect.selection");
+        s.attr("x",p1.x )
+        	.attr("y",p1.y)
+        	.attr("width",p2.x - p1.x )
+        	.attr("height",p2.y - p1.y)
+
+
+        func_frameSelect()
+
+	}
+}
+
+
+
+
+
+
+// functional
+/***********************************************************************/
 
 // 数据转换
 function _l2v(d) {
@@ -228,16 +472,28 @@ function _l2v(d) {
     var x = d['lat']
     return map.latLngToLayerPoint(new L.LatLng(x,y))
 }
+function _v2l( xy ){		// [x,y] 
+	let { bottomLeft,topRight } = Boundry
+	let lng_width = topRight['lng'] - bottomLeft['lng']   //精度  -> x
+	let lat_width = topRight['lat'] - bottomLeft['lat']   //纬度  -> y
+
+	var visBox = document.getElementById("map-container");
+	let  h = visBox.offsetHeight; //高度
+	let  w = visBox.offsetWidth; //宽度
+
+	let x = xy[0] , y = xy[1]
+	let lat = topRight['lat']    - (y / h) * lat_width
+	let lng = bottomLeft['lng']  + (x / w )* lng_width
+	return  { lat ,lng }
+}
+
+
 //计算 rect 长宽
 function _vGap(data){
 	let sequence = data.sequence
 	let x_num  = data.summery.x_num 
-
 	let x_p1 = sequence[0] , x_p2 = sequence[1]
 	let y_p1 = sequence[0] , y_p2 = sequence[x_num]
-
-	// console.log(x_p1,x_p2,y_p1,y_p2)
-
 	let x_p1_v = map.latLngToLayerPoint(new L.LatLng(x_p1['lat'],x_p1['lng']))
 	let x_p2_v = map.latLngToLayerPoint(new L.LatLng(x_p2['lat'],x_p2['lng']))
 	let y_p1_v = map.latLngToLayerPoint(new L.LatLng(y_p1['lat'],y_p1['lng']))
@@ -247,14 +503,9 @@ function _vGap(data){
 		x : x_p2_v.x - x_p1_v.x,
 		y : y_p2_v.y - y_p1_v.y
 	}
-	// console.log(gap)
 	let lastone = sequence[sequence.length - 1]
 	return gap
 }
-
-
-
-
 
 
 
