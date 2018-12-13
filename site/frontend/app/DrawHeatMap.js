@@ -229,7 +229,7 @@ function _addSelectEvent(){
 		map.dragging.enable()	
 		_removeSelectEvent()
 		document.getElementById('range8').disabled = false
-
+		svg.style('cursor','grab')
 		// 记录框选状态
 		let s = d3.select( "rect.selection");
 		let s_x1 = s.attr('x')
@@ -284,7 +284,7 @@ async function func_frameSelect(){
 
 	//控制系数 
 	let th = {
-		max : document.getElementById("valBox4").innerHTML,
+		// max : document.getElementById("valBox4").innerHTML,
 		min : document.getElementById("valBox3").innerHTML
 	}
 
@@ -339,11 +339,11 @@ async function func_frameSelect(){
 	let l_n = +document.getElementById("range6").value
 	for(let i = 0;i < l_n ;i++){
 		let r = new topicZoomRect()
-		let h = new  topicHexa()
+		// let h = new  topicHexa()
 
-		h.init(topicNames,selected_trajs.ps[i],i)
-		h.bind(select_outer,un_select_outer)
-		h.render()
+		// h.init(topicNames,selected_trajs.ps[i],i)
+		// h.bind(select_outer,un_select_outer)
+		// h.render()
 
 		r._init(visBox,selected_trajs.ps[i],i)
 		r.bind(select_outer,un_select_outer)
@@ -400,18 +400,19 @@ function _addControlPanel(maxval){
  	//框选操作 添加
  	document.getElementById('range8').addEventListener('click',(e)=>{
  		document.getElementById('range8').disabled = true
-		map.dragging.disable()	
+		map.dragging.disable()
+		svg.style('cursor','crosshair')
 		_addSelectEvent()
  	})
 
 
  	document.getElementById('range3').setAttribute('max',maxval)
  	document.getElementById('range3').setAttribute('value',maxval * 0.1)
- 	document.getElementById("valBox3").innerHTML = maxval * 0.1
+ 	document.getElementById("valBox3").innerHTML = (maxval * 0.1).toFixed(2).toString()
 
- 	document.getElementById('range4').setAttribute('max',maxval)
- 	document.getElementById('range4').setAttribute('value',maxval * 0.5)
- 	document.getElementById("valBox4").innerHTML = maxval * 0.5;
+ 	// document.getElementById('range4').setAttribute('max',maxval)
+ 	// document.getElementById('range4').setAttribute('value',maxval * 0.5)
+ 	// document.getElementById("valBox4").innerHTML = maxval * 0.5;
 
 
 	// 框选阈值 min 
@@ -422,12 +423,12 @@ function _addControlPanel(maxval){
 	})
 
 	// 框选阈值 max 
-	document.getElementById('range4').addEventListener('change',(e)=>{
+	// document.getElementById('range4').addEventListener('change',(e)=>{
 	  	
-	  	let v = e.target.value;
-	 	document.getElementById("valBox4").innerHTML = v;
-	 	func_frameSelect()
-	})
+	//   	let v = e.target.value;
+	//  	document.getElementById("valBox4").innerHTML = v;
+	//  	func_frameSelect()
+	// })
 
 
 	document.getElementById('range6').addEventListener('change',(e)=>{

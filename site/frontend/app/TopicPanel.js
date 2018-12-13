@@ -15,7 +15,7 @@ topicNameList.forEach((topic,i)=>{
 let iconSrcUrl = './assets/icons_/'
 let topicThemesConfig = {
 	min_width : 50,    // 显示 icon
-	max_width : 100	   // 显示 比例
+	max_width : 150	   // 显示 比例
 }
 
 const visBox = document.getElementById("topic-container");
@@ -56,6 +56,7 @@ function init(timeRange){
 	register_func_list	= []
 	_appendWidgets(timeRange)
 }
+
 
 function _appendWidgets(timeRange){
 	let  vHeight = h ,vWidth = w
@@ -108,6 +109,17 @@ function _appendWidgets(timeRange){
 			d3.select('.axis--top').call(topAxis)
 		}
 
+
+	var brush = d3.brushX()
+	    .extent([[0, 0], [vWidth * 0.9, vRectHeight]])
+	    .on("brush end", brushed);
+
+	d3.select('.top-axis-container').select('svg')
+		.append('g')
+		.attr("class", "brush")
+      	.call(brush)
+      	// .call(brush.move, x.range());
+
 	register_zoom_func(  syncAsix ,null )
 
 
@@ -143,6 +155,11 @@ function _appendWidgets(timeRange){
 	listenerRect.call(zoom)
 		// .on("mousedown.zoom", null)   //拖动
 }
+
+function brushed(){
+	console.log(d3.event.selection)
+}
+
 
 function func_zoomed(){
 	let t = d3.event.transform
@@ -218,7 +235,7 @@ class topicZoomRect {
 
 		document.getElementsByClassName('rect-group')[0].appendChild(_el)
 		// container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
-		console.log(data)
+		// console.log(data)
 		this.data = data
 		this.index = index   //第几个
 	}
@@ -385,8 +402,14 @@ class topicZoomRect {
 			let topic_3rd_name = topic_3rd.topic.toLowerCase()
 			let topic_3rd_val =  Math.round(+topic_3rd.val * 100)+ '%'
 
-			if(+width  <  topicThemesConfig.min_width){
+			_rect.style('width',width+'px')
+				.style('height',height+'px')
+				.style('left',x  + 'px')
+				.style('top',y + 'px')
+				.style('background-color',topicThemes[topic_top_name].color)
 
+			if(+width  <  topicThemesConfig.min_width){
+					_rect.style('background-color','#e8e8e8')
 			}else if(+width  <  topicThemesConfig.max_width){
 				let box = _rect.append('div')
 							.attr('class','mid-box')
@@ -415,11 +438,7 @@ class topicZoomRect {
 						.html(topic_3rd_name + ' : ' + topic_3rd_val)
 			}
 
-			_rect.style('width',width+'px')
-				.style('height',height+'px')
-				.style('left',x  + 'px')
-				.style('top',y + 'px')
-				.style('background-color',topicThemes[topic_top_name].color)
+
 
 		})
 
