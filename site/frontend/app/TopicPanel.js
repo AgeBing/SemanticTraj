@@ -21,7 +21,7 @@ let topicThemesConfig = {
 const visBox = document.getElementById("topic-container");
 let  h = visBox.offsetHeight; //高度
 let  w = visBox.offsetWidth; //宽度
-let  vRectHeight = 50
+let  vRectHeight = 35
 
 // 数据格式转换
 function dataAdapter(_line_data){

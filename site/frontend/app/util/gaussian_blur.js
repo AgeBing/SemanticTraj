@@ -1,17 +1,15 @@
-/* 实现矩阵高斯平滑 */
-/*
+/* 实现矩阵高斯平滑 
 	参考 http://www.ruanyifeng.com/blog/2012/11/gaussian_blur.html
 	https://zhuanlan.zhihu.com/p/43907816
 */
 
-var PI = Math.PI
-var E = Math.E
-var sigma = 1.5
+var PI = Math.PI,
+    E = Math.E,
+    sigma = 1.5
 
 
 function gaussian_fn(x,y){ 
 	return  1 / ( 2 * PI * sigma * sigma) * Math.exp(- (x*x  + y*y)/(2*sigma*sigma))
-
 }
 
 function getWeight(r){
@@ -24,13 +22,11 @@ function getWeight(r){
 			bias_x = i - r
 			bias_y = j - r 
 			weightArr[i][j] = gaussian_fn(bias_x,bias_y)
-			// console.log(weightArr[i][j])
 			sum += weightArr[i][j]
 		}
 	}
 	for(let i = 0;i < 2*r ;i++){
 		for(let j = 0;j < 2*r;j++){
-			// console.log(i,j,weightArr[i][j],sum)	
 			weightArr[i][j] = weightArr[i][j] / sum
 		}
 	}
@@ -73,12 +69,9 @@ function gaussian_blur(_matrix){  //r 模糊半径
 	for(let  i = 0 ; i < width;i++){
 		matrix[i] = _matrix[i].slice(0,height)
 	}
-	
-
 	let r = 2
 	let weight = getWeight(r)
 	// console.log(r,matrix)
-
 
 	for(let y = 0;y < height;y++){
 		for(let x = 0;x < width;x++){

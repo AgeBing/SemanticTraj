@@ -72,15 +72,10 @@
 	width: 50px;
 	margin: auto;
 }
-.mid-box img{
-	width: 25px;
-	height: 25px;
-	margin: 4px auto 4px;
-}
 .mid-box .precent-text{
-	margin: auto;
-	color: #fff;
-	font-size: 10px;
+    color: #fff;
+    margin: auto;
+    font-size: 10px;
 }
 
 .topic-rect .left-box{
@@ -89,10 +84,10 @@
 	width: 50px;
 	float: left;
 }
-.left-box img{
-	width: 25px;
-	height: 25px;
-	margin: 4px auto 4px;
+.topic-rect-container img{
+	width: 20px;
+    height: 20px;
+    margin: 3px auto 0;
 }
 .left-box .precent-text{
 	display: inline-block;
@@ -105,12 +100,11 @@
 	float: right;
 	display: flex;
 	flex-direction: column;
-	padding: 5px 0;
 }
 .right-box .precent-text{
-	margin: 4px 0;
-	color: #fff;
-	font-size: 11px;
+	    margin: 4px 0 0;
+    color: #fff;
+    font-size: 11px;
 }
 
 
