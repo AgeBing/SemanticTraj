@@ -228,9 +228,9 @@ function _l2v(latlon){    //[lat,lng]
 
 	//  注意运算后的值可能超出视窗 
 	x_i = (x_i < 0) ? 0 : x_i
-	x_i = (x_i > x_num) ? x_num - 1: x_i
+	x_i = (x_i >= x_num) ? x_num - 1: x_i
 	y_i = (y_i < 0) ? 0 : y_i
-	y_i = (y_i > y_num) ? y_num - 1: y_i
+	y_i = (y_i >= y_num) ? y_num - 1: y_i
  
 	return [ x_i , y_i ]
 }
@@ -255,7 +255,8 @@ function _v2l(xy){		// [x,y]
 	th ： 
 		min : 选取时设定的最小值  若 val 比其小 则舍去
 
-		max : 扩散过程中的 相邻值 差值 的最大值 ， 若差值大于其则停止扩散
+		// 弃用
+		// max : 扩散过程中的 相邻值 差值 的最大值 ， 若差值大于其则停止扩散
 
 */
 function getHighLight(th,topLeft,bottomRight){
@@ -269,23 +270,44 @@ function getHighLight(th,topLeft,bottomRight){
 	let S  = []	   //集合
 	let R  = {}    //返回值
 
+	// 遍历一遍选择框内的方格 
 	let th_min = th.min
+	let inner_max = 0
+	let inner_min = undefined
+	let th_val = undefined
+
+	console.log(matrix)
 	for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
 		for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
 			let val = matrix[y][x]
 
+			inner_min = ( inner_min == undefined) ? val : ( inner_min < val ? inner_min : val )
+			inner_max = (val >= inner_max) ? val : inner_max
+
 			if(val < th_min) continue
 			Q.push({ x,y,val })
-			S.push( x+","+y )
+			S.push( x+","+y )    
 		}
 	}
 
-
-	let th_max = th.max
+	// 自适应  当一轮扫描没有结果时 修改阈值
+	if(!Q.length){
+		th_val = inner_max
+		for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
+			for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
+				let val = matrix[y][x]
+				
+				if(val < th_val) continue
+				Q.push({ x,y,val })
+				S.push( x+","+y )    
+			}
+		}
+	}
+	// let th_max = th.max
 
 	while(Q.length){
-		let c =  Q.shift()
-		let xy = [{
+		let c =  Q.shift()    
+		let xy = [{         // 选中格的 上 下 左 右 格。
 			x : c.x - 1,
 			y : c.y
 		},{
@@ -302,13 +324,14 @@ function getHighLight(th,topLeft,bottomRight){
 		xy.forEach((_xy)=>{
 			let s = _xy.x + ","+ _xy.y
 
+			//边界条件
 			let cond3 = _xy.x >= x_num || _xy.x < 0 || _xy.y >= y_num || _xy.y < 0 
 			if(cond3)  return true //进入下一个循环 
 
 			let c_val = matrix[_xy.y][_xy.x]
-			// let cond1 = ( Math.abs(c_val - c.val) < th_max )
-			let cond2 = (S.indexOf(s)  == -1 )
-			let cond4 = c_val >= th_min
+			// let cond1 = ( Math.abs(c_val - c.val) < th_max )  //差值不能超过最大值 //弃用
+			let cond2 = (S.indexOf(s)  == -1 )  //是否已经被 Scan 过
+			let cond4 = c_val >= th_min    		// 是否 大于 最小阈值
 
 			if(cond2 && cond4){
 				S.push(s)
@@ -332,7 +355,8 @@ function getHighLight(th,topLeft,bottomRight){
 
 	return {
 		ps : R,
-		x_num : x_num
+		x_num : x_num,
+		th_val : th_val
 	}
 }
 

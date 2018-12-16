@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { debug } from './util/debug'
 
 let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hotel","Life","Finance","Traffic","Enterprise","Scenicspot","Government"]
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
@@ -373,6 +374,9 @@ class topicZoomRect {
 
 		let  _rects = d3.selectAll('.rect-container:last-child .topic-rect')
 		let  _rect 
+		
+			debug(data)
+
 		rects.each(function(d,i){
 			let rect = d3.select(this)
 			let width = rect.attr('width'),
@@ -384,9 +388,8 @@ class topicZoomRect {
 
 			//移除 child elements 
 			_rect.selectAll('div').remove() 
-
 			if(!data.ps[i].topics){
-				console.log('null,no topics')
+				debug('null,no topics. Skip this timeRange')
 				return
 			}
 
