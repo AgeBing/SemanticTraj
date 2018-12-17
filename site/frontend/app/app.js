@@ -10,22 +10,23 @@
 import $ from 'jquery';
 import * as d3 from 'd3';
 
-import * as queryview from 'newqueryview'
+// import * as queryview from 'newqueryview'
 import * as datamanager from 'datamanager'
+import * as SearchBar from 'searchbar'
 import { draw_trajs } from 'mappanel'
 
 
 console.log('Waiting~')
 datamanager.init()
-  .then(o => queryview.init())
-  .then(()=>{
+  .then(o => SearchBar.init())
+  .then(() => {
   	var storage=window.localStorage;
-	var json=storage.getItem("DM");
-	var trajs_data = JSON.parse(json);
-	console.log(trajs_data)
-	if(trajs_data){
-		draw_trajs(trajs_data)
-	}
+  	var json=storage.getItem("DM");
+  	var trajs_data = JSON.parse(json);
+  	console.log(trajs_data)
+  	if(trajs_data){
+  		draw_trajs(trajs_data)
+  	}
   })
 
 

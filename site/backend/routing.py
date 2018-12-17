@@ -6,9 +6,11 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 # import routing
 
 from . import querymysql
+from . import nlpconsumer
 
 websocket_urlpatterns = [
     url(r'^ws/$', querymysql.QueryMysql),
+    url(r'^nlp/(?P<method>\w+)/$', nlpconsumer.NlpConsumer)
 ]
 
 application = ProtocolTypeRouter({

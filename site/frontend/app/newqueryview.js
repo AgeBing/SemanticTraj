@@ -1,5 +1,5 @@
 // import '../css/newqueryview.css';
-// import '../css/flat-ui.css';
+// import '../assets/css/flat-ui.css';
 // import 'jquery-ui/ui/widgets/slider';
 // import 'jquery-ui/ui/widgets/datepicker';
 // import 'jquery-ui/ui/widgets/spinner';
@@ -71,16 +71,16 @@ function addInputListener(o) {
     if (!e) {
       e = window.event;
     }
-    updateTag(o, e);
+    // updateTag(o, e);
     if (e.keyCode == "13" || e.keyCode == "32" || e.keyCode == '8') {
       updateConditionQueue();
       updateData();
     }
   })
-  .on("click", function(){
-    updateConditionQueue();
-    updateData();
-  })
+  // .on("click", function(){
+  //   updateConditionQueue();
+  //   updateData();
+  // })
 }
 
 function addSearchListener(o) {

@@ -7,22 +7,20 @@ import heapq
 import random
 import multiprocessing as mp
 
+from backend import pathutil
+
 MAX_ARRAY_LEN = 1000
 
-def get_vectors(this_file):
-  ans = []
-  for line in this_file:
-    this_row = line.split(',')
-    tmp = {}
-    tmp['id'] = this_row[0]
-    tmp['vn'] = int(this_row[1])
-    tmp['v'] = []
-    for i in range(0, tmp['vn']):
-      tmp['v'].append(list(map(float, this_row[i * 100 + 2 : (i + 1) * 100 + 2])))
-    ans.append(tmp)
-    if (len(ans) == MAX_ARRAY_LEN):
-      break
-  return ans
+class Node(object):
+  def __init__(self, site_id, id, val):
+    self.site_id = site_id
+    self.id = id
+    self.val = val
+
+  def __lt__(self, other):
+    if (self.val != other.val):
+      return self.val < other.val
+    return self.site_id < other.site_id
 
 def calc_cosine(A, B):
   product = 0.0
@@ -40,25 +38,11 @@ def calc_word_doc_cosine(word_vec, ob):
     sum_cosine += calc_cosine(word_vec, vec)
   return sum_cosine
 
-class Node(object):
-  def __init__(self, id, val):
-    self.id = id
-    self.val = val
-
-  def __lt__(self, other):
-    if (self.val != other.val):
-      return self.val < other.val
-    return self.id < other.id
-
-this_file = open('split_vector', 'r', encoding = 'utf-8')
-
-test_arr = [random.random() for i in range(0, 100)]
-
 def get_top_k(vecs, vec, K):
   que = []
   for v in vecs:
     val = calc_word_doc_cosine(vec, v)
-    heapq.heappush(que, Node(v['id'], val))
+    heapq.heappush(que, Node(v['site_id'], v['id'], val))
     if (len(que) > K):
       heapq.heappop(que)
   return que
@@ -67,13 +51,14 @@ def get_max_k_node(vec, K):
   # start_time = time.time()
   ans = []
   vecs = []
-  pool = mp.Pool(processes = 8)
-  with open('split_vector', 'r', encoding = 'utf-8') as this_file:
+  pool = mp.Pool(processes = 6)
+  with open(pathutil.VECTOR_PATH, 'r', encoding = 'utf-8') as this_file:
     for line in this_file:
       this_row = line.split(',')
       tmp = {}
-      tmp['id'] = this_row[0]
-      tmp['vn'] = int(this_row[1])
+      tmp['site_id'] = int(this_row[0])
+      tmp['id'] = this_row[1]
+      tmp['vn'] = int(this_row[2])
       tmp['v'] = []
       for i in range(0, tmp['vn']):
         tmp['v'].append(list(map(float, this_row[i * 100 + 2 : (i + 1) * 100 + 2])))
