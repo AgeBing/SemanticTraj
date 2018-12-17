@@ -6,9 +6,8 @@ import os
 
 from django.http import *
 from channels.generic.websocket import WebsocketConsumer
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-BASE_DATA_DIR = os.path.join(BASE_DIR, 'data')
+from . import pathutil
+from . import querymysqlutil
 
 class QueryMysql(WebsocketConsumer):
     def connect(self):
@@ -20,34 +19,23 @@ class QueryMysql(WebsocketConsumer):
     def receive(self, text_data):
         data = json.loads(text_data)
         if (data['reqType'] == 'queryDb' and data['operate'] == 'select'):
-            self.querydb(data)
+            mysql = querymysqlutil.Mysql()
+            results_dict = mysql.query(data)
+            self.send(text_data = json.dumps(results_dict))
         elif (data['reqType'] == 'readText'):
             self.readText(data)
-    """
-    查询mysql，返回结果的字典数组
-    """
+
+    # def send(self, data):
+    #     self.send(text_data = json.dumps(data))
+
     def querydb(self, data):
-        sql_str = "select {0} from {1} {2}".format(data['column'], 
-            data['table'], data['limit'])
-        results = []
-        results_dict = []
-        try:
-            conn = MySQLdb.connect(db = 'mobiledata', host = '10.76.0.184', 
-            	user = 'root', passwd = '123456', use_unicode = True, 
-                charset = "utf8")
-            cursor = conn.cursor()
-            cursor.execute(sql_str)
-            column_names = tuple(map(lambda x: x[0], cursor.description))
-            results_dict = [dict(zip(column_names, row)) 
-                for row in cursor.fetchall()]
-            conn.close()
-        except Exception as e:
-            print(e)
-        finally:
-            self.send(text_data = json.dumps(results_dict))
+        """
+        查询mysql，返回结果的字典数组
+        """
+        print('This method is deprecated. Please use querymysqlutil.Mysql.query() method.')
 
     def readText(self, data):
-        with open(os.path.join(BASE_DATA_DIR, data['fileName']), 'r') as f:
+        with open(os.path.join(pathutil.BASE_DATA_DIR, data['fileName']), 'r') as f:
             lines = f.readlines()[data['begin']-1 : data['readLineLimit']]
             idx = -1
             results = {}

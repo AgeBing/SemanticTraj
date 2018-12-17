@@ -1,0 +1,165 @@
+from . import querymysqlutil
+from datetime import datetime, timedelta
+import math
+
+# 认定在某个地点停留的时间长度阈值
+STOPTIME_THRESHOLD = 20 * 60
+
+class Traj(object):
+  def __init__(self, stop_num, sites, site_cover, 
+      start_time_str = '2014-01-14 00:00:00.00', 
+      end_time_str = '2014-01-14 00:01:00.00'):
+    self.__stop_num = stop_num
+    self.__sites = sites
+    self.__site_cover = site_cover
+    self.__format_str = '%Y-%m-%d %H:%M:%S.%f'
+    self.__start_time = datetime.strptime(start_time_str, self.__format_str)
+    self.__end_time = datetime.strptime(end_time_str, self.__format_str)
+
+  def __get_traj_pid_by_time(self):
+    """
+    按照时间和基站查询轨迹ID
+    @return {site, plist} 字典数组
+    """
+    start_time = int(self.__start_time.strftime('%m%d%H%M'))
+    end_time = int(self.__end_time.strftime('%m%d%H%M'))
+    start_time = math.floor(start_time / 10) * 10
+    end_time = math.floor(end_time / 10) * 10 + 10
+    times = [str(x) for x in range(start_time, end_time + 10, 10)]
+    mysql = querymysqlutil.Mysql()
+    sql_str = """select site, plist
+              from phonetrajectory_index_bysite 
+              where site in ({0}) and datetime in ({1}) 
+        """.format(','.join(map(lambda x: str(x), self.__sites)), ','.join(times))
+    print(sql_str)
+    return mysql.get_all(sql_str)
+
+  def __filter_pid(self, pids):
+    """
+    @param pids: {site, plist} 字典数组
+    @return 符合条件的轨迹ID的set
+    """
+    pid_site = {}
+    valid_pids = set()
+    for node in pids:
+      site_state = self.__site_cover.get(int(node['site']), 0)
+      if site_state == 0:
+        continue
+      for pid in node['plist'].split(';'):
+        pid = "'" + pid + "'"
+        if not pid:
+          continue
+        state = pid_site.get(pid, 0)
+        if ((state | site_state) == (1 << self.__stop_num) - 1):
+          valid_pids.add(pid)
+        pid_site[pid] = state | site_state
+    return valid_pids
+
+  def __get_trajs_by_pids(self, pids):
+    """
+    根据轨迹ID找到所有轨迹
+    @return {pid, traj:[]} 形式的数组
+    """
+    start_time = int(self.__start_time.strftime('%m%d'))
+    end_time = int(self.__end_time.strftime('%m%d'))
+    dates = [str(x) for x in range(start_time, end_time + 1)]
+    mysql = querymysqlutil.Mysql()
+    sql_str = """
+        select peopleid, count, traj
+        from phonetrajectory_sortbyid
+        where date in ({0}) and peopleid in ({1})
+        order by peopleid, count
+        """.format(','.join(dates), ','.join(pids))
+    print(sql_str)
+    traj_results = mysql.get_all(sql_str)
+    print('query sql finish')
+    trajs = {}
+    for node in traj_results:
+      now_traj = trajs.get(node['peopleid'], {
+        'pid': node['peopleid'],
+        'traj': []
+        })
+      traj_strs = filter(lambda x: len(x) > 0, node['traj'].split(';'))
+      now_traj['traj'].extend(
+        [dict(zip(
+          ('time', 'site'), x.split(','))) for x in traj_strs
+        ]
+      )
+      trajs[node['peopleid']] = now_traj
+    return trajs
+
+  def __get_diff_seconds(self, t1, t2):
+    return (datetime.strptime(t2, self.__format_str) - 
+        datetime.strptime(t1, self.__format_str)).seconds
+
+  def __handle_traj(self, trajs):
+    """
+    合并相邻的相同节点
+    """
+    for key, traj in trajs.items():
+      tmp_traj = []
+      for now_node in traj['traj']:
+        # now_node = traj['traj'][i];
+        if len(tmp_traj) == 0:
+          now_node['isStop'] = True
+          now_node['startTime'] = now_node['time']
+          now_node['endTime'] = now_node['time']
+          now_node['stopTime'] = 0
+          del now_node['time']
+          tmp_traj.append(now_node)
+        else:
+          pre = tmp_traj[-1]
+          if now_node['site'] == pre['site']:
+            pre['endTime'] = now_node['time']
+            pre['stopTime'] = self.__get_diff_seconds(pre['startTime'], 
+                pre['endTime'])
+            if pre['stopTime'] >= STOPTIME_THRESHOLD:
+              pre['isStop'] = True
+          else:
+            now_node['startTime'] = pre['endTime']
+            now_node['endTime'] = now_node['time']
+            now_node['stopTime'] = self.__get_diff_seconds(
+                now_node['startTime'], now_node['endTime'])
+            if now_node['stopTime'] >= STOPTIME_THRESHOLD:
+              now_node['isStop'] = True
+            else:
+              now_node['isStop'] = False
+            del now_node['time']
+            tmp_traj.append(now_node)
+      traj['traj'] = tmp_traj
+    return trajs
+
+  def __filter_trajs(self, trajs):
+    """
+    过滤轨迹
+    @return 合法的轨迹数组
+    """
+    traj_array = []
+    for key, traj in trajs.items():
+      traj['matching'] = False
+      num = 0
+      state = 0
+      for now_node in traj['traj']:
+        if now_node['isStop'] and int(now_node['site']) in self.__site_cover:
+          now_state = self.__site_cover[int(now_node['site'])]
+          if ((1 << num) & (state | now_state)) != 0:
+            now_node['stoppoint'] = num
+            num += 1
+            state |= now_state
+          if num == self.__stop_num:
+            break
+      if num == self.__stop_num:
+        traj['matching'] = True
+        traj_array.append(traj)
+    return traj_array
+
+  def get_traj(self):
+    # 优化内存，用相同变量
+    o = self.__get_traj_pid_by_time()
+    o = self.__filter_pid(o)
+    o = self.__get_trajs_by_pids(o)
+    o = self.__handle_traj(o)
+    return self.__filter_trajs(o)
+
+
+  

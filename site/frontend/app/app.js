@@ -10,18 +10,16 @@
 import $ from 'jquery';
 import * as d3 from 'd3';
 
-import * as queryview from 'newqueryview'
+// import * as queryview from 'newqueryview'
 import * as datamanager from 'datamanager'
+import * as SearchBar from 'searchbar'
 import { draw_trajs } from 'mappanel'
-
-
-
 
 let debug = true
 
 if(!debug) {
 		datamanager.init()
-		  .then(o => queryview.init())
+		  .then(o => SearchBar.init())
 		  .then(()=>{
 		  	var storage=window.localStorage;
 			var json=storage.getItem("DM");
