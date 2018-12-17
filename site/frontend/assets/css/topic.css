@@ -63,6 +63,9 @@
 	opacity: 1;
 	position: absolute;   /* 左右移动  设置 left top (xy)*/
 }
+.topic-rect.gray{
+	background-color: gray
+}
 .topic-rect .mid-box{
 	display: flex;
 	flex-direction: column;

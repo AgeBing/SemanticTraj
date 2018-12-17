@@ -22,7 +22,7 @@
 	font-size: 14px;
 	border-radius: 4px;
 	height: 24px;
-	cursor: default;
+	cursor: pointer;
 }
 
 .control-box .type-name{

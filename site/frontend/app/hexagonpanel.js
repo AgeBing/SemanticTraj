@@ -56,7 +56,6 @@ class topicHexa{
 		document.getElementById('range7').addEventListener('input',(e)=>{
 		  	let v = e.target.value;
 		 	document.getElementById("valBox7").innerHTML = v;
-		 	console.log(v)
 		 	CF = v
 		 	self.render()
 		})
@@ -111,7 +110,7 @@ class topicHexa{
 		topicNames.forEach((topic,i)=>{
 			hexagon_nodes[i].id = topic
 		})
-		console.log(hexagon_nodes)
+
 
 		let hexagon_links = hexagon_nodes.map((p,i)=>{
 			let now = p
@@ -186,7 +185,6 @@ class topicHexa{
 		return ps
 	}
 	prepareInnerData(innerDatas){
-		console.log(innerDatas)
 		let { hexagon_nodes,hexagon_links,topic_names } = this
 
 		let inner_nodes = []
@@ -201,7 +199,6 @@ class topicHexa{
 			return {id: String.fromCharCode(97+i)} 
 		}))
 
-		// console.log(inner_nodes)
 		let inner_links = []
 		inner_nodes.forEach((d,i)=>{
 			if(topic_names.indexOf(d.id) != -1) return true
@@ -297,7 +294,6 @@ class topicHexa{
 	           })
 	          .force("link").links(inner_links)
 
-	    console.log(inner_links)
 
 	    function ticked() {
 		    let alpha = simulation.alpha()
@@ -320,7 +316,7 @@ class topicHexa{
 		        // }
 		      });
 
-		      connectNodes()
+		      // connectNodes()
 		      // console.log(alpha)
 		  }
 		  if(alpha < 0.3){

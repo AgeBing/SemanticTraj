@@ -203,6 +203,9 @@ function _addSelectEvent(){
             d.height = move.y;       
         }
 
+        // a bug 🐞
+        if(isNaN(d.x)) return
+
         s.attr("x",d.x )
         	.attr("y",d.y)
         	.attr("width",d.width)
@@ -229,7 +232,7 @@ function _addSelectEvent(){
 		map.dragging.enable()	
 		_removeSelectEvent()
 		document.getElementById('range8').disabled = false
-
+		svg.style('cursor','grab')
 		// 记录框选状态
 		let s = d3.select( "rect.selection");
 		let s_x1 = s.attr('x')
@@ -264,7 +267,7 @@ function un_select_outer(i,outerName){
 
 
 // 框选后 重新渲染自动识别 的色块
-async function func_frameSelect(){
+async function func_frameSelect(slide = false){
 
 	let { p_tl , p_br  } = state.select_rect
 
@@ -284,16 +287,22 @@ async function func_frameSelect(){
 
 	//控制系数 
 	let th = {
-		max : document.getElementById("valBox4").innerHTML,
+		// max : document.getElementById("valBox4").innerHTML,
 		min : document.getElementById("valBox3").innerHTML
 	}
 
 
 	// 取得数据 高亮 色块区域
 	let hightLight_coor   = getHighLight(th,topLeft,bottomRight)
-
+	console.log(hightLight_coor)
 	let x_num = hightLight_coor.x_num
 	let ps = hightLight_coor.ps
+	let th_val = hightLight_coor.th_val
+
+	if(th_val && !slide){
+		document.getElementById("valBox3").innerHTML = th_val.toFixed(2).toString();
+		document.getElementById("range3").setAttribute('max',th_val.toFixed(2).toString());
+	}
 
 	rects.attr("fill",function(di,i){
 			let y = Math.floor(i / x_num)
@@ -311,16 +320,15 @@ async function func_frameSelect(){
 
 	removeDefaultWords()
 	if(selected_trajs.ps.length == 0){
-		console.log('no trajs available~')
 
 		d3.select('#topic-container').selectAll('*').remove()
 		d3.select('#hexagon-container').selectAll('*').remove()
 		
 
 		d3.select('#topic-container')
-			.append('div').attr('class','default-word').append('span').text('返回结果为空')
+			.append('div').attr('class','default-word').append('span').text('No Trajectorys Available!')
 		d3.select('#hexagon-container')
-			.append('div').attr('class','default-word').append('span').text('返回结果为空')
+			.append('div').attr('class','default-word').append('span').text('No Trajectorys Available!')
 
 		return
 	}
@@ -332,12 +340,11 @@ async function func_frameSelect(){
 
 
 
-
 	topic_init(selected_trajs.timeRange)
 	hexa_init()
 
 	let l_n = +document.getElementById("range6").value
-	for(let i = 0;i < l_n ;i++){
+	for(let i = 0;i < l_n && i < selected_trajs.ps.length;i++){
 		let r = new topicZoomRect()
 		let h = new  topicHexa()
 
@@ -379,14 +386,24 @@ function _removeSelectEvent(){
 	svg.on( "mousedown",null)
 	svg.on( "mousemove",null)
 	svg.on( "mouseup",null)
-
 }
+
+
+let range1_input_func,
+	range8_click_func,
+	range3_change_func,
+	range6_change_func
 
 function _addControlPanel(maxval){
 
-	//透明度
-	document.getElementById('range1').addEventListener('input',(e)=>{
-	  	let v = e.target.value;
+	document.getElementById('range1').removeEventListener('input',range1_input_func)
+ 	document.getElementById('range8').removeEventListener('click',range8_click_func)
+	document.getElementById('range3').removeEventListener('input',range3_change_func)
+	document.getElementById('range6').removeEventListener('change',range6_change_func)
+
+
+	range1_input_func = function (e){
+		let v = e.target.value;
 	 	document.getElementById("valBox1").innerHTML = v;
 		quantile.domain( d3.range(maxval * v) ) 
 
@@ -394,46 +411,38 @@ function _addControlPanel(maxval){
 			let op = quantile(d.val)
 			return op
 		})
+	}
+	range8_click_func = function (e){
+		document.getElementById('range8').disabled = true
+		map.dragging.disable()
+		svg.style('cursor','crosshair')
+		_addSelectEvent()
+	}
+	range3_change_func = function (e){
+	  	let v = e.target.value;
+	 	document.getElementById("valBox3").innerHTML = v;
+	 	func_frameSelect(true)
+	}
+	range6_change_func = function (e){
+		let v = e.target.value;
+	 	func_frameSelect()
+	}
 
-	})
+
+	//透明度
+	document.getElementById('range1').addEventListener('input',range1_input_func)
 
  	//框选操作 添加
- 	document.getElementById('range8').addEventListener('click',(e)=>{
- 		document.getElementById('range8').disabled = true
-		map.dragging.disable()	
-		_addSelectEvent()
- 	})
+ 	document.getElementById('range8').addEventListener('click',range8_click_func)
 
 
  	document.getElementById('range3').setAttribute('max',maxval)
  	document.getElementById('range3').setAttribute('value',maxval * 0.1)
- 	document.getElementById("valBox3").innerHTML = maxval * 0.1
-
- 	document.getElementById('range4').setAttribute('max',maxval)
- 	document.getElementById('range4').setAttribute('value',maxval * 0.5)
- 	document.getElementById("valBox4").innerHTML = maxval * 0.5;
-
+ 	document.getElementById("valBox3").innerHTML = (maxval * 0.1).toFixed(2).toString()
 
 	// 框选阈值 min 
-	document.getElementById('range3').addEventListener('change',(e)=>{
-	  	let v = e.target.value;
-	 	document.getElementById("valBox3").innerHTML = v;
-	 	func_frameSelect()
-	})
-
-	// 框选阈值 max 
-	document.getElementById('range4').addEventListener('change',(e)=>{
-	  	
-	  	let v = e.target.value;
-	 	document.getElementById("valBox4").innerHTML = v;
-	 	func_frameSelect()
-	})
-
-
-	document.getElementById('range6').addEventListener('change',(e)=>{
-	  	let v = e.target.value;
-	 	func_frameSelect()
-	})
+	document.getElementById('range3').addEventListener('input',range3_change_func)
+	document.getElementById('range6').addEventListener('change',range6_change_func)
 
 }
 

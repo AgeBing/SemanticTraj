@@ -1,5 +1,6 @@
 import { clip } from './liang-barsky'
 import { blur } from './gaussian_blur'
+import { debug } from './debug'
 
 let x_num = 70,y_num
 
@@ -11,13 +12,12 @@ let matrix_xy2Traj_id = new Map()   //2纬 Map
 
 let max_val = 0 // 全局值的最大值 
 
+
 function getData(data,bottom_left,top_right) {
 	v_boundry = { bottom_left,top_right }   //更新全局变量
-	// console.log(v_boundry)
-	// return v_boundry
 
 	let matrix = _create_matrix()
-	// let data = _import_data()
+
 	let ps = []
 
 	data.forEach((one_traj) => {
@@ -25,17 +25,13 @@ function getData(data,bottom_left,top_right) {
 	})
 	let matrix_added =  _addToMatrix(matrix,ps)
 
-	// console.log("matrix_before_blur",matrix_added)
 	let matrix_added_blured = blur(matrix_added)    // 高斯模糊
-	// console.log("matrix_after_blured",matrix_added_blured)
 
 	let latlngPointsSequence = _matrix2Sequence(matrix_added_blured)
 
 	// let latlngPointsMatrix   = _matrix2matrix(matrix_added_blured)
 	
 	last_matrix = matrix_added_blured
-
-	// console.log(matrix_xy2Traj_id)
 
 	return latlngPointsSequence
 }
@@ -45,11 +41,12 @@ function _create_matrix(){
 	let { bottom_left,top_right }	=  v_boundry 
 
 	let lat_width = top_right['lat'] - bottom_left['lat']   //纬度  -> y
-	let lng_width = top_right['lng'] - bottom_left['lng']   //精度  -> x
+	let lng_width = top_right['lng'] - bottom_left['lng']   //经度  -> x
 
 	let lng_width_per_grid = lng_width / x_num       //横向跨度切分 
+	
 	// 需要考虑精确度
-	y_num = Math.ceil(lat_width / lng_width_per_grid)  //??
+	y_num = Math.ceil(lat_width / lng_width_per_grid)  //?? 正方形
 
 	// x * y
 	let matrix = new Array(y_num)
@@ -168,15 +165,20 @@ function _addToMatrix(matrix,ps){
 	return matrix
 }
 function _matrix2Sequence(matrix){
+	let distribution = []
 	let sequence = [],maxval = 0
 	for(let y = 0;y < matrix.length;y++){
 		for(let x = 0;x < matrix[y].length;x++){
 			let latlng = _v2l([x,y])
-			maxval = ( maxval < matrix[y][x] ? matrix[y][x] : maxval)
+			let val = matrix[y][x]
+			maxval = ( maxval < val ? val : maxval)
+
+			let d_i = Math.floor(val/2)
+			distribution[d_i] = distribution[d_i] == undefined ? 1 : distribution[d_i]+1
 			sequence.push({
 				'lat' :  latlng[0],
 				'lng' :  latlng[1],
-				'val' :  matrix[y][x]
+				'val' :  val
 			})
 		}
 	}
@@ -184,6 +186,7 @@ function _matrix2Sequence(matrix){
 
 	max_val = ( maxval > max_val ) ? maxval : max_val
 
+	debug('distribution:',distribution)
 	let reObj = {
 		sequence : sequence,
 		summery: {
@@ -223,6 +226,12 @@ function _l2v(latlon){    //[lat,lng]
 	let lat_w =  top_right['lat'] - latlon[0]
 	let y_i = Math.floor(lat_w / lat_width * y_num)
 
+	//  注意运算后的值可能超出视窗 
+	x_i = (x_i < 0) ? 0 : x_i
+	x_i = (x_i >= x_num) ? x_num - 1: x_i
+	y_i = (y_i < 0) ? 0 : y_i
+	y_i = (y_i >= y_num) ? y_num - 1: y_i
+ 
 	return [ x_i , y_i ]
 }
 //  viewGridIndex => latlon_of_gridCornor
@@ -243,39 +252,62 @@ function _v2l(xy){		// [x,y]
 
 
 /*
-	
 	th ： 
 		min : 选取时设定的最小值  若 val 比其小 则舍去
 
-		max : 扩散过程中的 相邻值 差值 的最大值 ， 若差值大于其则停止扩散
+		// 弃用
+		// max : 扩散过程中的 相邻值 差值 的最大值 ， 若差值大于其则停止扩散
 
 */
 function getHighLight(th,topLeft,bottomRight){
 	let matrix = last_matrix
-	// console.log(matrix)
+
 	let v_top_left = _l2v([topLeft['lat'],topLeft['lng']])
 	let v_bottom_right = _l2v([bottomRight['lat'],bottomRight['lng']])
 
+	debug(v_top_left,v_bottom_right,matrix)
 	let Q  = []    //队列
 	let S  = []	   //集合
 	let R  = {}    //返回值
 
+	// 遍历一遍选择框内的方格 
 	let th_min = th.min
+	let inner_max = 0
+	let inner_min = undefined
+	let th_val = undefined
+
+	console.log(matrix)
 	for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
 		for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
 			let val = matrix[y][x]
+
+			inner_min = ( inner_min == undefined) ? val : ( inner_min < val ? inner_min : val )
+			inner_max = (val >= inner_max) ? val : inner_max
+
 			if(val < th_min) continue
 			Q.push({ x,y,val })
-			S.push( x+","+y )
+			S.push( x+","+y )    
 		}
 	}
 
-
-	let th_max = th.max
+	// 自适应  当一轮扫描没有结果时 修改阈值
+	if(!Q.length){
+		th_val = inner_max
+		for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
+			for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
+				let val = matrix[y][x]
+				
+				if(val < th_val) continue
+				Q.push({ x,y,val })
+				S.push( x+","+y )    
+			}
+		}
+	}
+	// let th_max = th.max
 
 	while(Q.length){
-		let c =  Q.shift()
-		let xy = [{
+		let c =  Q.shift()    
+		let xy = [{         // 选中格的 上 下 左 右 格。
 			x : c.x - 1,
 			y : c.y
 		},{
@@ -292,15 +324,16 @@ function getHighLight(th,topLeft,bottomRight){
 		xy.forEach((_xy)=>{
 			let s = _xy.x + ","+ _xy.y
 
+			//边界条件
 			let cond3 = _xy.x >= x_num || _xy.x < 0 || _xy.y >= y_num || _xy.y < 0 
 			if(cond3)  return true //进入下一个循环 
 
 			let c_val = matrix[_xy.y][_xy.x]
-			let cond1 = ( Math.abs(c_val - c.val) < th_max )
-			let cond2 = (S.indexOf(s)  == -1 )
-			let cond4 = c_val >= th_min
+			// let cond1 = ( Math.abs(c_val - c.val) < th_max )  //差值不能超过最大值 //弃用
+			let cond2 = (S.indexOf(s)  == -1 )  //是否已经被 Scan 过
+			let cond4 = c_val >= th_min    		// 是否 大于 最小阈值
 
-			if(cond1 && cond2 && cond4){
+			if(cond2 && cond4){
 				S.push(s)
 				Q.push({
 					x: _xy.x,
@@ -322,7 +355,8 @@ function getHighLight(th,topLeft,bottomRight){
 
 	return {
 		ps : R,
-		x_num : x_num
+		x_num : x_num,
+		th_val : th_val
 	}
 }
 
