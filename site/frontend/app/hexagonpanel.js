@@ -5,8 +5,11 @@ let svg , h,w
 const SK_V = 0.01 * 0.001
 let  SK = document.getElementById("valBox5").innerHTML
 let  CF = document.getElementById("valBox7").innerHTML
+
 const RollideRadius = 2
 const GroupColor = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+
+
 function init() {
 	d3.select('#hexagon-container').selectAll('svg').remove()
 
@@ -21,6 +24,7 @@ function init() {
 		.style('left',w*0.25+'px')
 }
 
+
 function print(index,id,link){
 	console.log("G",index,"  P",id)
  	for(var l of link){
@@ -28,6 +32,7 @@ function print(index,id,link){
  	}
  	console.log("********************************")
 }
+
 
 class topicHexa{
 	init(topicNames,innerDatas,index){
@@ -367,10 +372,6 @@ class topicHexa{
 
 		_svg.select('.link-items').selectAll('.link-item').attr('class','link-item select-group')
 
-		// if(!d){
-		// 	let i = d.index - topic_names.length
-		// 	print(index,d.id,sampleData[i])
-		// }
 		if(!fromOuter) this.select_outer(index,'topic')
 	}
 	un_select(fromOuter = true){
