@@ -1,19 +1,25 @@
-﻿#Prepare
+﻿# Prepare
 
 + python: 3.6.3
 + django: 1.11.1
 + vc++ 14.0
 
 
-#依赖
+# 依赖
+```
 pip install django-webpack-loader
-
 pip install django-cors-headers
-
 pip install channels
 pip install pypiwin32
 
-#Build
+pip install DBUtils
+pip install gensim
+pip install thulac
+pip install jieba
+```
+
+
+# Build
 
 1.`./frontend/index.html`文件修改`js`路径为：
 
@@ -33,7 +39,7 @@ npm install
 npm run build
 ```
 
-#Debug
+# Debug
 
 1.`./frontend/index.html`文件修改`js`路径为：
 
