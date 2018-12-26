@@ -2,20 +2,21 @@ import { clip } from './liang-barsky'
 import { blur } from './gaussian_blur'
 import { debug } from './debug'
 
-let x_num = 70,y_num
+import { gBoundry as v_boundry } from '../drawheatmap'
 
-let v_boundry 
+let gXnum = 70,y_num
 
 let last_matrix   //矩阵缓存，存储上一次的矩阵数据
 
 let matrix_xy2Traj_id = new Map()   //2纬 Map 
 
-let max_val = 0 // 全局值的最大值 
+let gMaxVal = 0 // 全局值的最大值 
 
 
-function getData(data,bottom_left,top_right) {
-	v_boundry = { bottom_left,top_right }   //更新全局变量
+let gDistrubuion,gInnerMin,gInnerMax
 
+function getData(data) {
+	
 	let matrix = _create_matrix()
 
 	let ps = []
@@ -43,7 +44,7 @@ function _create_matrix(){
 	let lat_width = top_right['lat'] - bottom_left['lat']   //纬度  -> y
 	let lng_width = top_right['lng'] - bottom_left['lng']   //经度  -> x
 
-	let lng_width_per_grid = lng_width / x_num       //横向跨度切分 
+	let lng_width_per_grid = lng_width / gXnum       //横向跨度切分 
 	
 	// 需要考虑精确度
 	y_num = Math.ceil(lat_width / lng_width_per_grid)  //?? 正方形
@@ -55,9 +56,9 @@ function _create_matrix(){
 		
 		matrix_xy2Traj_id.set( i , new Map())
 
-		matrix[i] = new Array(x_num)
+		matrix[i] = new Array(gXnum)
 		
-		for(let j = 0;j < x_num;j++){
+		for(let j = 0;j < gXnum;j++){
 			matrix[i][j] = 0
 
 			matrix_xy2Traj_id.get(i).set( j  , new Set() )
@@ -173,7 +174,7 @@ function _matrix2Sequence(matrix){
 			let val = matrix[y][x]
 			maxval = ( maxval < val ? val : maxval)
 
-			let d_i = Math.floor(val/2)
+			let d_i = Math.floor(val/10)
 			distribution[d_i] = distribution[d_i] == undefined ? 1 : distribution[d_i]+1
 			sequence.push({
 				'lat' :  latlng[0],
@@ -184,19 +185,14 @@ function _matrix2Sequence(matrix){
 	}
 
 
-	max_val = ( maxval > max_val ) ? maxval : max_val
+	gMaxVal = ( maxval > gMaxVal ) ? maxval : gMaxVal
 
-	debug('distribution:',distribution)
-	let reObj = {
-		sequence : sequence,
-		summery: {
-			maxval : max_val,
-			x_num : matrix[0].length,
-			y_num : matrix.length
-		}
-	}
+	gDistrubuion = distribution
+	console.log('distribution:',distribution)
+	console.log('maxval:',gMaxVal)
 
-	return reObj
+
+	return sequence
 }
 function _matrix2matrix(matrix){
 	let matrix_ = matrix.slice()
@@ -220,7 +216,7 @@ function _l2v(latlon){    //[lat,lng]
 	
 	let lng_width = top_right['lng'] - bottom_left['lng']   //精度  -> x
 	let lng_w =  latlon[1] - bottom_left['lng'] 
-	let x_i = Math.floor(lng_w / lng_width * x_num)
+	let x_i = Math.floor(lng_w / lng_width * gXnum)
 
 	let lat_width = top_right['lat'] - bottom_left['lat']   //纬度  -> y
 	let lat_w =  top_right['lat'] - latlon[0]
@@ -228,7 +224,7 @@ function _l2v(latlon){    //[lat,lng]
 
 	//  注意运算后的值可能超出视窗 
 	x_i = (x_i < 0) ? 0 : x_i
-	x_i = (x_i >= x_num) ? x_num - 1: x_i
+	x_i = (x_i >= gXnum) ? gXnum - 1: x_i
 	y_i = (y_i < 0) ? 0 : y_i
 	y_i = (y_i >= y_num) ? y_num - 1: y_i
  
@@ -242,7 +238,7 @@ function _v2l(xy){		// [x,y]
 
 	let x_i = xy[0] , y_i = xy[1]
 	let lat = top_right['lat']    -  y_i / y_num * lat_width
-	let lng = bottom_left['lng']  +  x_i / x_num * lng_width
+	let lng = bottom_left['lng']  +  x_i / gXnum * lng_width
 
 	return  [ lat ,lng ]
 }
@@ -254,10 +250,10 @@ function _v2l(xy){		// [x,y]
 /*
 	th ： 
 		min : 选取时设定的最小值  若 val 比其小 则舍去
-
 		// 弃用
 		// max : 扩散过程中的 相邻值 差值 的最大值 ， 若差值大于其则停止扩散
 
+	topLeft,bottomRight  选择框的边界经纬度
 */
 function getHighLight(th,topLeft,bottomRight){
 	let matrix = last_matrix
@@ -271,12 +267,11 @@ function getHighLight(th,topLeft,bottomRight){
 	let R  = {}    //返回值
 
 	// 遍历一遍选择框内的方格 
-	let th_min = th.min
+	let th_max = th.min
 	let inner_max = 0
 	let inner_min = undefined
 	let th_val = undefined
 
-	console.log(matrix)
 	for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
 		for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
 			let val = matrix[y][x]
@@ -284,25 +279,29 @@ function getHighLight(th,topLeft,bottomRight){
 			inner_min = ( inner_min == undefined) ? val : ( inner_min < val ? inner_min : val )
 			inner_max = (val >= inner_max) ? val : inner_max
 
-			if(val < th_min) continue
-			Q.push({ x,y,val })
-			S.push( x+","+y )    
+			// if(val < th_min) continue
+		
+			if( y == v_top_left[1] || y == v_bottom_right[1] || 
+				( (x == v_top_left[0] || x == v_bottom_right[0]) && y != v_top_left[1] && y != v_bottom_right[1]  ) ) {
+				Q.push({ x,y,val })
+				S.push( x+","+y ) 
+			}   
 		}
 	}
 
 	// 自适应  当一轮扫描没有结果时 修改阈值
-	if(!Q.length){
-		th_val = inner_max
-		for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
-			for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
-				let val = matrix[y][x]
+	// if(!Q.length){
+	// 	th_val = inner_max
+	// 	for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
+	// 		for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
+	// 			let val = matrix[y][x]
 				
-				if(val < th_val) continue
-				Q.push({ x,y,val })
-				S.push( x+","+y )    
-			}
-		}
-	}
+	// 			if(val < th_val) continue
+	// 			Q.push({ x,y,val })
+	// 			S.push( x+","+y )    
+	// 		}
+	// 	}
+	// }
 	// let th_max = th.max
 
 	while(Q.length){
@@ -325,15 +324,21 @@ function getHighLight(th,topLeft,bottomRight){
 			let s = _xy.x + ","+ _xy.y
 
 			//边界条件
-			let cond3 = _xy.x >= x_num || _xy.x < 0 || _xy.y >= y_num || _xy.y < 0 
+			let cond3 = _xy.x >= gXnum || _xy.x < 0 || _xy.y >= y_num || _xy.y < 0 
 			if(cond3)  return true //进入下一个循环 
 
 			let c_val = matrix[_xy.y][_xy.x]
-			// let cond1 = ( Math.abs(c_val - c.val) < th_max )  //差值不能超过最大值 //弃用
+			let cond1 = ( Math.abs(c_val - c.val) < th_max )  //差值不能超过最大值
 			let cond2 = (S.indexOf(s)  == -1 )  //是否已经被 Scan 过
-			let cond4 = c_val >= th_min    		// 是否 大于 最小阈值
 
-			if(cond2 && cond4){
+
+			// let cond4 = c_val >= th_min    		// 是否 大于 最小阈值
+
+			if(cond2 && cond1){
+
+				inner_min = ( inner_min == undefined) ? c_val : ( inner_min < c_val ? inner_min : c_val )
+				inner_max = (c_val >= inner_max) ? c_val : inner_max
+
 				S.push(s)
 				Q.push({
 					x: _xy.x,
@@ -353,10 +358,13 @@ function getHighLight(th,topLeft,bottomRight){
 			R[y].push(x)
 	})
 
+	gInnerMin = inner_min
+	gInnerMax = inner_max
+
 	return {
 		ps : R,
-		x_num : x_num,
-		th_val : th_val
+		gXnum : gXnum,
+		th_val : undefined
 	}
 }
 
@@ -400,8 +408,6 @@ function getTrajsThroughHL(lines_data , coor){
 					}
 
 				})
-
-
 				return false
 			}
 		})
@@ -412,126 +418,4 @@ function getTrajsThroughHL(lines_data , coor){
 		timeRange:timeRange
 	}
 }
-
-
-// function getHighLight(topLeft,bottomRight){
-// 	let matrix = last_matrix
-// 	let v_top_left = _l2v([topLeft['lat'],topLeft['lng']])
-// 	let v_bottom_right = _l2v([bottomRight['lat'],bottomRight['lng']])
-
-// 	let maxval = 0 ,maxval_xy = { x:v_top_left[0],y:v_top_left[1]}
-// 	// console.log(v_top_left,v_bottom_right)
-
-
-// 	// 找到框选中的最大 点 以他为中心
-// 	for(let y = v_top_left[1];y <=v_bottom_right[1];y++){
-// 		for(let x = v_top_left[0];x <=v_bottom_right[0];x++){
-
-// 				if( matrix[y][x] > maxval ){
-// 					maxval = matrix[y][x]
-// 					maxval_xy = { x,y }
-// 				}
-
-
-// 		}
-// 	}
-
-
-
-// 	//阈值
-// 	let K = maxval * 0.6
-
-// 	//向四个方向找
-// 	let direct = { up:0 ,down:0,left:0,right:0 }
-// 	let direct_bool = { up:true,down:true,left:true,right:true }
-// 	let step = 1
-// 	let c_x = maxval_xy['x'],c_y = maxval_xy['y']
-// 	while(1){
-// 		step++
-
-// 		if( direct_bool['up'] ){
-// 			if( c_y - step < 0){
-// 				direct_bool['up'] = false
-// 			}else{
-// 				if( maxval - matrix[c_y - step][c_x] > K){
-// 					direct_bool['up'] = false
-// 				}else{
-// 					direct['up'] = step
-// 				}
-// 			}
-// 		}
-
-// 		if( direct_bool['down'] ){
-// 			if( c_y + step >= y_num){
-// 				direct_bool['down'] = false
-// 			}else{
-// 				if( maxval - matrix[c_y + step][c_x] > K){
-// 					direct_bool['down'] = false
-// 				}else{
-// 					direct['down'] = step
-// 				}
-// 			}
-// 		}
-
-// 		if( direct_bool['left'] ){
-// 			if( c_x - step < 0){
-// 				direct_bool['left'] = false
-// 			}else{
-// 				if( maxval - matrix[c_y][c_x - step] > K){
-// 					direct_bool['left'] = false
-// 				}else{
-// 					direct['left'] = step
-// 				}
-// 			}
-// 		}
-
-// 		if( direct_bool['right'] ){
-// 			if( c_x + step >= x_num){
-// 				direct_bool['right'] = false
-// 			}else{
-// 				if( maxval - matrix[c_y][c_x + step] > K){
-// 					direct_bool['right'] = false
-// 				}else{
-// 					direct['right'] = step
-// 				}
-// 			}
-// 		}
-
-// 		if( !direct_bool['up'] 
-// 			&& !direct_bool['down'] 
-// 			&& !direct_bool['left']
-// 			&& !direct_bool['right'])  
-// 			break
-
-// 	}
-// 	console.log(direct)
-
-// 	let ps = {}
-// 	for(let y = c_y - direct['up']; y < c_y + direct['down'];y++){
-// 		for(let x = c_x - direct['left']; x < c_x + direct['right'];x++){
-// 			if(maxval - matrix[y][x] < K) {
-// 				if(!ps[y]) ps[y] = []
-// 				ps[y].push(x)
-// 			}
-// 		}
-// 	}
-
-// 	let reObj = {
-// 		ps : ps,
-// 		x_num : x_num
-// 	}
-// 	return reObj 
-// 	// console.log(direct,direct_bool)
-
-// }
-
-
-
-// 需先计算 getData 后计算 getHL ，依赖 boundry,matrix
-
-
-
-
-
-
-export { getData,getHighLight,getTrajsThroughHL }
+export { getData,getHighLight,getTrajsThroughHL, gXnum,gMaxVal,gDistrubuion,gInnerMin,gInnerMax }

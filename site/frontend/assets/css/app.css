@@ -65,3 +65,28 @@ html, body {
     font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
 }
 
+
+.mid-contain{
+	height: 30%;
+}
+.dist-box{
+	width: 300px;
+	margin: 25px 30px;
+	height: calc(100% - 50px);
+	display: inline-block;
+	float: left;
+}
+.dist-del{
+	float: left;
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+}
+.dist-del img{
+	width: inherit;
+	height: inherit;
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 40px;
+	cursor: pointer;
+}
