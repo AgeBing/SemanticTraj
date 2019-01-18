@@ -4,7 +4,7 @@ import { draw as draw_h } from 'drawheatmap'
 
 import { init as topic_init,topicZoomRect ,registr_select_func  } from 'topicpanel'
 import { draw as draw_t ,selectPeriod } from 'drawtrajlines'
-import { init as hexa_init,topicHexa }  from 'hexagonpanel' 
+// import { init as hexa_init,topicHexa }  from 'hexagonpanel' 
 
 
 
