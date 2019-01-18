@@ -1,0 +1,42 @@
+
+.list-item{
+	/*height: 40px;*/
+	margin: 5px;
+	background-color:  #f0f5ff
+}
+.list-item>div{
+	display: inline-block;
+	height: 20px;
+	border: 1px dashed brown;
+	float: left
+}
+.check-contain{
+	width: 20px;
+
+}
+.check-contain input{
+	width: 16px;
+	height: 16px;
+	margin: 2px;
+}
+.id-word{
+    width: 76px;
+    font-size: 10px;
+    line-height: 20px;
+    padding: 0 6px;
+}
+.percent-rect{
+	width: calc(100% - 150px);
+	min-width: 100px;
+}
+.percent-rect-color{
+	height: 16px;
+	margin: 2px 5px;
+	max-width: calc(100% - 10px);
+	background-color: black;
+}
+.percent-word{
+	font-size: 10px;
+    line-height: 20px;
+    padding: 0 6px;
+}

@@ -5,11 +5,13 @@
 <head>
   <title>semanticTraj</title>
   <meta charset="UTF-8">
+
   <link rel="stylesheet" type="text/css" href="assets/css/app.css">
   <link rel="stylesheet" type="text/css" href="assets/css/map.css">
   <link rel="stylesheet" type="text/css" href="assets/css/topic.css">
   <link rel="stylesheet" type="text/css" href="assets/css/cotrol.css">
   <link rel="stylesheet" type="text/css" href="assets/css/hexa.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/list.css">
   <link rel="stylesheet" type="text/css" href="assets/css/queryview.css">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
@@ -25,41 +27,45 @@
 
 </head>
 
-<body>
-  <div id='leftcolumn'>
-    <div id='input-wrapper'>
-      <input type="text" id='search-input-text'>
-    </div>
-    <button id='search-button'>Query</button>
-  </div>
+<body >
 
-  <!-- <script src="static/bundle/bundle.js"></script> -->
+  <div class="top-bar">
+      <div class="logo">
+        STVA
+      </div>
+      <div id="input-wrapper">
+        <input type="text" id="search-input-text">
+      </div>
+      <button id="search-button">
+         Search
+      </button>
+
+      <button id="voice-button">
+         Voice
+      </button>
+  </div>
 
 	<div class="contain">
 		
-		<div class="sub-contain up-contain">
+		<div class="up-contain">
 			<div class="panel left-panel" id="map-container">
+          <div class="default-word"><span> - </span></div> 
 			</div>
 			<div class="panel right-panel" id="topic-container">
-          <div class="default-word">
-            <span> · </span>
-          </div>   
+          <div class="default-word"><span> - </span></div>  
       </div>			
 		</div>
 
-
-<!--     <div class="sub-contain mid-contain">
-      <div class="panel">
-          <div class="dist-del">
-            <img src="./assets/icons_/delete.png">
-          </div>
-          <div class="dist-box" id='opacity-dist'></div>
-          <div class="dist-box"></div>
-          <div class="dist-box"></div>
+    <div class="down-contain">
+      <div class="panel up-panel">
+      </div>     
+      <div class="panel down-panel">
+          <div class="default-word"><span> - </span></div> 
+        
       </div>
-    </div> -->
+    </div>
 
-		<div class="sub-contain down-contain">
+<!-- 		<div class="sub-contain down-contain">
 			<div class="panel left-panel"  id="control">
         <div class="left-small-panel">
             <div class="control-box">
@@ -69,19 +75,13 @@
 
               <button id="range8"> Select</button> 
             </div>
-                          
+                         
 
             <div class="control-box">
               <span class="type-name">Threshold | min </span>    
               <input id='range3'  type="range" name="进度条" min="0.001" max="20" step="0.00001" value="1">
               <span id="valBox3" class="type-value"> 1 </span>  
             </div>
-
-<!--             <div class="control-box">
-              <span class="type-name">框选阈值 | max </span>    
-              <input id='range4'  type="range" name="进度条" min="0.05" max="10" step="0.01" value="4">
-              <span id="valBox4" class="type-value"> 4 </span>  
-            </div> -->
 
             <div class="control-box">
               <span class="type-name">Links Force</span>    
@@ -113,9 +113,46 @@
           </div> 
        </div> 
       </div>	
-		</div>
+		</div> -->
 
 	</div>
+
+
+  <div class="list-contain panel">
+          <!-- <div class="default-word"><span> - </span></div>  -->
+      <div class="list-window">
+          <div class="list-item">
+            <div class="check-contain">
+              <input type="checkbox" name="check">
+            </div>
+            <div class="id-word">
+                460000000000
+            </div>
+            <div class="percent-rect">
+              <div class="percent-rect-color"></div>
+            </div>
+            <div class="percent-word">
+              98%
+            </div>
+          </div>
+
+
+          <div class="list-item">
+            <div class="check-contain">
+              <input type="checkbox" name="check">
+            </div>
+            <div class="id-word">
+                460000000000
+            </div>
+            <div class="percent-rect">
+              <div class="percent-rect-color"></div>
+            </div>
+            <div class="percent-word">
+              98%
+            </div>
+          </div>
+      </div>
+  </div>
 
   <!-- {% render_bundle 'main' %} -->
   <script src="bundle.js"></script>

@@ -48,17 +48,25 @@ function get_participle(data) {
 
 function addSearchListener(o) {
   o.on('click', function(d, i) {
+
+    let t1 = new Date().getTime();
+    console.log('Getting result ....')
     QueryUtil.get_trajs($('#search-input-text').val())
         .then(result => {
+
           DataManager.drawTraj = result;
           console.log(result.length, '_______')
+          let t2 =  new Date().getTime();
+          console.log('get result: ' + (t2-t1) + 'ms')
         })
-        // .then(result => dataTrans_YKJ())
+        .then(result => dataTrans_YKJ())
   });
 }
 
 // modified by ykj
 function dataTrans_YKJ(){
+    let t1 = new Date().getTime();
+
     let trajs = DataManager.drawTraj
     let sites = DataManager.sites
     let siteTopic = DataManager.siteTopic
@@ -76,8 +84,8 @@ function dataTrans_YKJ(){
       })
     })
 
-    var storage=window.localStorage;
-    var d=JSON.stringify(trajs);
-    storage.setItem("DM",d);
-    console.log(storage['DM'])
+    let t2 =  new Date().getTime();
+    console.log('data trans: ' + (t2-t1) + 'ms')
+
+    console.log(trajs)
 }

@@ -17,37 +17,104 @@ html, body {
   margin:0;
 }
 
+
+
+.top-bar{
+	height: 50px;
+	margin: 10px 10px;
+	background-color: #f0f5ff
+}
+.top-bar .logo{
+    display: inline-block;
+    width: 67px;
+    height: 40px;
+    margin: 5px 0 5px 10px;
+    float: left;
+    font-size: 25px;
+    line-height: 40px;
+    font-weight: 600;
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    color: #2c3e50;
+}
+.top-bar #input-wrapper{
+	display: inline-block;
+	margin: 10px;
+	float: left;
+	width: 60%;
+}
+#input-wrapper input{
+	height: 20px;
+	width: 100%;
+}
+.top-bar button{
+    background-color: #40a9ff;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 100;
+    border: 0px solid transparent;
+    width: 93px;
+    margin: 9px 5px;
+    height: 28px;
+    font-size: 15px;
+}
+
+
+
+
+
 .contain {
-	position: relative;
-	height: 99%;
-	top: 0;
+	display: inline-block;
+	width: 70%;
+	height: 95%;
+	float: left;
 }
-.sub-contain{
-	margin:20px 10px;
-	min-width: 580px;
-}
-.up-contain{
-	height: 60%;
-}
-.down-contain{
-	height: 38%;
-	min-height: 270px;
+
+
+.list-contain{
+	display: inline-block;
+	width: 27.8%;
+	float: right;
+	height: 95%;
+	margin: 10px 10px;
 }
 
 .panel{
 	background-color: #ffffff;
-	height: 100%;
 	border: 1px solid #e8e8e8;
+}
+
+
+.up-contain{
+	height: 60%;
+	margin: 10px 10px;
 }
 .left-panel{
 	float: left;
 	width: 50%;
+	height: 100%;
 }
 .right-panel{
 	float: right;
 	width: 48%;
 	height: 100%;
 }
+
+.down-contain{
+	height: 38%;
+	margin: 10px 10px;
+}
+.up-panel{
+	width: 100%;
+	height: 10%;
+}
+.down-panel{
+	width: 100%;
+	height: 89%;
+	margin-top:5px;
+}
+
+
+
 
 
 
