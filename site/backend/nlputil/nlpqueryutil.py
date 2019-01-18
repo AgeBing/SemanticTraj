@@ -36,8 +36,14 @@ class NlpSocket:
       raw_data = self.recvall(msg_len)
       return raw_data.decode()
 
-  def query_nlp(self, word, K):
-    query_dict = {'type': 'query', 'word': word, 'K': K}
+  def query_nlp(self, word, K, K_nearst_num):
+    query_dict = {'type': 'query2', 'word': word, 'K': K, 'K_nearst_num': K_nearst_num}
+    self.connect(HOST, PORT)
+    self.send_msg(json.dumps(query_dict).encode())
+    return json.loads(self.receive_msg())
+
+  def query_vecs(self, word, K_nearst_num):
+    query_dict = {'type': 'get_k_words_vecs', 'word': word, 'K_nearst_num': K_nearst_num}
     self.connect(HOST, PORT)
     self.send_msg(json.dumps(query_dict).encode())
     return json.loads(self.receive_msg())

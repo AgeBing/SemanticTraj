@@ -11,6 +11,10 @@ e/叹词 o/拟声词 g/语素 w/标点 x/其它
 import thulac
 import jieba
 
+from sklearn import manifold
+from sklearn.metrics import euclidean_distances
+import numpy as np
+
 # from . import compare
 from backend import pathutil
 from backend import traj
@@ -18,6 +22,7 @@ from . import nlpqueryutil
 import logging
 
 MAX_K_NUM = 1000
+K_NEARST_NUM = 20
 
 # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -49,18 +54,34 @@ def get_similiar_sites(sentence):
   print('participle: ', words)
   sites = set()
   _site_cover = {}
+  pois = []
   for i in range(0, len(words)):
     # word_vec = get_word_vec(words[i][0])
     # if word_vec is None:
     #   continue
     nlp_socket = nlpqueryutil.NlpSocket()
-    most_similiar_node = nlp_socket.query_nlp(words[i][0], MAX_K_NUM)
+    most_similiar_node = nlp_socket.query_nlp(words[i][0], MAX_K_NUM, K_NEARST_NUM)
     if len(most_similiar_node) == 0:
       print(words, 'has no vector')
     for node in most_similiar_node:
+      pois.append("'" + str(node['id']) + "'")
       sites.add(node['site_id'])
       state = _site_cover.get(node['site_id'], 0)
       _site_cover[node['site_id']] = state | (1 << i)
+  print(','.join(pois))
+  print('sites:', sites)
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)
-  
+
+def get_k_vecs(word):
+  nlp_socket = nlpqueryutil.NlpSocket()
+  k_words_vecs = nlp_socket.query_vecs(word, K_NEARST_NUM)
+  seed = np.random.RandomState(seed=3)
+  k_matrics = [x[2] for x in k_words_vecs]
+  similarities = euclidean_distances(k_matrics)
+  mds = manifold.MDS(n_components=2, max_iter=3000, eps=1e-9, random_state=seed,
+      dissimilarity="precomputed", n_jobs=1)
+  pos = mds.fit(similarities).embedding_
+  words = [x[0] for x in k_words_vecs]
+  ratios = [x[1] for x in k_words_vecs]
+  return list(zip(words, ratios, pos))

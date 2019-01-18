@@ -29,8 +29,8 @@ function _dataAdapter(_lines_data){
 	let lines_data = _lines_data.map((line) => {
 		let ps = line.traj.map((p) => {     //各轨迹点
 			return 	{
-					date : p.time.split(' ')[0],
-					time : p.time.split(' ')[1],
+					date : p.startTime.split(' ')[0],
+					time : p.startTime.split(' ')[1],
 					coor : {
 						lat : p.latitude ,
 						lon : p.longitude

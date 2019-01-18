@@ -60,6 +60,9 @@ class Traj(object):
     根据轨迹ID找到所有轨迹
     @return {pid, traj:[]} 形式的数组
     """
+    # '460000000000000' 为异常ID
+    if '460000000000000' in pids:
+      pids.remove('460000000000000')
     start_time = int(self.__start_time.strftime('%m%d'))
     end_time = int(self.__end_time.strftime('%m%d'))
     dates = [str(x) for x in range(start_time, end_time + 1)]
@@ -86,6 +89,7 @@ class Traj(object):
         ]
       )
       trajs[node['peopleid']] = now_traj
+    print('get trajs finished!')
     return trajs
 
   def __get_diff_seconds(self, t1, t2):
@@ -127,6 +131,7 @@ class Traj(object):
             del now_node['time']
             tmp_traj.append(now_node)
       traj['traj'] = tmp_traj
+    print ('handle traj finished')
     return trajs
 
   def __filter_trajs(self, trajs):
@@ -151,13 +156,18 @@ class Traj(object):
       if num == self.__stop_num:
         traj['matching'] = True
         traj_array.append(traj)
+    print('filter traj finished')
     return traj_array
 
   def get_traj(self):
     # 优化内存，用相同变量
+    print('get traj pid by time .....')
     o = self.__get_traj_pid_by_time()
+    print('filter pid ....')
     o = self.__filter_pid(o)
+    print('get trajs by pids ...')
     o = self.__get_trajs_by_pids(o)
+    print('handle traj ....')
     o = self.__handle_traj(o)
     return self.__filter_trajs(o)
 
