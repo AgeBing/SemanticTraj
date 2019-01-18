@@ -32,3 +32,7 @@ export function get_participle(data) {
 export function get_trajs(data) {
   return _query('nlp/trajs/', {'text': data});
 }
+
+export function get_k_vecs(data) {
+  return _query('nlp/k_vecs/', {'text': data});
+}

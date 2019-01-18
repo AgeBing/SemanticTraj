@@ -7,6 +7,18 @@ import os
 from django.http import *
 from channels.generic.websocket import WebsocketConsumer
 from backend.nlputil import nlp
+import numpy as np
+
+class MyEncoder(json.JSONEncoder):
+  def default(self, obj):
+    if isinstance(obj, np.integer):
+      return int(obj)
+    elif isinstance(obj, np.floating):
+      return float(obj)
+    elif isinstance(obj, np.ndarray):
+      return obj.tolist()
+    else:
+      return super(MyEncoder, self).default(obj)
 
 class NlpConsumer(WebsocketConsumer):
     def connect(self):
@@ -26,6 +38,9 @@ class NlpConsumer(WebsocketConsumer):
           trajNode = nlp.get_similiar_sites(data['text'])
           trajs = trajNode.get_traj()
           self._send(trajs)
+        elif nlp_method == 'k_vecs':
+          results = nlp.get_k_vecs(data['text'])
+          self._send(results)
 
     def _send(self, data):
-        self.send(text_data = json.dumps(data))
+        self.send(text_data = json.dumps(data, cls = MyEncoder))
