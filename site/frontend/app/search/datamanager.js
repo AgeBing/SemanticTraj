@@ -104,6 +104,8 @@ function getIndexTopic() {
       aRes.sort((a, b) => b.val - a.val);
       siteTopic.set(i+'', aRes);
     });
+
+    
   });
 };
 
@@ -308,6 +310,7 @@ function detectTrajStopPoint() {
     trajs.matching = false;
     trajs.filter = false;
   });
+  
   console.log('detect Traj Stop Point done!')
 }
 

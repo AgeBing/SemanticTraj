@@ -2,9 +2,12 @@ import * as d3 from 'd3';
 import * as QueryUtil from './queryutil'
 import $ from 'jquery';
 import * as DataManager from './datamanager.js';
-import { draw_trajs } from 'mappanel'
+// import { draw_trajs } from 'mappanel'
 
-import '../assets/css/searchbar.css'
+
+
+import { setGlobalTrajData } from '../app.js'
+
 
 let textData = []
 
@@ -68,11 +71,17 @@ function get_participle(data) {
 function addSearchListener(o) {
   o.on('click', function(d, i) {
 
+    let t1 = new Date().getTime()
+          console.log('Start Getting Data ...')
     QueryUtil.get_trajs(textData.map(d => d[0]).join(''))
         .then(result => {
 
-          DataManager.drawTraj = result;
 
+          DataManager.drawTraj = result;
+          console.log('_____',result.length)
+            // console.log(result.slice(0,5))
+            let t2 = new Date().getTime()
+            console.log('GetData: ' + (t2-t1) + 'ms')
           return result;
         })
         .then(result => dataTrans_YKJ())
@@ -82,10 +91,14 @@ function addSearchListener(o) {
 // modified by ykj
 
 function dataTrans_YKJ() {
+    console.log('Start Process Data ...')      
+
+    let t1 = new Date().getTime()
 
     let trajs = DataManager.drawTraj
     let sites = DataManager.sites
     let siteTopic = DataManager.siteTopic
+
 
     trajs.forEach((traj) => {
       let _traj = traj.traj 
@@ -99,12 +112,19 @@ function dataTrans_YKJ() {
         p.topics = sitetopic
       })
     })
-    draw_trajs(trajs)
-    // var storage = window.localStorage;
-    // trajs = trajs.slice(0, 10);
-    // var d = JSON.stringify(trajs);
-    // storage.setItem("DM", d);
-    // console.log(storage['DM'])
+
+    let t2 = new Date().getTime()
+    console.log('TransData: ' + (t2-t1) + 'ms')
+
+
+    setGlobalTrajData(trajs)
+
+
+        // 返回到后端存起来
+    // QueryUtil.send_cache(trajs)
+    //   .then(result=>{
+    //     console.log("send",result)
+    //   })
 }
 
 function createNewTab(data) {

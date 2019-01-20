@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import { debug } from './util/debug'
 
 let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hotel","Life","Finance","Traffic","Enterprise","Scenicspot","Government"]
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
@@ -26,10 +25,10 @@ let  vRectHeight = 35
 
 // 数据格式转换
 function dataAdapter(_line_data){
-	let ps = _line_data.points.map((line) => {
+	let ps = _line_data.traj.map((line) => {
 		return {
-			date : line.date,
-			time : line.time,
+			date : line.startTime.split(' ')[0],
+			time : line.startTime.split(' ')[1],
 			topics : line.topics
 		}
 	})
@@ -45,7 +44,7 @@ function dataAdapter(_line_data){
 let timeScale,timeScale2     //两个 timeScale 
 let register_func_list      //注册的 zoom 时触发的函数 列表
 let register_click_list = new Map()  //用于 click 时选择
-let traj_select_func  		//线 轨迹的 callback 函数 
+// let traj_select_func  		//线 轨迹的 callback 函数 
 
 
 // for all instances 
@@ -62,6 +61,7 @@ function init(timeRange){
 function _appendWidgets(timeRange){
 	let  vHeight = h ,vWidth = w
 
+	console.log(timeRange)
 	// scales 
 	timeScale = d3.scaleTime()
 		.range([0,vWidth])
@@ -186,22 +186,22 @@ function register_zoom_func(func, whos){
 		)
 }
 
-function func_clicked(_th,x){
-	let whos = register_click_list.get(_th)
-	let tr = whos.func.call( whos.who , x) 
-	traj_select_func(whos.who.id , tr.period_time)
-}
+// function func_clicked(_th,x){
+// 	let whos = register_click_list.get(_th)
+// 	let tr = whos.func.call( whos.who , x) 
+// 	traj_select_func(whos.who.id , tr.period_time)
+// }
 
 // func => _caltime_period
-function register_click_func(id,who,func){
-	register_click_list.set(id,{
-		who , func
-	})
-}
+// function register_click_func(id,who,func){
+// 	register_click_list.set(id,{
+// 		who , func
+// 	})
+// }
 
-function registr_select_func(func){
-	traj_select_func = func
-}
+// function registr_select_func(func){
+// 	traj_select_func = func
+// }
 
 
 function on_tick_move(x){
@@ -225,8 +225,8 @@ function on_tick_move(x){
 //  一个 instance 代表一个 方块
 
 class topicZoomRect {
-	_init(container,data,index){
-		data = dataAdapter(data)
+	_init(_data,index){
+		let data = dataAdapter(_data)
 
 		let _el = document.createElement('div')
 		_el.className = 'rect-container th' + index
@@ -319,7 +319,9 @@ class topicZoomRect {
 
 			rects
 				.attr('x',(d,i)=>{
+					// console.log(dates[i])
 					let x = timeScale(dates[i])
+					// console.log(x)
 					// x = (x >= 0) ? x : 0
 					show.x = x
 					return x
@@ -357,7 +359,7 @@ class topicZoomRect {
 						.on('mouseenter',function(){
 							d3.selectAll('.topic-rect').style('opacity',0.2)
 							d3.select(this).style('opacity',1)
-							traj_select_func(id,t)
+							// traj_select_func(id,t)
 							// console.log(id,t)
 							self.select(false)
 						})
@@ -375,7 +377,6 @@ class topicZoomRect {
 		let  _rects = d3.selectAll('.rect-container:last-child .topic-rect')
 		let  _rect 
 		
-			debug(data)
 
 		rects.each(function(d,i){
 			let rect = d3.select(this)
@@ -389,7 +390,7 @@ class topicZoomRect {
 			//移除 child elements 
 			_rect.selectAll('div').remove() 
 			if(!data.ps[i].topics){
-				debug('null,no topics. Skip this timeRange')
+
 				return
 			}
 
@@ -452,7 +453,7 @@ class topicZoomRect {
 
 		this.topicContainer = topicContainer
 
-		register_click_func( this.index,this,this._caltime_period )
+		// register_click_func( this.index,this,this._caltime_period )
 	}
 
 	_render(){    //注意顺序
@@ -505,16 +506,16 @@ class topicZoomRect {
 				.selectAll('.topic-rect')
 				.style('opacity',1)
 		}
-		if(!fromOuter) this.select_outer(index,'hexa')
+		// if(!fromOuter) this.select_outer(index,'hexa')
 	}
 	un_select(fromOuter = true){
 		let { index } = this
 		
 		d3.selectAll('.topic-rect').style('opacity',1)
-		if(!fromOuter) this.un_select_outer(index,'hexa')
+		// if(!fromOuter) this.un_select_outer(index,'hexa')
 	}
 }
 
 
 
-export { init,topicZoomRect,registr_select_func  }
+export { init,topicZoomRect  }

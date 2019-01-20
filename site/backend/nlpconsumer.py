@@ -9,6 +9,8 @@ from channels.generic.websocket import WebsocketConsumer
 from backend.nlputil import nlp
 import numpy as np
 
+from .import cachedata
+
 class MyEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, np.integer):
@@ -35,12 +37,30 @@ class NlpConsumer(WebsocketConsumer):
           results = nlp.get_participle(data['text'])
           self._send(results)
         elif nlp_method == 'trajs':
-          trajNode = nlp.get_similiar_sites(data['text'])
-          trajs = trajNode.get_traj()
-          self._send(trajs)
+          
+          # trajNode = nlp.get_similiar_sites(data['text'])
+          # trajs = trajNode.get_traj()
+         
+          # cachedata.write(trajs)
+          # print(len(trajs))
+
+          # 使用 样本数据
+          trajs = cachedata.read()
+          print(len(trajs))
+          self._send(trajs[0:100])
+          # self._send(trajs)
+
+
+
         elif nlp_method == 'k_vecs':
           results = nlp.get_k_vecs(data['text'])
           self._send(results)
+        
+        elif nlp_method == 'cache':
+          trajs = data['trajs']
+          cachedata.write_topic(trajs)
+          self._send(1)
+
 
     def _send(self, data):
         self.send(text_data = json.dumps(data, cls = MyEncoder))

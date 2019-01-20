@@ -7,8 +7,11 @@
 .list-item>div{
 	display: inline-block;
 	height: 20px;
-	border: 1px dashed brown;
-	float: left
+	/*border: 1px dashed brown;*/
+	float: left ;
+
+
+	margin-top: 8px;
 }
 .check-contain{
 	width: 20px;
@@ -20,23 +23,35 @@
 	margin: 2px;
 }
 .id-word{
-    width: 76px;
+    width: 82px;
     font-size: 10px;
     line-height: 20px;
     padding: 0 6px;
+	color:#595959;
 }
 .percent-rect{
-	width: calc(100% - 150px);
+	width: calc(100% - 156px);
 	min-width: 100px;
 }
 .percent-rect-color{
 	height: 16px;
 	margin: 2px 5px;
 	max-width: calc(100% - 10px);
-	background-color: black;
+	background-color: #595959;
 }
 .percent-word{
 	font-size: 10px;
     line-height: 20px;
     padding: 0 6px;
+	color:#595959;
+}
+
+.filtered .id-word{
+	color:#e8e8e8;
+}
+.filtered .percent-rect-color{
+	background-color: #e8e8e8
+}
+.filtered .percent-word{
+	color:#e8e8e8;
 }

@@ -9,10 +9,9 @@
   <link rel="stylesheet" type="text/css" href="assets/css/app.css">
   <link rel="stylesheet" type="text/css" href="assets/css/map.css">
   <link rel="stylesheet" type="text/css" href="assets/css/topic.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/cotrol.css">
   <link rel="stylesheet" type="text/css" href="assets/css/hexa.css">
   <link rel="stylesheet" type="text/css" href="assets/css/list.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/queryview.css">
+
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
@@ -30,10 +29,8 @@
 
 
 <body>
-  <div id='top-bar'>
-      <div class="logo">
-        STVA
-      </div>
+
+<!--   <div id='leftcolumn'>
     <div class='search-container'>
       <div id='input-wrapper'>
         <input type="text" id='search-input-text'>
@@ -46,22 +43,48 @@
         </svg>
       </span>
     </div>
-    <!-- <button id='search-button'>Query</button> -->
   </div>
+ -->
 
+
+
+  <div class="top-bar">
+      <div class="logo">
+        STVA
+      </div>
+      <div class='search-container'>
+
+<!--         <div class="word-tab" style="
+    float: left;
+"><div class="tab-image-container"><img src="../assets/icons/POI.svg"></div><div class="tab-text-container"><div class="tab-text">学校</div></div></div> -->
+
+          <div id="input-wrapper">
+            <input type="text" id="search-input-text">
+          </div>
+      </div>
+      <button id="search-button">
+         Search
+      </button>
 
       <button id="voice-button">
          Voice
       </button>
+
+      <button id="select-btn">
+         Select
+      </button>
+
   </div>
+
+
 
 	<div class="contain">
 		
 		<div class="up-contain">
-			<div class="panel left-panel" id="map-container">
+			<div class="panel left-panel">
           <div class="default-word"><span> - </span></div> 
 			</div>
-			<div class="panel right-panel" id="topic-container">
+			<div class="panel right-panel" id="map-container">
           <div class="default-word"><span> - </span></div>  
       </div>			
 		</div>
@@ -69,7 +92,7 @@
     <div class="down-contain">
       <div class="panel up-panel">
       </div>     
-      <div class="panel down-panel">
+      <div class="panel down-panel" id="topic-container">
           <div class="default-word"><span> - </span></div> 
         
       </div>
@@ -131,7 +154,8 @@
   <div class="list-contain panel">
           <!-- <div class="default-word"><span> - </span></div>  -->
       <div class="list-window">
-          <div class="list-item">
+
+  <!--         <div class="list-item filtered">
             <div class="check-contain">
               <input type="checkbox" name="check">
             </div>
@@ -144,23 +168,9 @@
             <div class="percent-word">
               98%
             </div>
-          </div>
+          </div> -->
 
 
-          <div class="list-item">
-            <div class="check-contain">
-              <input type="checkbox" name="check">
-            </div>
-            <div class="id-word">
-                460000000000
-            </div>
-            <div class="percent-rect">
-              <div class="percent-rect-color"></div>
-            </div>
-            <div class="percent-word">
-              98%
-            </div>
-          </div>
       </div>
   </div>
 

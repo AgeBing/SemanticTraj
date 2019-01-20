@@ -6,12 +6,20 @@
 
 
 # 依赖
+
+### 导出依赖
+`pip freeze > requirements.txt`
+
+### 安装 一步搞定
+`pip install -r requirements.txt`
+
 ```
 pip install django-webpack-loader
 pip install django-cors-headers
 pip install channels
 pip install pypiwin32
 
+            mysqlclient
 pip install DBUtils
 pip install gensim
 pip install thulac
