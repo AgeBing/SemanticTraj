@@ -8,8 +8,8 @@ STOPTIME_THRESHOLD = 20 * 60
 
 class Traj(object):
   def __init__(self, stop_num, sites, site_cover, 
-      start_time_str = '2014-01-14 00:00:00.00', 
-      end_time_str = '2014-01-14 00:01:00.00'):
+      start_time_str = '2014-01-14 08:00:00.00', 
+      end_time_str = '2014-01-14 08:30:00.00'):
     self.__stop_num = stop_num
     self.__sites = sites
     self.__site_cover = site_cover
@@ -30,7 +30,7 @@ class Traj(object):
     mysql = querymysqlutil.Mysql()
     sql_str = """select site, plist
               from phonetrajectory_index_bysite 
-              where site in ({0}) and datetime in ({1}) 
+              where site in ({0}) and datetime in ({1})
         """.format(','.join(map(lambda x: str(x), self.__sites)), ','.join(times))
     # print(sql_str)
     return mysql.get_all(sql_str)

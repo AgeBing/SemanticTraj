@@ -21,8 +21,8 @@ from backend import traj
 from . import nlpqueryutil
 import logging
 
-MAX_K_NUM = 1000
-K_NEARST_NUM = 20
+MAX_K_NUM = 200
+K_NEARST_NUM = 5
 
 # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -65,10 +65,12 @@ def get_similiar_sites(sentence):
       print(words, 'has no vector')
     for node in most_similiar_node:
       pois.append("'" + str(node['id']) + "'")
+      # if int(node['site_id']) < 0 or int(node['site_id']) > 28746:
+      #   continue
       sites.add(node['site_id'])
       state = _site_cover.get(node['site_id'], 0)
       _site_cover[node['site_id']] = state | (1 << i)
-  print(','.join(pois))
+  # print(','.join(pois))
   print('sites:', sites)
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)

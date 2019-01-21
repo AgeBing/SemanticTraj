@@ -155,8 +155,8 @@ function createNewTab(data) {
 
 
   div.on('click', function(d) {
-    const pos_x = d3.event.pageX
-    const pos_y = d3.event.pageY
+    const pos_x = d3.event.clientX - d3.mouse(this)[0];
+    const pos_y = d3.event.clientY - d3.mouse(this)[1];
     console.log(pos_x, pos_y, '   @@@@ ')
     QueryUtil.get_k_vecs(d[0])
         .then(vecs => {
@@ -185,11 +185,11 @@ function render_MDS(data, name, x, y) {
   const x_extent = d3.extent(data, d => d[2][0])
   const y_extent = d3.extent(data, d => d[2][1])
   d3.select('#word-vecs-mds').remove();
-  const svg = d3.select('#leftcolumn')
+  const svg = d3.select('.search-container')
       .append('svg')
       .attr('id', 'word-vecs-mds')
-      .style('top', x)
-      .style('left', y)
+      .style('top', y + 40)
+      .style('left', x)
   const g = svg.append('g')
       .attr('transform', 'translate(60, 60)')
   g.selectAll('circle')

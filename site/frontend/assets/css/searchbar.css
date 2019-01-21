@@ -1,0 +1,10 @@
+#word-vecs-mds {
+  position: absolute;
+  z-index: 1000;
+  border: 1px dashed brown;
+}
+
+.mds-point {
+  stroke-width: 2px;
+  stroke: #444444;
+}

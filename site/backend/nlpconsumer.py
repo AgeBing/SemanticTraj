@@ -37,18 +37,17 @@ class NlpConsumer(WebsocketConsumer):
           results = nlp.get_participle(data['text'])
           self._send(results)
         elif nlp_method == 'trajs':
-          
-          # trajNode = nlp.get_similiar_sites(data['text'])
-          # trajs = trajNode.get_traj()
+          trajNode = nlp.get_similiar_sites(data['text'])
+          trajs = trajNode.get_traj()
          
           # cachedata.write(trajs)
           # print(len(trajs))
 
-          # 使用 样本数据
-          trajs = cachedata.read()
-          print(len(trajs))
-          self._send(trajs[0:5000])
-          # self._send(trajs)
+          # # 使用 样本数据
+          # trajs = cachedata.read()
+          # print(len(trajs))
+          # self._send(trajs[0:5000])
+          self._send(trajs)
 
 
 
