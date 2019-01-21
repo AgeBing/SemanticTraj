@@ -1,6 +1,7 @@
 from . import querymysqlutil
 from datetime import datetime, timedelta
 import math
+from . import datamanager
 
 # 认定在某个地点停留的时间长度阈值
 STOPTIME_THRESHOLD = 20 * 60
@@ -31,7 +32,7 @@ class Traj(object):
               from phonetrajectory_index_bysite 
               where site in ({0}) and datetime in ({1}) 
         """.format(','.join(map(lambda x: str(x), self.__sites)), ','.join(times))
-    print(sql_str)
+    # print(sql_str)
     return mysql.get_all(sql_str)
 
   def __filter_pid(self, pids):
@@ -73,7 +74,7 @@ class Traj(object):
         where date in ({0}) and peopleid in ({1})
         order by peopleid, count
         """.format(','.join(dates), ','.join(pids))
-    print(sql_str)
+    # print(sql_str)
     traj_results = mysql.get_all(sql_str)
     print('query sql finish')
     trajs = {}
@@ -144,17 +145,27 @@ class Traj(object):
       traj['matching'] = False
       num = 0
       state = 0
-      for now_node in traj['traj']:
+      begin_index = -1
+      end_index = -1
+      for idx, now_node in enumerate(traj['traj']):
         if now_node['isStop'] and int(now_node['site']) in self.__site_cover:
           now_state = self.__site_cover[int(now_node['site'])]
+          # 先经过A后经过B
           if ((1 << num) & (state | now_state)) != 0:
+            if num == 0:
+              begin_index = idx
             now_node['stoppoint'] = num
             num += 1
             state |= now_state
           if num == self.__stop_num:
+            end_index = idx + 1
             break
+      # 经过一个关键点：截取的轨迹为A到末尾
+      end_index = len(traj['traj']) if end_index - begin_index == 1 else end_index
       if num == self.__stop_num:
         traj['matching'] = True
+        # 截断
+        traj['traj'] = traj['traj'][begin_index : end_index]
         traj_array.append(traj)
     print('filter traj finished')
     return traj_array
