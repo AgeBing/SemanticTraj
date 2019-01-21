@@ -4,6 +4,7 @@ let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hot
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
 // let colorList =["#b8ffd0","#ecffc1","#ffe6cc","#dfbaf7","#ffcd3c","#35d0ba","#dcb5ff","#a5bdfd","#77529e","#fb929e","#ffdfdf","#fff6f6","#aedefc","#ff7657"]
 let colorList = ['#8dd3c7','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#80b1d3','#fdb462','#b3de69','#fccde5']
+
 let topicThemes = {}
 
 topicNameList.forEach((topic,i)=>{
@@ -156,6 +157,19 @@ function _appendWidgets(timeRange){
 	listenerRect.call(zoom)
 		// .on("mousedown.zoom", null)   //拖动
 }
+
+
+function addLegend(){
+    let container = d3.select('#topic-legend')
+    topicNameList.forEach((name,i)=>{
+    	let item = container.append('div').attr('class','legend-item')
+   	 	item.append('div').attr('class','legend-rect')
+   	 		.style('background-color',colorList[i])
+	    item.append('div').attr('class','legend-name')
+	    	.text(name)
+    })
+}
+addLegend()
 
 function brushed(){
 	console.log(d3.event.selection)

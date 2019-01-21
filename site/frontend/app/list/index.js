@@ -10,12 +10,12 @@ function init(argument) {
 
 
 export function draw(data){
-	let maxNum = 10    // 設置最多顯示數目
+	let maxNum = 500    // 設置最多顯示數目
 
 
 	for(let i = 0 ;i < data.length;i++){
 		appendOne( data[i] )
-		// if( i > maxNum) break;
+		if( i > maxNum) break;
 	}
 
 }
@@ -48,7 +48,7 @@ function appendOne(Onetraj){
 }
 
 export function filter(filteredPids){
-	console.log(filteredPids)
+	// console.log(filteredPids)
 	let allItems = d3.selectAll('.list-item')
 
 	allItems.each(function(){
@@ -82,3 +82,35 @@ function topicAdd(pid,add){
 
 	drawTopic(topicPids)
 }
+
+
+d3.select('#filter-btn')
+	.on('mousedown',function(){
+		let isFiltered =  d3.select(this).attr('filtered')
+		let allItems = d3.selectAll('.list-item')
+		console.log(isFiltered)
+		if(isFiltered){
+
+			allItems.each(function(){
+				let curItem  = d3.select(this)
+
+				if( curItem.attr('class').indexOf('filtered') != -1 ){
+					curItem.attr('class','list-item filtered hide')
+				}
+			})
+
+			d3.select(this).text('show')
+			d3.select(this).attr('filtered',null)
+		}else{
+
+			allItems.each(function(){
+				let curItem  = d3.select(this)
+				if( curItem.attr('class').indexOf('hide') != -1 ){
+					curItem.attr('class','list-item filtered')
+				}
+			})
+
+			d3.select(this).text('filter')
+			d3.select(this).attr('filtered',true)
+		}
+	})

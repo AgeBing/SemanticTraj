@@ -86,6 +86,8 @@ function addSearchListener(o) {
         })
         .then(result => dataTrans_YKJ())
   });
+
+
 }
 
 // modified by ykj
@@ -119,12 +121,6 @@ function dataTrans_YKJ() {
 
     setGlobalTrajData(trajs)
 
-
-        // 返回到后端存起来
-    // QueryUtil.send_cache(trajs)
-    //   .then(result=>{
-    //     console.log("send",result)
-    //   })
 }
 
 function createNewTab(data) {
@@ -168,6 +164,21 @@ function createNewTab(data) {
           render_MDS(vecs, d[0], pos_x, pos_y);
         })
   })
+
+
+syncInputWrapperLength()
+  // d3.select('.input-wrapper').style('width')
+}
+
+function syncInputWrapperLength(){
+
+  let allWidth = +d3.select('.search-container').style('width').toString().split('px')[0] - 16
+  let wordlengthSum = 0
+  d3.selectAll('.word-tab').each(function(){
+    wordlengthSum += (+d3.select(this).style('width').toString().split('px')[0]) 
+    wordlengthSum += 10
+  })
+  d3.select('#input-wrapper').style('width' , allWidth - wordlengthSum + 'px')
 }
 
 function render_MDS(data, name, x, y) {

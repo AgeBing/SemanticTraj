@@ -13,7 +13,9 @@ BASE_DIR_DATA = os.path.join(BASE_DIR,'data')
 print(BASE_DIR_DATA)
 
 
-filename = '医院和学校结果_2000.json'
+filename = '医院和学校结果.json'
+# filename = '医院和学校结果_2000.json'
+
 filename_topic = '医院和学校_包含Topic.json'
 
 
@@ -24,7 +26,7 @@ def write(data):
 
 def write_topic(data):
 	f = open(os.path.join(BASE_DIR_DATA,filename_topic),'w')
-	json.dump(data[0:5],f)
+	json.dump(data,f)
 	f.close()
 
 
@@ -34,3 +36,7 @@ def read():
 	data = json.loads(a)
 	return data
 
+def write_file(data,file):
+	f = open(os.path.join(BASE_DIR_DATA,file),'w')
+	json.dump(data,f)
+	f.close()

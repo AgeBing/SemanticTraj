@@ -41,3 +41,8 @@ export function get_k_vecs(data) {
 export function send_cache(data) {
   return _query('nlp/cache/', {'trajs': data});
 }
+
+export function send_sites(data) {
+  return _query('nlp/send_sites/', {'sites': data});
+}
+

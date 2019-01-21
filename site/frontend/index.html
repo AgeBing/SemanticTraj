@@ -81,7 +81,7 @@
 	<div class="contain">
 		
 		<div class="up-contain">
-			<div class="panel left-panel">
+			<div class="panel left-panel" id="hexagon-container">
           <div class="default-word"><span> - </span></div> 
 			</div>
 			<div class="panel right-panel" id="map-container">
@@ -90,8 +90,18 @@
 		</div>
 
     <div class="down-contain">
-      <div class="panel up-panel">
+      <div class="panel up-panel" id="topic-legend">
+          
+            <div class="legend-intro">
+                Function Categories :
+            </div>
+<!--             <div class="legend-item">
+              <div class="legend-rect"></div>
+              <div class="legend-name">Entertainment Area</div>
+            </div> -->
+
       </div>     
+      
       <div class="panel down-panel" id="topic-container">
           <div class="default-word"><span> - </span></div> 
         
@@ -154,7 +164,9 @@
   <div class="list-contain panel">
           <!-- <div class="default-word"><span> - </span></div>  -->
       <div class="list-window">
-
+        <div class="btn-container">
+          <button id="filter-btn" filtered>filter</button>
+        </div>
   <!--         <div class="list-item filtered">
             <div class="check-contain">
               <input type="checkbox" name="check">

@@ -55,3 +55,20 @@
 .filtered .percent-word{
 	color:#e8e8e8;
 }
+.hide{
+	display: none
+}
+.btn-container{
+	height: 38px;
+}
+#filter-btn{
+	background-color: #40a9ff;
+    color: #fff;
+    cursor: pointer;
+    border: 0px solid transparent;
+    width: 44px;
+    height: 23px;
+    float: right;
+    font-size: 12px;
+    margin: 15px 22px 0px 0px;
+}

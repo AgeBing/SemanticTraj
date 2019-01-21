@@ -1,12 +1,18 @@
 import * as Topic from './topic.js'
+import * as Hexa from './hexa.js'
 
+
+const topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
 
 export function draw(data){
 
 	Topic.init(getTimeRange(data))
+	Hexa.init()
+
 
 	data.forEach((traj,i)=>{
 		addTopic(traj,i)
+		addHexa(traj,i)
 	})
 }
 export function addTopic(traj,i) {
@@ -15,6 +21,13 @@ export function addTopic(traj,i) {
 	t._init(traj,i)
 	t._render()
 }
+
+function addHexa(traj,i) {
+	let h = new  Hexa.topicHexa()
+	h.init(topicNames,traj,i)
+	h.render()
+}
+
 
 function getTimeRange(data){
 	let timeRange = []

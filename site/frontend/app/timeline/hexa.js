@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 let svg , h,w
 
 const SK_V = 0.01 * 0.001
-let  SK = document.getElementById("valBox5").innerHTML
-let  CF = document.getElementById("valBox7").innerHTML
+let  SK = 6
+let  CF = -150
 
 const RollideRadius = 2
 const GroupColor = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
@@ -12,6 +12,8 @@ const GroupColor = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c',
 
 function init() {
 	d3.select('#hexagon-container').selectAll('svg').remove()
+	d3.select('#hexagon-container').selectAll('div').remove()
+
 
 	const visBox = document.getElementById("hexagon-container");
 	h = visBox.offsetHeight; //高度
@@ -19,9 +21,9 @@ function init() {
 
 	svg = d3.select('#hexagon-container')
 		.append('svg')
-		.attr('width',w*0.5)
+		.attr('width',w*0.7)
 		.attr('height',h)
-		.style('left',w*0.25+'px')
+		.style('left',w*0.15+'px')
 }
 
 
@@ -38,10 +40,10 @@ class topicHexa{
 	init(topicNames,innerDatas,index){
 		this.prepareHexagonData(topicNames)
 		// this.prepareInnerData(innerDatas)
-		let sampleData = this.sampleInnerDate(innerDatas)
+		let sampleData = this.sampleInnerDate(innerDatas)  //取前5点 
 		this.prepareInnerData(sampleData)
 		this.sampleData = sampleData
-		this.bindEventListener()
+		// this.bindEventListener()
 		this.index = index
 
 		let _svg = svg.append('g')
@@ -174,12 +176,12 @@ class topicHexa{
 		this._svg = _svg
 	}
 	sampleInnerDate(innerDatas){
-		let  { id,points } = innerDatas
+		let  { pid,traj } = innerDatas
 		let  { topic_names } = this
 		let  ps = []
 
-		for(let i = 0;i < 5;i++){
-			let topics = points[i].topics
+		for(let i = 0;i < 5;i++){     //取前5点 
+			let topics = traj[i].topics
 			ps[i] = new Map()
 			topics.forEach((t)=>{
 				if( topic_names.indexOf(t.topic) != -1){
@@ -372,7 +374,7 @@ class topicHexa{
 
 		_svg.select('.link-items').selectAll('.link-item').attr('class','link-item select-group')
 
-		if(!fromOuter) this.select_outer(index,'topic')
+		// if(!fromOuter) this.select_outer(index,'topic')
 	}
 	un_select(fromOuter = true){
 		let { _svg,index } = this
@@ -387,7 +389,7 @@ class topicHexa{
 			.selectAll('.link-item')
 			.attr('class','link-item')
 
-		if(!fromOuter) this.un_select_outer(index,'topic')
+		// if(!fromOuter) this.un_select_outer(index,'topic')
 	}
 
 

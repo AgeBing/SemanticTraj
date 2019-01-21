@@ -47,7 +47,7 @@ class NlpConsumer(WebsocketConsumer):
           # 使用 样本数据
           trajs = cachedata.read()
           print(len(trajs))
-          self._send(trajs[0:100])
+          self._send(trajs[0:5000])
           # self._send(trajs)
 
 
@@ -59,6 +59,12 @@ class NlpConsumer(WebsocketConsumer):
         elif nlp_method == 'cache':
           trajs = data['trajs']
           cachedata.write_topic(trajs)
+          self._send(1)
+
+        elif nlp_method == 'sites':
+          trajs = data['sites']
+          print(len(trajs))
+          cachedata.write_file(trajs,'sites.json')
           self._send(1)
 
 
