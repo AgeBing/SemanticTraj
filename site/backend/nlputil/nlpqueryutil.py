@@ -37,7 +37,7 @@ class NlpSocket:
       return raw_data.decode()
 
   def query_nlp(self, word, K, K_nearst_num):
-    query_dict = {'type': 'query2', 'word': word, 'K': K, 'K_nearst_num': K_nearst_num}
+    query_dict = {'type': 'query_new', 'word': word, 'K': K, 'K_nearst_num': K_nearst_num}
     self.connect(HOST, PORT)
     self.send_msg(json.dumps(query_dict).encode())
     return json.loads(self.receive_msg())

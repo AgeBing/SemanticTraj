@@ -24,7 +24,7 @@ class Mysql(object):
             __pool = PooledDB(creator = MySQLdb, mincached = 1, maxcached = 20,
                               host = '10.76.0.184', port = 3306, user = 'root', 
                               passwd = '123456', db = 'mobiledata', 
-                              use_unicode = True, cursorclass = DictCursor)
+                              use_unicode = True, cursorclass = DictCursor, charset = 'utf8')
         return __pool.connection()
  
     def get_all(self, sql, param = None):

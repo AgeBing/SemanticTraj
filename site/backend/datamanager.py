@@ -15,6 +15,7 @@ wordIndex2Topic = {}
 topic2WordIndex = {}
 siteTopic = {}
 sites = {}
+pois = {}
 
 def readText(data):
     with open(os.path.join(pathutil.BASE_DATA_DIR, data['fileName']), 'r') as f:
@@ -81,6 +82,21 @@ def get_sites():
             'neighbor': d['neighbor'],
             'base_station': d['base_station']
         }
+    print('initialize data successfully!')
+
+def update_pois(pois_set):
+    pois_str = ','.join(pois_set)
+    pois_sql = 'select * from poi where uid in ({0})'.format(pois_str)
+    db = querymysqlutil.Mysql()
+    res = db.get_all(pois_sql)
+    for poi in res:
+        if poi['uid'] not in pois:
+            pois[poi['uid']] = {
+                'name': poi['name'],
+                'type': poi['type'],
+                'longitude': poi['longitude'],
+                'latitude': poi['latitude']
+            }
 
 load_data()
     

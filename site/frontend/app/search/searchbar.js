@@ -68,23 +68,34 @@ function get_participle(data) {
     })
 }
 
+// 查询按钮监听click事件，首先查询符合条件的轨迹，然后查询POI的层次信息
 function addSearchListener(o) {
   o.on('click', function(d, i) {
 
     let t1 = new Date().getTime()
-          console.log('Start Getting Data ...')
-    QueryUtil.get_trajs(textData.map(d => d[0]).join(''))
+    console.log('Start Getting Data ...')
+    const currentText = textData.map(d => d[0]).join('')
+    // QueryUtil.get_poi_layer(currentText)
+    //         .then(result => {
+    //           console.log(result, '!!!!!!!!!!!!')
+    //         })
+    QueryUtil.get_trajs(currentText)
         .then(result => {
-
-
           DataManager.drawTraj = result;
           console.log('_____',result.length)
-            // console.log(result.slice(0,5))
-            let t2 = new Date().getTime()
-            console.log('GetData: ' + (t2-t1) + 'ms')
+          let t2 = new Date().getTime()
+          console.log('GetData: ' + (t2-t1) + 'ms')
           return result;
         })
         .then(result => dataTrans_YKJ())
+        .then(result => {
+          // 获取POI的层次信息
+          console.log('lalalal')
+          QueryUtil.get_poi_layer(currentText)
+            .then(result => {
+              console.log(result, '!!!!!!!!!!!!')
+            })
+        })
   });
 
 

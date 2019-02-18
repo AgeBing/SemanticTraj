@@ -33,28 +33,23 @@ class NlpConsumer(WebsocketConsumer):
     def receive(self, text_data):
         data = json.loads(text_data)
         nlp_method = self.scope['url_route']["kwargs"]["method"]
+        # 获取简单的分词
         if nlp_method == 'participle':
           results = nlp.get_participle(data['text'])
           self._send(results)
+        # 获取轨迹
         elif nlp_method == 'trajs':
           trajNode = nlp.get_similiar_sites(data['text'])
           trajs = trajNode.get_traj()
-         
-          # cachedata.write(trajs)
-          # print(len(trajs))
-
-          # # 使用 样本数据
-          # trajs = cachedata.read()
-          # print(len(trajs))
-          # self._send(trajs[0:5000])
           self._send(trajs)
-
-
-
+        # 获取得到K近邻分词的MDS投影
         elif nlp_method == 'k_vecs':
           results = nlp.get_k_vecs(data['text'])
           self._send(results)
-        
+        # 获取POI的层次信息
+        elif nlp_method == 'poi_layer':
+          results = nlp.get_poi_layer(data['text'])
+          self._send(results)
         elif nlp_method == 'cache':
           trajs = data['trajs']
           cachedata.write_topic(trajs)

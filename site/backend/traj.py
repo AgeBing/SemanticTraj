@@ -9,7 +9,7 @@ STOPTIME_THRESHOLD = 20 * 60
 class Traj(object):
   def __init__(self, stop_num, sites, site_cover, 
       start_time_str = '2014-01-14 08:00:00.00', 
-      end_time_str = '2014-01-14 08:30:00.00'):
+      end_time_str = '2014-01-14 08:00:20.00'):
     self.__stop_num = stop_num
     self.__sites = sites
     self.__site_cover = site_cover
@@ -73,6 +73,7 @@ class Traj(object):
         from phonetrajectory_sortbyid
         where date in ({0}) and peopleid in ({1})
         order by peopleid, count
+        limit 10000
         """.format(','.join(dates), ','.join(pids))
     # print(sql_str)
     traj_results = mysql.get_all(sql_str)

@@ -37,6 +37,9 @@ export function get_k_vecs(data) {
   return _query('nlp/k_vecs/', {'text': data});
 }
 
+export function get_poi_layer(data) {
+  return _query('nlp/poi_layer/', {'text': data})
+}
 
 export function send_cache(data) {
   return _query('nlp/cache/', {'trajs': data});

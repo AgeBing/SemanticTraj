@@ -18,11 +18,14 @@ import numpy as np
 # from . import compare
 from backend import pathutil
 from backend import traj
+from backend import datamanager
 from . import nlpqueryutil
 import logging
 
 MAX_K_NUM = 200
 K_NEARST_NUM = 5
+
+word_cache = {}
 
 # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -60,20 +63,38 @@ def get_similiar_sites(sentence):
     # if word_vec is None:
     #   continue
     nlp_socket = nlpqueryutil.NlpSocket()
-    most_similiar_node = nlp_socket.query_nlp(words[i][0], MAX_K_NUM, K_NEARST_NUM)
-    if len(most_similiar_node) == 0:
+    poi_complex = nlp_socket.query_nlp(words[i][0], MAX_K_NUM, K_NEARST_NUM)
+    if len(poi_complex['simple']) == 0:
       print(words, 'has no vector')
-    for node in most_similiar_node:
+    for node in poi_complex['simple']:
       pois.append("'" + str(node['id']) + "'")
-      # if int(node['site_id']) < 0 or int(node['site_id']) > 28746:
-      #   continue
       sites.add(node['site_id'])
       state = _site_cover.get(node['site_id'], 0)
       _site_cover[node['site_id']] = state | (1 << i)
+    if words[i][0] not in word_cache:
+      word_cache[words[i][0]] = {
+        'name': words[i][0],
+        'val': words[i][1],
+        'data': poi_complex['complex']
+      }
   # print(','.join(pois))
   print('sites:', sites)
+  datamanager.update_pois(pois)
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)
+
+def get_poi_layer(sentence):
+  words = list(filter(lambda x: x[1] == 'n' or x[1] == 'ns' or x[1] == 'nz',
+      thul.cut(sentence)))
+  results = []
+  for word, word_ratio in words:
+    if word in word_cache:
+      for split_word in word_cache[word]['data']:
+        for poi in split_word['data']:
+          if poi['id'] in datamanager.pois:
+            poi.update(datamanager.pois[poi['id']])
+      results.append(word_cache[word])
+  return results
 
 def get_k_vecs(word):
   nlp_socket = nlpqueryutil.NlpSocket()
