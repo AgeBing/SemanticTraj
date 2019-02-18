@@ -74,7 +74,6 @@ def get_similiar_sites(sentence):
     if words[i][0] not in word_cache:
       word_cache[words[i][0]] = {
         'name': words[i][0],
-        'val': words[i][1],
         'data': poi_complex['complex']
       }
   # print(','.join(pois))
