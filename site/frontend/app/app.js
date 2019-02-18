@@ -22,6 +22,7 @@ datamanager.init()
 
 let trajs  // 全量数据
 
+// 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
 	trajs = data
 	drawViews()
@@ -41,6 +42,7 @@ export function drawViews() {
 
 }
 
+// 绘制 Topic
 export function topicAdd(topicPids){
 	let topicLists = []
 	trajs.forEach((traj)=>{

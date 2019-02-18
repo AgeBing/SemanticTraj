@@ -9,6 +9,8 @@ function init(argument) {
 }
 
 
+
+
 export function draw(data){
 	let maxNum = 500    // 設置最多顯示數目
 
@@ -19,8 +21,9 @@ export function draw(data){
 	}
 
 }
-
+//添加一条 记录
 function appendOne(Onetraj){
+
 	let item = d3.select('.list-window')
 				.append('div')
 					.attr('class','list-item')
@@ -29,10 +32,8 @@ function appendOne(Onetraj){
 	item.append('div').attr('class',"check-contain")
 		.append('input').attr('type','checkbox')
 		.on('change',function(){
-			topicAdd( Onetraj.pid  , d3.select(this).property('checked')  )
+			topicAdd( Onetraj.pid  , d3.select(this).property('checked')  )   // TopicAdd 添加勾选的记录至 已选列表中
 		})
-
-
 
 	item.append('div').attr('class','id-word')
 		.text(Onetraj.pid)
@@ -42,29 +43,9 @@ function appendOne(Onetraj){
 
 	item.append('div').attr('class','percent-word')
 		.text('98%')
-
-
-
 }
 
-export function filter(filteredPids){
-	// console.log(filteredPids)
-	let allItems = d3.selectAll('.list-item')
-
-	allItems.each(function(){
-		let curItem = d3.select(this),
-			curId = curItem.attr('id')
-
-		if( filteredPids.indexOf(curId) == -1 ){
-			curItem.attr('class','list-item filtered')
-			curItem.select('input').attr('disabled','true')
-		}else{
-			curItem.attr('class','list-item')
-			curItem.select('input').attr('disabled', null)
-		}
-	})
-}
-
+// 每一次勾选操作都重新绘制 已选列表中的 Topic
 function topicAdd(pid,add){
 
 	let newTopicPids = []
@@ -80,11 +61,14 @@ function topicAdd(pid,add){
 		topicPids = newTopicPids
 	}
 
+	// 重新绘制线框
 	drawTopic(topicPids)
 }
 
 
+// 过滤按钮
 d3.select('#filter-btn')
+	.attr('filtered',true)
 	.on('mousedown',function(){
 		let isFiltered =  d3.select(this).attr('filtered')
 		let allItems = d3.selectAll('.list-item')
@@ -114,3 +98,36 @@ d3.select('#filter-btn')
 			d3.select(this).attr('filtered',true)
 		}
 	})
+
+
+// 将未被选中的项 变成暗色
+// 对应项的  Checkbox 也为 false 
+// 在 app.js 中被引用
+export function filter(filteredPids){
+	let allItems = d3.selectAll('.list-item')
+	let topicPidsFilter = []
+
+	allItems.each(function(){
+		let curItem = d3.select(this),
+			curId = curItem.attr('id')
+
+		let ifChecked = curItem.select('input').property('checked')  //是否被勾选
+
+		if( filteredPids.indexOf(curId) == -1 ){     //被筛除
+			curItem.attr('class','list-item filtered')
+			curItem.select('input').attr('disabled','true')
+			if(ifChecked){
+				curItem.select('input').property('checked',false)
+			}
+		}else{				//保留下的
+			curItem.attr('class','list-item')
+			curItem.select('input').attr('disabled', null)
+			if(ifChecked){
+				topicPidsFilter.push(curId)
+			}
+		}
+	})
+	topicPids = topicPidsFilter
+	console.log(topicPids)
+	drawTopic(topicPids)
+}

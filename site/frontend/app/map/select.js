@@ -108,36 +108,36 @@ function addRectListener( ){
 		x : +r.attr('x') + (+r.attr('width')) ,
 		y : +r.attr('y')
 	},
-	w = 20, q = 3
+	w = 20, q = 3 , l = 5
 
 	r.on('mouseenter',function(){
 		svg.style('cursor','auto')
 
 		let del = g.append('g')
 			.attr('class','del-icon')
+			.attr('stroke','black')
+
 			
 		// 叉叉 造型
+			del.append('circle')
+				.attr('cx', p.x)
+				.attr('cy', p.y)
+				.attr('r',  10)
+				.attr('fill', 'none')
 
-
-			del.append('rect')
-				.attr('x', p.x - w)
-				.attr('y', p.y)
-				.attr('width', w)
-				.attr('height',w)
 
 			del.append('line')
-				.attr('x1', p.x - w + q)
-				.attr('y1', p.y + q)
-				.attr('x2', p.x - q)
-				.attr('y2', p.y + w - q)
+				.attr('x1', p.x - l)
+				.attr('y1', p.y + l)
+				.attr('x2', p.x + l)
+				.attr('y2', p.y - l)
+
 
 			del.append('line')
-				.attr('x1', p.x - q )
-				.attr('y1', p.y + q)
-				.attr('x2', p.x - w + q)
-				.attr('y2', p.y + w - q)
-
-
+				.attr('x1', p.x - l )
+				.attr('y1', p.y - l)
+				.attr('x2', p.x + l )
+				.attr('y2', p.y + l)
 
 	})
 

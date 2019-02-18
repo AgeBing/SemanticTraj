@@ -48,6 +48,8 @@ let register_click_list = new Map()  //用于 click 时选择
 // let traj_select_func  		//线 轨迹的 callback 函数 
 
 
+
+
 // for all instances 
 function init(timeRange){
 	d3.select('#topic-container')
@@ -72,7 +74,6 @@ function _appendWidgets(timeRange){
 	// set domain
 	timeScale.domain(timeRange)
 	timeScale2.domain(timeRange)
-
 
 	//zoom 
 	let zoom = d3.zoom()
@@ -127,7 +128,7 @@ function _appendWidgets(timeRange){
 
 	// 中间的 toipcs
 	d3.select('#topic-container').append('div')
-		.attr('class','rect-group')
+		.attr('class','rect-group-container')
 
 
 	// 底部的 zoom 监听svg
@@ -158,7 +159,7 @@ function _appendWidgets(timeRange){
 		// .on("mousedown.zoom", null)   //拖动
 }
 
-
+//图例
 function addLegend(){
     let container = d3.select('#topic-legend')
     topicNameList.forEach((name,i)=>{
@@ -170,6 +171,7 @@ function addLegend(){
     })
 }
 addLegend()
+
 
 function brushed(){
 	console.log(d3.event.selection)
@@ -237,18 +239,19 @@ function on_tick_move(x){
 
 
 //  一个 instance 代表一个 方块
-
 class topicZoomRect {
 	_init(_data,index){
 		let data = dataAdapter(_data)
-
+		console.log('data:',data)
 		let _el = document.createElement('div')
 		_el.className = 'rect-container th' + index
 		this.rootEl = _el
 		this.vHeight = vRectHeight
 		this.vWidth =  w * 0.9
-
-		document.getElementsByClassName('rect-group')[0].appendChild(_el)
+		// console.log(document.getElementsByClassName('rect-group'))
+		document.getElementsByClassName('rect-group-container')[0].appendChild(_el)
+		// console.log(document.getElementsByClassName('rect-group'))
+		console.log()
 		// container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
 		// console.log(data)
 		this.data = data
@@ -516,7 +519,7 @@ class topicZoomRect {
 
 		if(fromOuter){
 			d3.selectAll('.topic-rect').style('opacity',0.2)
-			d3.select('.rect-group').select('.th'+index).select('.topic-rect-container')
+			d3.select('.rect-group-container').select('.th'+index).select('.topic-rect-container')
 				.selectAll('.topic-rect')
 				.style('opacity',1)
 		}
