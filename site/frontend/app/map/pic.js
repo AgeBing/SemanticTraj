@@ -4,12 +4,17 @@ let stack = []
 import { clip } from './clip'  // 库函数 用于 判断直线是否经过矩形
 
 import { boundry,zoom, width,height } from './index'
+
 import { _l2p, updateTileBoundry , showLoading ,hideLoading, loadTrajsData ,
 	t_boundry , t_width , t_height ,left as t_left ,top as t_top } from './util'
+
 
 import { filterGlobalData } from '../app.js'
 
 export async function draw(data) {
+
+
+	let isChanged = updateTileBoundry()
 
 	if(data){ //data 来自全局 ，表示数据更新
 		trajsData = data
@@ -18,7 +23,7 @@ export async function draw(data) {
 	}
 	// showLoading()
 
-	let isChanged = updateTileBoundry()
+
 
 	// 视窗变化时 选择框需要重新绘制
 	let originPiexelPoints , selectPiexelPoints , urlCache = {}
@@ -99,6 +104,8 @@ export async function draw(data) {
 }
 
 
+// #canvas-upon-map 	   上绘制未选择的轨迹
+// #canvas-upon-map-select 上为选择后留下的轨迹
 function drawTrajs(url){
 
 	if(url.origin){
@@ -405,26 +412,29 @@ function lineShowConfig(len){
 	let ops = [0.004,0.1 , 0.171,0.357,0.386,0.42, 0.461,0.569,0.643,0.735,0.843,0.945,0.994]
 	
 	let width , opacity
-	if(len > 10000){
-		width = 1,
-		opacity = ops[0]
-	}else if( len > 6000){
-		width = 2
-		opacity = ops[0]
-	}else if( len > 2000){
-		width = 2
-		opacity = ops[0]
-	}else if( len > 120){
-		width = 3
-		opacity = ops[0]
-	}
-	else if( len > 50){
-		width = 2
-		opacity = ops[1]
-	}else{
-		width = 4
-		opacity = ops[1]
-	}
+	// if(len > 10000){
+	// 	width = 1,
+	// 	opacity = ops[0]
+	// }else if( len > 6000){
+	// 	width = 2
+	// 	opacity = ops[0]
+	// }else if( len > 2000){
+	// 	width = 2
+	// 	opacity = ops[0]
+	// }else if( len > 120){
+	// 	width = 3
+	// 	opacity = ops[0]
+	// }
+	// else if( len > 50){
+	// 	width = 2
+	// 	opacity = ops[1]
+	// }else{
+	// 	width = 4
+	// 	opacity = ops[1]
+	// }
+
+	width =  2
+	opacity = ops[1]
 
 	return {
 		width,

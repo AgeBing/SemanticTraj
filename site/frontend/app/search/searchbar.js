@@ -4,6 +4,7 @@ import $ from 'jquery';
 import * as DataManager from './datamanager.js';
 // import { draw_trajs } from 'mappanel'
 
+import { draw as drawPoi } from '../map/poi'
 
 
 import { setGlobalTrajData } from '../app.js'
@@ -75,10 +76,13 @@ function addSearchListener(o) {
     let t1 = new Date().getTime()
     console.log('Start Getting Data ...')
     const currentText = textData.map(d => d[0]).join('')
+
     // QueryUtil.get_poi_layer(currentText)
     //         .then(result => {
     //           console.log(result, '!!!!!!!!!!!!')
     //         })
+
+
     QueryUtil.get_trajs(currentText)
         .then(result => {
           DataManager.drawTraj = result;
@@ -94,6 +98,7 @@ function addSearchListener(o) {
           QueryUtil.get_poi_layer(currentText)
             .then(result => {
               console.log(result, '!!!!!!!!!!!!')
+              drawPoi(result)
             })
         })
   });

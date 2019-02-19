@@ -12,8 +12,10 @@ import * as SearchBar from './search/searchbar'
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
 import { draw as drawList , filter as filterList } from './list/index.js'
-import { draw as drawTopic} from './timeline/index.js'
+import { draw as drawTopic } from './timeline/index.js'
 
+import { highLightTrajInMap , unHighLightTrajInMap } from './map/poi.js'
+import { highLightTopic , unHighLightTopic } from './timeline/index.js'
 
 // 初始化
 datamanager.init()
@@ -36,15 +38,15 @@ export function drawViews() {
 
 	// map view
 	drawPic(trajs)
-
-
 	// semantic view
 
 }
 
+
+let topicLists = []
 // 绘制 Topic
 export function topicAdd(topicPids){
-	let topicLists = []
+	topicLists = []
 	trajs.forEach((traj)=>{
 		if(topicPids.indexOf(traj.pid) != -1){
 			topicLists.push(traj)
@@ -62,5 +64,30 @@ export function filterGlobalData(filteredTrajs){
 	})
 
 	filterList(filteredPids)
+}
 
+
+export function highLightTrajContorl(id){
+	trajs.forEach((traj)=>{
+		if(traj.pid == id){
+			highLightTrajInMap(traj)
+		}
+	})
+}
+export function unHighLightTrajContorl(id){
+	unHighLightTrajInMap()
+}
+export function highLightTopiContorl(pid){
+	for(let i = 0; i < topicLists.length; i++){
+		if(pid == topicLists[i].pid){
+			highLightTopic(i)
+		}
+	}
+}
+export function unHighLightTopiContorl(pid){
+	for(let i = 0; i < topicLists.length; i++){
+		if(pid == topicLists[i].pid){
+			unHighLightTopic(i)
+		}
+	}
 }

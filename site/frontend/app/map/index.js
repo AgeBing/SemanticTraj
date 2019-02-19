@@ -4,6 +4,7 @@ import $ from 'jquery';
 import { draw }  from './pic'
 import { addSelect } from './select'
 
+import { draw as drawPoi } from './poi'
 
 
 let event_queue = false
@@ -12,9 +13,9 @@ let  visBox = document.getElementById("map-container");
 let  height = visBox.offsetHeight; //高度
 let  width = visBox.offsetWidth; //宽度
 
+// console.log(height,width)
 
 //1. 创建地图 、 创建绘制层
-
 // let tilemapservice = 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
 let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
 let zoomRate = 12;
@@ -28,9 +29,16 @@ let canvas = d3.select(map.getPanes().overlayPane).append("canvas").attr('id','c
 d3.select(map.getPanes().overlayPane).append("canvas").attr('id','canvas-upon-map-select')
 
 
-let svg = d3.select(map.getPanes().overlayPane)
+let selectSvg = d3.select(map.getPanes().overlayPane)
 	.append("svg")
 	.attr('id','svg-select')
+	.attr("width",  width)
+    .attr("height",height)
+
+
+let poiSvg = d3.select(map.getPanes().overlayPane)
+	.append("svg")
+	.attr('id','svg-poi')
 	.attr("width",  width)
     .attr("height",height)
 
@@ -59,6 +67,10 @@ resize()
 
 
 function resize(){
+
+	d3.select('#svg-poi').selectAll('*').remove()
+
+
 	event_queue = true
 
 	zoom  = map.getZoom()
@@ -71,11 +83,14 @@ function resize(){
 		bottom_left : map.latLngToLayerPoint(boundry.bottom_left),
 		top_right 	: map.latLngToLayerPoint(boundry.top_right)
 	}
+	// console.log(boundry)
+
 
 	// 在地图上绘制轨迹
 	drawPic()
 	// 添加 事件
 	addSelect()
+	// drawPoi()
 }
 
 
@@ -112,11 +127,16 @@ async function drawPic() {
 	d3.select('#canvas-upon-map-select')
 		.style("transform" , "translate(" + left + ","+ top + ")" )
 
-    svg.style("left", left)
+    selectSvg.style("left", left)
+        .style("top",  top);
+
+    poiSvg.style("left", left)
         .style("top",  top);
 
 
- 	draw()
+ 	draw()  //绘制轨迹
+	// drawPoi()
+
 }
 
 export { map,boundry,zoom,width,height }

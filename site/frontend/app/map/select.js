@@ -15,14 +15,16 @@ export function addSelect(){
 	let btn = document.getElementById('select-btn')
 
 	btn.addEventListener('click',()=>{
+		d3.select('#svg-poi').style('display','none')
+
 		svg = d3.select('#svg-select')
 		svg.style('cursor','crosshair')
 		map.dragging.disable()
+
 		
 		addSelectRect()
 	})
 }
-
 
 // 创建选择框 
 function addSelectRect(){
@@ -92,6 +94,10 @@ function addSelectRect(){
 		svg.style('cursor','grab')
 		map.dragging.enable()
 		addSelection()
+
+		d3.select('#svg-poi').style('display','block')
+
+
 	})
 }
 

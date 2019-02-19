@@ -6,7 +6,14 @@
 
 import * as d3 from 'd3';
 
-import { boundry,zoom, width,height } from './index'
+import { boundry,zoom } from './index'
+
+
+let  visBox = document.getElementById("map-container");
+let  height = visBox.offsetHeight; //高度
+let  width = visBox.offsetWidth; //宽度
+
+
 
 let t_boundry , t_width , t_height ,left ,top ,old_t_boundry ,old_zoom
 
@@ -36,7 +43,6 @@ let t_boundry , t_width , t_height ,left ,top ,old_t_boundry ,old_zoom
 
 
 function _l2p(lat,lng) {    
-	
 	let lngWidth = t_boundry.top_right.lng - t_boundry.bottom_left.lng,
 		latHeight = t_boundry.top_right.lat - t_boundry.bottom_left.lat,
 		widthPixel = t_width,
@@ -82,6 +88,25 @@ function _p2l(x,y){
 
 
 
+
+// 相对视图边界的像素坐标
+function _l2pb(lat,lng) {    
+	let lngWidth = boundry.top_right.lng - boundry.bottom_left.lng,
+		latHeight = boundry.top_right.lat - boundry.bottom_left.lat,
+		widthPixel = width,
+		heightPixel = height;
+
+	if( lat > boundry.top_right.lat || lat < boundry.bottom_left.lat 
+		|| lng > boundry.top_right.lng || lng < boundry.bottom_left.lng)  //超出视窗
+		return [-1,-1]
+
+
+	let x = Math.round( (lng - boundry.bottom_left.lng) / lngWidth*widthPixel) , 
+		y = Math.round( (boundry.top_right.lat - lat) / latHeight*heightPixel)
+
+	// console.log(x,y)
+    return [x,y]
+}
 
 
 
@@ -170,7 +195,7 @@ function updateTileBoundry(){
 		/(  t_boundry.top_right.lat - t_boundry.bottom_left.lat ))
 
 
-	// console.log(v_number, v_boundry, t_boundry,width,height,t_width,t_height,left,top)
+	console.log(v_number, v_boundry, t_boundry,width,height,t_width,t_height,left,top)
 
 
 	return ic
@@ -241,7 +266,10 @@ async function loadTrajsData() {
 
 
 
-export {  _l2p   , _p2l ,updateTileBoundry, showLoading ,hideLoading , loadTrajsData ,
+
+
+
+export {  _l2p  , _l2pb , _p2l ,updateTileBoundry, showLoading ,hideLoading , loadTrajsData ,
 	 t_boundry , t_width , t_height ,left ,top } 
 
 

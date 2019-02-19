@@ -248,12 +248,7 @@ class topicZoomRect {
 		this.rootEl = _el
 		this.vHeight = vRectHeight
 		this.vWidth =  w * 0.9
-		// console.log(document.getElementsByClassName('rect-group'))
 		document.getElementsByClassName('rect-group-container')[0].appendChild(_el)
-		// console.log(document.getElementsByClassName('rect-group'))
-		console.log()
-		// container.insertBefore(_el,document.getElementsByClassName('listener-svg')[0])  //挂载到传进来的 container
-		// console.log(data)
 		this.data = data
 		this.index = index   //第几个
 	}
@@ -273,7 +268,6 @@ class topicZoomRect {
 		let chart = svg.append('g')
 				.attr('class','chart')
 		      	.attr("transform", "translate(12,0)")
-
 
 		this.chart = chart
 	}
@@ -306,6 +300,15 @@ class topicZoomRect {
 
 		return { dates,xAxis } 
 	}
+
+	/*
+		- rect container 
+			- svg 
+				- rect show-rects
+			- topic-rect-container
+				- topic-rect
+		两层重合的  ，外面一层与里面一层对齐
+	*/
 	_appendShowRect(){
 		let { chart}= this
 		let { dates,xAxis } = this._setAxis()
@@ -358,7 +361,6 @@ class topicZoomRect {
 		register_zoom_func( this.update_rect ,this )
 		register_zoom_func( this._syncTopicRect ,this)
 	}
-
 	_appendTopicRect(){
 		let { rects,vHeight,vWidth,index,id } = this
 		let self = this
@@ -370,19 +372,27 @@ class topicZoomRect {
 			  .style('width',vWidth   + 'px')
 
 		rects.each(function(t){
-
+			//对每一个 rect
 			topicContainer.append('div')
-						.attr('class','topic-rect')
-						.on('mouseenter',function(){
-							d3.selectAll('.topic-rect').style('opacity',0.2)
-							d3.select(this).style('opacity',1)
-							// traj_select_func(id,t)
-							// console.log(id,t)
-							self.select(false)
-						})
-						.on('mouseleave',function(){
-							self.un_select(false)
-						})
+				.attr('class','topic-rect')
+				.on('mouseenter',function(){					
+
+					//其他的包括其他行的变暗
+					d3.selectAll('.topic-rect').style('opacity',0.2)
+					//选中的这块变亮
+					d3.select(this).style('opacity',1)
+
+					// 计算选中的是第几块
+					let v_p  = d3.mouse( this )
+					let t_x  = v_p[0]
+					console.log(t)
+					// console.log(self._caltime_period(t_x))
+					// 联动
+					self.high_light_rect()
+				})
+				.on('mouseleave',function(){
+					self.unhigh_light_rect()
+				})
 
 		})
 
@@ -502,18 +512,9 @@ class topicZoomRect {
 		})
 		return { period_time,index }
 	}
-	_setTopicRectSelected(i){
- 		let { topicContainer } =	this
 
-		let  _rects = topicContainer.selectAll('.topic-rect')
-		_rects.style('opacity',0.5)
 
- 		if(i){
-			let _rect = topicContainer.select('.topic-rect:nth-child('+(i+1)+')')
-			_rect.style('opacity',1)
-		}
-	}
-
+	// hover 
 	select(fromOuter = true){
 		let { index } = this
 
@@ -523,13 +524,32 @@ class topicZoomRect {
 				.selectAll('.topic-rect')
 				.style('opacity',1)
 		}
+
 		// if(!fromOuter) this.select_outer(index,'hexa')
 	}
 	un_select(fromOuter = true){
 		let { index } = this
-		
 		d3.selectAll('.topic-rect').style('opacity',1)
 		// if(!fromOuter) this.un_select_outer(index,'hexa')
+	}
+	high_light_rect(){    //选中那块 其他变暗
+
+	}
+	unhigh_light_rect(){  //所有亮的变亮
+		d3.selectAll('.topic-rect').style('opacity',1)
+	}
+	high_light_whole(){  // 整个高亮 => 当整条轨迹被选中
+		let { index } = this
+		console.log(index)
+		console.log(d3.select('#topic-container').select('.th'+index).select('#topic-rect-container'))
+
+		d3.select('#topic-container').select('.th'+index).select('.topic-rect-container')
+			.style('box-shadow','0px 1px 5.5px #333333')
+	}
+	unhigh_light_whole(){  //取消选择
+		let { index } = this
+		d3.select('#topic-container').select('.th'+index).select('.topic-rect-container')
+			.style('box-shadow','0px 0px 0px')
 	}
 }
 
