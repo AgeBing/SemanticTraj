@@ -180,7 +180,8 @@ class topicHexa{
 		let  { topic_names } = this
 		let  ps = []
 
-		for(let i = 0;i < 5;i++){     //取前5点 
+		for(let i = 0;i < 5;i++){     //取前5点
+			 
 			let topics = traj[i].topics
 			ps[i] = new Map()
 			topics.forEach((t)=>{
