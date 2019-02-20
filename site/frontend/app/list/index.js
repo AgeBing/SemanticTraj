@@ -160,9 +160,9 @@ export function filter(filteredPids){
 
 
 //样式高亮
-function highLightOneItem(id){
+export function highLightOneItem(id){
 	let allItems = d3.selectAll('.list-item')
-		console.log('高亮',id)
+		// console.log('高亮',id)
 
 	allItems.each(function(){
 		let curItem = d3.select(this),
@@ -172,7 +172,7 @@ function highLightOneItem(id){
 		}
 	})
 }
-function unhighLightOneItem(id){
+export function unhighLightOneItem(id){
 	let allItems = d3.selectAll('.list-item')
 	allItems.each(function(){
 		let curItem = d3.select(this),

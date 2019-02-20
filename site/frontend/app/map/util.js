@@ -195,7 +195,7 @@ function updateTileBoundry(){
 		/(  t_boundry.top_right.lat - t_boundry.bottom_left.lat ))
 
 
-	console.log(v_number, v_boundry, t_boundry,width,height,t_width,t_height,left,top)
+	// console.log(v_number, v_boundry, t_boundry,width,height,t_width,t_height,left,top)
 
 
 	return ic

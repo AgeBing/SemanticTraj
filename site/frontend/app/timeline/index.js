@@ -37,6 +37,7 @@ export function unHighLightTopic(i){
 	t.unhigh_light_whole()
 }
 
+
 function addHexa(traj,i) {
 	let h = new  Hexa.topicHexa()
 	h.init(topicNames,traj,i)

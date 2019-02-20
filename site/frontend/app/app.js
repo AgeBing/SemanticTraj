@@ -14,8 +14,12 @@ import { draw as drawPic} from './map/pic.js'
 import { draw as drawList , filter as filterList } from './list/index.js'
 import { draw as drawTopic } from './timeline/index.js'
 
-import { highLightTrajInMap , unHighLightTrajInMap } from './map/poi.js'
+import { highLightTrajInMap ,unHighLightTrajInMap , 
+		 highLightTrajSectionInMap, unHighLightTrajSectionInMap,
+		 draw as drawTraj  } from './map/traj.js'
 import { highLightTopic , unHighLightTopic } from './timeline/index.js'
+import { highLightOneItem , unhighLightOneItem } from './list/index.js'
+
 
 // 初始化
 datamanager.init()
@@ -53,9 +57,10 @@ export function topicAdd(topicPids){
 		}
 	})
 	drawTopic(topicLists)
+
+	//同时绘制线段
+	drawTraj(topicLists)
 }
-
-
 export function filterGlobalData(filteredTrajs){
 
 	let filteredPids = []
@@ -65,6 +70,13 @@ export function filterGlobalData(filteredTrajs){
 
 	filterList(filteredPids)
 }
+
+
+
+
+
+
+
 
 
 export function highLightTrajContorl(id){
@@ -90,4 +102,32 @@ export function unHighLightTopiContorl(pid){
 			unHighLightTopic(i)
 		}
 	}
+}
+export function HighLightTrajSectionContorl(i,t){ 
+	let traj = topicLists[i].traj
+	// console.log(traj,t)
+	for(let j = 0;j < traj.length ; j++){
+		let startTime = traj[j].startTime
+
+		let date = startTime.split(' ')[0],
+			time = startTime.split(' ')[1],
+			_t = new Date(date + 'T' + time)
+		// console.log(_t)
+		if(_t.getTime()  == t.getTime()){
+
+			let siteId1 = +traj[j].site,
+				siteId2 = +traj[j+1].site
+
+			highLightTrajSectionInMap(siteId1,siteId2)
+			break;
+		}
+	}
+
+	highLightOneItem( topicLists[i].pid)
+
+}
+export function unHighLightTrajSectionContorl(i){
+	let id = topicLists[i].pid
+	unHighLightTrajSectionInMap()
+	unhighLightOneItem(id)
 }

@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { HighLightTrajSectionContorl,unHighLightTrajSectionContorl } from '../app.js'
 
 let topicNameList = ["Beauty","Food","Shop","Uptown","Education","Hospital","Hotel","Life","Finance","Traffic","Enterprise","Scenicspot","Government"]
 // let colorList = ["#ffcfd9","#ff8399","#d5fff5","#458f8f","#ffac4b","#2b7bf6","#f4d3b0","#f7d177","#8cabef","#2ebef5","#fb929e","#ffdfdf","#fff6f6","#aedefc"]
@@ -376,19 +377,12 @@ class topicZoomRect {
 			topicContainer.append('div')
 				.attr('class','topic-rect')
 				.on('mouseenter',function(){					
-
 					//其他的包括其他行的变暗
 					d3.selectAll('.topic-rect').style('opacity',0.2)
 					//选中的这块变亮
 					d3.select(this).style('opacity',1)
-
-					// 计算选中的是第几块
-					let v_p  = d3.mouse( this )
-					let t_x  = v_p[0]
-					console.log(t)
-					// console.log(self._caltime_period(t_x))
 					// 联动
-					self.high_light_rect()
+					self.high_light_rect(t)
 				})
 				.on('mouseleave',function(){
 					self.unhigh_light_rect()
@@ -532,11 +526,14 @@ class topicZoomRect {
 		d3.selectAll('.topic-rect').style('opacity',1)
 		// if(!fromOuter) this.un_select_outer(index,'hexa')
 	}
-	high_light_rect(){    //选中那块 其他变暗
-
+	high_light_rect(t){    //t 如 Tue Jan 14 2014 05:37:06 GMT+0800 (China Standard Time)
+		let { index }  = this
+		HighLightTrajSectionContorl(index,t)
 	}
 	unhigh_light_rect(){  //所有亮的变亮
+		let { index }  = this
 		d3.selectAll('.topic-rect').style('opacity',1)
+		unHighLightTrajSectionContorl(index)
 	}
 	high_light_whole(){  // 整个高亮 => 当整条轨迹被选中
 		let { index } = this

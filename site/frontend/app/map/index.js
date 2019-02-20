@@ -5,6 +5,8 @@ import { draw }  from './pic'
 import { addSelect } from './select'
 
 import { draw as drawPoi } from './poi'
+import { draw as drawTraj } from './traj'
+
 
 
 let event_queue = false
@@ -88,9 +90,9 @@ function resize(){
 
 	// 在地图上绘制轨迹
 	drawPic()
+	
 	// 添加 事件
 	addSelect()
-	// drawPoi()
 }
 
 
@@ -135,8 +137,8 @@ async function drawPic() {
 
 
  	draw()  //绘制轨迹
-	// drawPoi()
-
+	drawPoi()  //绘制poi点
+	drawTraj() //绘制勾选的轨迹
 }
 
 export { map,boundry,zoom,width,height }
