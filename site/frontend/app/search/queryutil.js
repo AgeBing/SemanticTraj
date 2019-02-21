@@ -38,7 +38,14 @@ export function get_k_vecs(data) {
 }
 
 export function get_poi_layer(data) {
-  return _query('nlp/poi_layer/', {'text': data})
+  return _query('nlp/poi_layer/', {'text': JSON.stringify(data)});
+}
+
+// 可以根据用户的选择，合并分词，对于合并的词，采用BM25算法
+export function get_trajs_new(data) {
+  return _query('nlp/trajs_new/', {
+    'text': JSON.stringify(data),
+  });
 }
 
 export function send_cache(data) {

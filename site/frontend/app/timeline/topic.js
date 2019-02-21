@@ -35,7 +35,7 @@ function dataAdapter(_line_data){
 	})
 
 	return {
-			id : _line_data.id,
+			id : _line_data.id || _line_data.pid,
 			ps : ps
 	}
 }

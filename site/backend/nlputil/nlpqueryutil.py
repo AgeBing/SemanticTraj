@@ -47,3 +47,14 @@ class NlpSocket:
     self.connect(HOST, PORT)
     self.send_msg(json.dumps(query_dict).encode())
     return json.loads(self.receive_msg())
+
+  def query_nlp_new(self, words, K, K_words):
+    query_dict = {
+        'type': 'bm25_query', 
+        'raw_words': words, 
+        'K_words': K_words, 
+        'K': K
+    }
+    self.connect(HOST, PORT)
+    self.send_msg(json.dumps(query_dict).encode())
+    return json.loads(self.receive_msg())

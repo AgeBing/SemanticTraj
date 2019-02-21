@@ -21,6 +21,7 @@ from backend import traj
 from backend import datamanager
 from . import nlpqueryutil
 import logging
+from backend.mylib import custom_decorator
 
 MAX_K_NUM = 200
 K_NEARST_NUM = 5
@@ -48,29 +49,22 @@ thul = thulac.thulac()
 def get_participle(sentence):
   return thul.cut(sentence)
 
-def get_similiar_sites(sentence):
+
+def get_similiar_sites(words):
   """
   @return 获取词意最相近的基站ID，以set形式返回
   """
-  words = list(filter(lambda x: x[1] == 'n' or x[1] == 'ns' or x[1] == 'nz',
-      thul.cut(sentence)))
-  print('participle: ', words)
   sites = set()
   _site_cover = {}
   pois = []
   for i in range(0, len(words)):
-    # word_vec = get_word_vec(words[i][0])
-    # if word_vec is None:
-    #   continue
     nlp_socket = nlpqueryutil.NlpSocket()
-    poi_complex = nlp_socket.query_nlp(words[i][0], MAX_K_NUM, K_NEARST_NUM)
+    poi_complex = nlp_socket.query_nlp_new(words[i][0].split('_'), 
+        MAX_K_NUM, K_NEARST_NUM)
     if len(poi_complex['simple']) == 0:
       print(words, 'has no vector')
-    # 获取所有POI的ID
-    for word_node in poi_complex['complex']:
-      for poi in word_node['data']:
-        pois.append("'" + str(poi['id']) + "'")
     for node in poi_complex['simple']:
+      pois.append("'" + str(node['id']) + "'")
       sites.add(node['site_id'])
       state = _site_cover.get(node['site_id'], 0)
       _site_cover[node['site_id']] = state | (1 << i)
@@ -85,16 +79,15 @@ def get_similiar_sites(sentence):
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)
 
-def get_poi_layer(sentence):
-  words = list(filter(lambda x: x[1] == 'n' or x[1] == 'ns' or x[1] == 'nz',
-      thul.cut(sentence)))
+def get_poi_layer(words):
   results = []
-  for word, word_ratio in words:
+  for word, word_type in words:
     if word in word_cache:
       for split_word in word_cache[word]['data']:
-        for poi in split_word['data']:
-          if poi['id'] in datamanager.pois:
-            poi.update(datamanager.pois[poi['id']])
+        for relation_word in split_word['data']:
+          for poi in relation_word['data']:
+            if poi['id'] in datamanager.pois:
+              poi.update(datamanager.pois[poi['id']])
       results.append(word_cache[word])
   return results
 

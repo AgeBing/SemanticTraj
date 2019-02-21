@@ -39,17 +39,25 @@ class NlpConsumer(WebsocketConsumer):
           self._send(results)
         # 获取轨迹
         elif nlp_method == 'trajs':
-          trajNode = nlp.get_similiar_sites(data['text'])
-          trajs = trajNode.get_traj()
-          self._send(trajs)
+          print('/trajs 接口已经弃用')
+          return '[]'
+          # trajNode = nlp.get_similiar_sites(data['text'])
+          # trajs = trajNode.get_traj()
+          # self._send(trajs)
         # 获取得到K近邻分词的MDS投影
         elif nlp_method == 'k_vecs':
           results = nlp.get_k_vecs(data['text'])
           self._send(results)
         # 获取POI的层次信息
         elif nlp_method == 'poi_layer':
-          results = nlp.get_poi_layer(data['text'])
+          words = json.loads(data['text'])
+          results = nlp.get_poi_layer(words)
           self._send(results)
+        elif nlp_method == 'trajs_new':
+          words = json.loads(data['text'])
+          trajNode = nlp.get_similiar_sites(words)
+          trajs = trajNode.get_traj()
+          self._send(trajs)
         elif nlp_method == 'cache':
           trajs = data['trajs']
           cachedata.write_topic(trajs)

@@ -74,28 +74,22 @@ function addSearchListener(o) {
 
     let t1 = new Date().getTime()
     console.log('Start Getting Data ...')
-    const currentText = textData.map(d => d[0]).join('')
-    // QueryUtil.get_poi_layer(currentText)
-    //         .then(result => {
-    //           console.log(result, '!!!!!!!!!!!!')
-    //         })
-    QueryUtil.get_trajs(currentText)
-        .then(result => {
-          DataManager.drawTraj = result;
-          console.log('_____',result.length)
-          let t2 = new Date().getTime()
-          console.log('GetData: ' + (t2-t1) + 'ms')
-          return result;
-        })
-        .then(result => dataTrans_YKJ())
-        .then(result => {
-          // 获取POI的层次信息
-          console.log('lalalal')
-          QueryUtil.get_poi_layer(currentText)
-            .then(result => {
-              console.log(result, '!!!!!!!!!!!!')
-            })
-        })
+    QueryUtil.get_trajs_new([['学校', 'n'], ['火车_南', 'cc']])
+      .then(results => {
+        DataManager.drawTraj = results;
+        console.log('_____',results.length)
+        let t2 = new Date().getTime()
+        console.log('GetData: ' + (t2-t1) + 'ms')
+        return results;
+      })
+      .then(results => dataTrans_YKJ())
+      .then(results => {
+        QueryUtil.get_poi_layer([['学校', 'n'], ['火车_南', 'cc']])
+          .then(results => {
+            // 获取POI的层次信息
+            console.log(results, '!!!!!!!!!!!!')
+          })
+      })
   });
 
 
@@ -129,7 +123,7 @@ function dataTrans_YKJ() {
     let t2 = new Date().getTime()
     console.log('TransData: ' + (t2-t1) + 'ms')
 
-
+    console.log(trajs)
     setGlobalTrajData(trajs)
 
 }
