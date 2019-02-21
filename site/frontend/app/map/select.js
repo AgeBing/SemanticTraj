@@ -2,28 +2,65 @@ import * as d3 from 'd3';
 
 
 import { map } from './index.js'
-import { _p2l } from './util.js'
-import { filter , stack , draw } from './pic.js'
+import { _p2l ,_l2pb } from './util.js'
+import { filter , stack , draw as drawPic} from './pic.js'
 
 
 let svg 
 
 
+
+export function draw(){
+	addSelect()
+
+	if(stack.length >= 2){
+		// 删除原有的
+		d3.select('#svg-select').selectAll('.rect-group').remove()
+
+		// 创建新的
+		for(let i = 1;i < stack.length ;i++){
+			let { top_right ,bottom_left } = stack[i].rect
+			//经纬度转像素
+			let p_top_right   =  _l2pb(top_right.lat , top_right.lng) ,
+				p_bottom_left =  _l2pb(bottom_left.lat ,bottom_left.lng),
+				p_top_left    = {
+					x  : p_bottom_left[0],
+					y  : p_top_right[1]
+				},
+				width         =  p_top_right[0] - p_bottom_left[0],
+				height        =  p_bottom_left[1] - p_top_right[1]
+			console.log(p_top_left,width,height)
+
+			svg.append('g')
+		    	.attr('class', 'rect-group')
+		    	.append("rect")
+			    	.attr('class','selection')
+			    	.attr('x',p_top_left.x)
+			    	.attr('y',p_top_left.y)
+			    	.attr('width',width)
+			    	.attr('height',height)
+			addRectListener( i )
+		}
+	}
+}
+
+
+function selectFunctionEventHandler(){
+		d3.select('#svg-poi').style('display','none')
+		svg = d3.select('#svg-select')
+		svg.style('cursor','crosshair')
+		map.dragging.disable()
+		addSelectRect()
+}
+
 export function addSelect(){
 	
 	// 筛选按钮
 	let btn = document.getElementById('select-btn')
-
-	btn.addEventListener('click',()=>{
-		d3.select('#svg-poi').style('display','none')
-
-		svg = d3.select('#svg-select')
-		svg.style('cursor','crosshair')
-		map.dragging.disable()
-
-		
-		addSelectRect()
-	})
+	
+	// 考虑重复添加事件
+	btn.removeEventListener('click',selectFunctionEventHandler)
+	btn.addEventListener('click',selectFunctionEventHandler)
 }
 
 // 创建选择框 
@@ -105,9 +142,10 @@ function addSelectRect(){
 
 
 
-function addRectListener( ){
+function addRectListener( index){
 
-	let id = stack.length
+	let id = index ? index : stack.length  // 指定index 表示更新后重绘的 ,stack length 表示为后续加上的
+
 	let g = d3.select( ".rect-group:nth-child( "+ id + ")" ) ,
 	r = g.select('.selection') ,
 	p = {
@@ -218,7 +256,7 @@ function removeSelection(i){
 		// console.log(stack)
 		// stack = stack.slice(0,1).concat(newStak)   // stack undefined ??? 不能改变stack地址
 	}
-	draw()
+	drawPic()
 }
 
 
@@ -239,7 +277,6 @@ function addSelection(){
 			bottom_left : s_bottom_left
 		}
 	})
-	draw()
-	// filter(s_bottom_left,s_top_right)
+	drawPic()
 }
 

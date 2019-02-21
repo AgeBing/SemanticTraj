@@ -2,11 +2,11 @@ import * as d3 from 'd3';
 import $ from 'jquery';
 
 import { draw }  from './pic'
-import { addSelect } from './select'
+
 
 import { draw as drawPoi } from './poi'
 import { draw as drawTraj } from './traj'
-
+import { draw as drawSelect } from './select'
 
 
 let event_queue = false
@@ -72,7 +72,6 @@ function resize(){
 
 	d3.select('#svg-poi').selectAll('*').remove()
 
-
 	event_queue = true
 
 	zoom  = map.getZoom()
@@ -87,14 +86,10 @@ function resize(){
 	}
 	// console.log(boundry)
 
-
 	// 在地图上绘制轨迹
 	drawPic()
-	
-	// 添加 事件
-	addSelect()
+	drawSelect()  //添加选择事件
 }
-
 
 
 // 实验  经纬度与pixel位置的转换关系

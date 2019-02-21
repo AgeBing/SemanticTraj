@@ -62,6 +62,7 @@ function drawPois(pois,index){
 
 function drawPoi(poi, opacity , index){
 	let poiSvg = d3.select('#svg-poi')
+			.style('pointer-events','none')  //事件穿透
 
 	let p = _l2pb(poi.latitude , poi.longitude)
 	// console.log(p)
@@ -72,6 +73,7 @@ function drawPoi(poi, opacity , index){
 		.attr('cy',p[1])
 		.attr('r' , 5)
 		.attr('fill', colorList[index] )
+		.style('pointer-events','fill')    //鼠标移入时能响应事件
 		.style('opacity',opacity)
 		.on('mouseover',()=>{
 

@@ -96,16 +96,28 @@ function _l2pb(lat,lng) {
 		widthPixel = width,
 		heightPixel = height;
 
-	if( lat > boundry.top_right.lat || lat < boundry.bottom_left.lat 
-		|| lng > boundry.top_right.lng || lng < boundry.bottom_left.lng)  //超出视窗
-		return [-1,-1]
+	let re = [0,0]
 
+	// if( lat > boundry.top_right.lat || lat < boundry.bottom_left.lat 
+	// 	|| lng > boundry.top_right.lng || lng < boundry.bottom_left.lng)  //超出视窗
+	// 	return [-1,-1]
 
-	let x = Math.round( (lng - boundry.bottom_left.lng) / lngWidth*widthPixel) , 
-		y = Math.round( (boundry.top_right.lat - lat) / latHeight*heightPixel)
+	if(lat > boundry.top_right.lat || lat < boundry.bottom_left.lat){
+		if(lat > boundry.top_right.lat) re[1] = 0
+		if(lat < boundry.bottom_left.lat) re[1] = heightPixel
+	}else{
+		re[1]  = Math.round( (boundry.top_right.lat - lat) / latHeight*heightPixel)
+	}
 
-	// console.log(x,y)
-    return [x,y]
+	if(lng > boundry.top_right.lng || lng < boundry.bottom_left.lng){
+		if(lng > boundry.top_right.lng)  re[0]  = widthPixel
+		if(lng < boundry.bottom_left.lng) re[0] = 0
+	}else{
+		re[0] = Math.round( (lng - boundry.bottom_left.lng) / lngWidth*widthPixel)
+	}
+
+	return re
+    // return [x,y]
 }
 
 

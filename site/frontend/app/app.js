@@ -61,6 +61,8 @@ export function topicAdd(topicPids){
 	//同时绘制线段
 	drawTraj(topicLists)
 }
+
+// 框选操作后的轨迹被筛选了  ， 因此 列表现实的轨迹是筛选后的
 export function filterGlobalData(filteredTrajs){
 
 	let filteredPids = []
