@@ -4,6 +4,7 @@ import $ from 'jquery';
 import * as DataManager from './datamanager.js';
 // import { draw_trajs } from 'mappanel'
 
+import { draw as drawPoi } from '../map/poi'
 
 
 import { setGlobalTrajData } from '../app.js'

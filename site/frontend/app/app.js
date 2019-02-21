@@ -12,7 +12,13 @@ import * as SearchBar from './search/searchbar'
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
 import { draw as drawList , filter as filterList } from './list/index.js'
-import { draw as drawTopic} from './timeline/index.js'
+import { draw as drawTopic } from './timeline/index.js'
+
+import { highLightTrajInMap ,unHighLightTrajInMap , 
+		 highLightTrajSectionInMap, unHighLightTrajSectionInMap,
+		 draw as drawTraj  } from './map/traj.js'
+import { highLightTopic , unHighLightTopic } from './timeline/index.js'
+import { highLightOneItem , unhighLightOneItem } from './list/index.js'
 
 
 // 初始化
@@ -36,24 +42,27 @@ export function drawViews() {
 
 	// map view
 	drawPic(trajs)
-
-
 	// semantic view
 
 }
 
+
+let topicLists = []
 // 绘制 Topic
 export function topicAdd(topicPids){
-	let topicLists = []
+	topicLists = []
 	trajs.forEach((traj)=>{
 		if(topicPids.indexOf(traj.pid) != -1){
 			topicLists.push(traj)
 		}
 	})
 	drawTopic(topicLists)
+
+	//同时绘制线段
+	drawTraj(topicLists)
 }
 
-
+// 框选操作后的轨迹被筛选了  ， 因此 列表现实的轨迹是筛选后的
 export function filterGlobalData(filteredTrajs){
 
 	let filteredPids = []
@@ -62,5 +71,65 @@ export function filterGlobalData(filteredTrajs){
 	})
 
 	filterList(filteredPids)
+}
 
+
+
+
+
+
+
+
+
+export function highLightTrajContorl(id){
+	trajs.forEach((traj)=>{
+		if(traj.pid == id){
+			highLightTrajInMap(traj)
+		}
+	})
+}
+export function unHighLightTrajContorl(id){
+	unHighLightTrajInMap()
+}
+export function highLightTopiContorl(pid){
+	for(let i = 0; i < topicLists.length; i++){
+		if(pid == topicLists[i].pid){
+			highLightTopic(i)
+		}
+	}
+}
+export function unHighLightTopiContorl(pid){
+	for(let i = 0; i < topicLists.length; i++){
+		if(pid == topicLists[i].pid){
+			unHighLightTopic(i)
+		}
+	}
+}
+export function HighLightTrajSectionContorl(i,t){ 
+	let traj = topicLists[i].traj
+	// console.log(traj,t)
+	for(let j = 0;j < traj.length ; j++){
+		let startTime = traj[j].startTime
+
+		let date = startTime.split(' ')[0],
+			time = startTime.split(' ')[1],
+			_t = new Date(date + 'T' + time)
+		// console.log(_t)
+		if(_t.getTime()  == t.getTime()){
+
+			let siteId1 = +traj[j].site,
+				siteId2 = +traj[j+1].site
+
+			highLightTrajSectionInMap(siteId1,siteId2)
+			break;
+		}
+	}
+
+	highLightOneItem( topicLists[i].pid)
+
+}
+export function unHighLightTrajSectionContorl(i){
+	let id = topicLists[i].pid
+	unHighLightTrajSectionInMap()
+	unhighLightOneItem(id)
 }

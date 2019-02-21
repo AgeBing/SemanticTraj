@@ -1,22 +1,29 @@
 
 .list-item{
 	/*height: 40px;*/
-	margin: 5px;
-	background-color:  #f0f5ff
+	margin: 10px 5px ;
+	/*background-color:  #f0f5ff;*/
+	overflow:  hidden; /*清除浮动*/
 }
+.list-item:hover{
+	background-color: #f5f5f5;
+}
+.list-item.filtered:hover{
+	background-color: white;
+}
+
 .list-item>div{
 	display: inline-block;
 	height: 20px;
 	/*border: 1px dashed brown;*/
 	float: left ;
 
-
-	margin-top: 8px;
+	/*margin-top: 8px;*/
 }
 .check-contain{
 	width: 20px;
-
 }
+
 .check-contain input{
 	width: 16px;
 	height: 16px;

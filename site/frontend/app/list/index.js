@@ -1,6 +1,12 @@
 import * as d3 from 'd3';
 
 import { topicAdd  as drawTopic } from '../app.js'
+import { highLightTrajContorl , 
+		 unHighLightTrajContorl , 
+		 highLightTopiContorl ,
+		 unHighLightTopiContorl
+		  }  from '../app.js'
+ 
 
 let topicPids = []
 
@@ -43,6 +49,24 @@ function appendOne(Onetraj){
 
 	item.append('div').attr('class','percent-word')
 		.text('98%')
+
+	item.on('mouseenter',function(){
+		highLightOneItem(Onetraj.pid)
+		highLightTrajContorl(Onetraj.pid)
+
+		let ifChecked = item.select('input').property('checked')
+		if( ifChecked ){
+			highLightTopiContorl(Onetraj.pid)
+		}
+	})
+	.on('mouseleave',function(){
+		unhighLightOneItem(Onetraj.pid)
+		unHighLightTrajContorl()
+		let ifChecked = item.select('input').property('checked')
+		if( ifChecked ){
+			unHighLightTopiContorl(Onetraj.pid)
+		}
+	})
 }
 
 // 每一次勾选操作都重新绘制 已选列表中的 Topic
@@ -130,4 +154,31 @@ export function filter(filteredPids){
 	topicPids = topicPidsFilter
 	console.log(topicPids)
 	drawTopic(topicPids)
+}
+
+
+
+
+//样式高亮
+export function highLightOneItem(id){
+	let allItems = d3.selectAll('.list-item')
+		// console.log('高亮',id)
+
+	allItems.each(function(){
+		let curItem = d3.select(this),
+			curId = curItem.attr('id')
+		if(curId == id){
+			curItem.style('background-color','#f5f5f5')
+		}
+	})
+}
+export function unhighLightOneItem(id){
+	let allItems = d3.selectAll('.list-item')
+	allItems.each(function(){
+		let curItem = d3.select(this),
+			curId = curItem.attr('id')
+		if(curId == id){
+			curItem.style('background-color','#FFFFFF')
+		}
+	})
 }

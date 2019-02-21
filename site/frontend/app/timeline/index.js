@@ -4,23 +4,39 @@ import * as Hexa from './hexa.js'
 
 const topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
 
+let objsT = []
+
 export function draw(data){
 
 	Topic.init(getTimeRange(data))
-	Hexa.init()
+	// Hexa.init()
 
-
+	objsT = []  
 	data.forEach((traj,i)=>{
 		addTopic(traj,i)
-		addHexa(traj,i)
+		// addHexa(traj,i)
 	})
 }
+
+
 export function addTopic(traj,i) {
-	console.log(traj,i)
+	// console.log(traj,i)
+
 	let t = new Topic.topicZoomRect()
 	t._init(traj,i)
 	t._render()
+
+	objsT.push(t)
 }
+export function highLightTopic(i){
+	let t = objsT[i]
+	t.high_light_whole()
+}
+export function unHighLightTopic(i){
+	let t = objsT[i]
+	t.unhigh_light_whole()
+}
+
 
 function addHexa(traj,i) {
 	let h = new  Hexa.topicHexa()

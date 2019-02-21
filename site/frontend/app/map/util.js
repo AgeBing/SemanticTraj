@@ -6,7 +6,14 @@
 
 import * as d3 from 'd3';
 
-import { boundry,zoom, width,height } from './index'
+import { boundry,zoom } from './index'
+
+
+let  visBox = document.getElementById("map-container");
+let  height = visBox.offsetHeight; //高度
+let  width = visBox.offsetWidth; //宽度
+
+
 
 let t_boundry , t_width , t_height ,left ,top ,old_t_boundry ,old_zoom
 
@@ -36,7 +43,6 @@ let t_boundry , t_width , t_height ,left ,top ,old_t_boundry ,old_zoom
 
 
 function _l2p(lat,lng) {    
-	
 	let lngWidth = t_boundry.top_right.lng - t_boundry.bottom_left.lng,
 		latHeight = t_boundry.top_right.lat - t_boundry.bottom_left.lat,
 		widthPixel = t_width,
@@ -82,6 +88,37 @@ function _p2l(x,y){
 
 
 
+
+// 相对视图边界的像素坐标
+function _l2pb(lat,lng) {    
+	let lngWidth = boundry.top_right.lng - boundry.bottom_left.lng,
+		latHeight = boundry.top_right.lat - boundry.bottom_left.lat,
+		widthPixel = width,
+		heightPixel = height;
+
+	let re = [0,0]
+
+	// if( lat > boundry.top_right.lat || lat < boundry.bottom_left.lat 
+	// 	|| lng > boundry.top_right.lng || lng < boundry.bottom_left.lng)  //超出视窗
+	// 	return [-1,-1]
+
+	if(lat > boundry.top_right.lat || lat < boundry.bottom_left.lat){
+		if(lat > boundry.top_right.lat) re[1] = 0
+		if(lat < boundry.bottom_left.lat) re[1] = heightPixel
+	}else{
+		re[1]  = Math.round( (boundry.top_right.lat - lat) / latHeight*heightPixel)
+	}
+
+	if(lng > boundry.top_right.lng || lng < boundry.bottom_left.lng){
+		if(lng > boundry.top_right.lng)  re[0]  = widthPixel
+		if(lng < boundry.bottom_left.lng) re[0] = 0
+	}else{
+		re[0] = Math.round( (lng - boundry.bottom_left.lng) / lngWidth*widthPixel)
+	}
+
+	return re
+    // return [x,y]
+}
 
 
 
@@ -241,7 +278,10 @@ async function loadTrajsData() {
 
 
 
-export {  _l2p   , _p2l ,updateTileBoundry, showLoading ,hideLoading , loadTrajsData ,
+
+
+
+export {  _l2p  , _l2pb , _p2l ,updateTileBoundry, showLoading ,hideLoading , loadTrajsData ,
 	 t_boundry , t_width , t_height ,left ,top } 
 
 
