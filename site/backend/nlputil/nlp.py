@@ -21,7 +21,6 @@ from backend import traj
 from backend import datamanager
 from . import nlpqueryutil
 import logging
-from backend.mylib import custom_decorator
 
 MAX_K_NUM = 200
 K_NEARST_NUM = 5
