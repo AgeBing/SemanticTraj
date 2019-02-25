@@ -11,6 +11,7 @@ import { setGlobalTrajData } from '../app.js'
 
 
 let textData = []
+let preClickedIndex = null
 
 export function init() {
 
@@ -68,11 +69,16 @@ function get_participle(data) {
       createNewTab(o)
     })
     .then(o => {
-      QueryUtil.get_poi_layer([['学校', 'n'], ['火车_南', 'cc']])
-          .then(results => {
-            // 获取POI的层次信息
-            console.log(results, '!!!!!!!!!!!!')
-          })
+      updatePOILayer();
+    })
+}
+
+function updatePOILayer() {
+  console.log('update poi layer...')
+  QueryUtil.get_poi_layer(textData)
+    .then(results => {
+      // 获取POI的层次信息
+      console.log(results, '!!!!!!!!!!!!')
     })
 }
 
@@ -82,7 +88,7 @@ function addSearchListener(o) {
 
     let t1 = new Date().getTime()
     console.log('Start Getting Data ...')
-    QueryUtil.get_trajs_new([['学校', 'n'], ['火车_南', 'cc']])
+    QueryUtil.get_trajs_new(textData)
       .then(results => {
         DataManager.drawTraj = results;
         console.log('_____',results.length)
@@ -129,11 +135,28 @@ function dataTrans_YKJ() {
 
 }
 
+// function tabDrag() {
+//   return d3.drag()
+//   .on('start', function() {
+//     console.log(d3.event.subject, d3.event.x, d3.event.y, '######')
+//   })
+//   .on('drag', function(d) {
+//     console.log('____####______', d)
+//     d3.select(this)
+//         // .style('position', 'absolute')
+//         .style('left', d3.event.x + 'px')
+//   })
+// }
+
 function createNewTab(data) {
-  console.log(data)
   const container = d3.select('.search-container')
+  // container.selectAll('.word-tab')
+  //     .remove()
   const divData = container.selectAll('.word-tab')
-      .data(data, d => d[0])
+      .data(data, (d, i) => d[0] + '_' + d[i])
+  divData.classed('word-tab-clicked', (d, i) => i == preClickedIndex)
+  divData.select('.tab-text-container .tab-text')
+      .text(d => d[0].split('_').join(''))
   const div = divData.enter()
       .insert('div', '#input-wrapper')
       .attr('class', 'word-tab')
@@ -155,20 +178,33 @@ function createNewTab(data) {
       .attr('class', 'tab-text-container')
       .append('div')
       .attr('class', 'tab-text')
-      .text(d => d[0])
+      .text(d => d[0].split('_').join(''))
   
   divData.exit().remove();
 
 
-  div.on('click', function(d) {
-    const pos_x = d3.event.clientX - d3.mouse(this)[0];
-    const pos_y = d3.event.clientY - d3.mouse(this)[1];
-    console.log(pos_x, pos_y, '   @@@@ ')
-    QueryUtil.get_k_vecs(d[0])
-        .then(vecs => {
-          console.log(vecs)
-          render_MDS(vecs, d[0], pos_x, pos_y);
-        })
+  div.on('click', function(clickedData) {
+    let flag = d3.select(this).classed('word-tab-clicked');
+    flag = !flag;
+    d3.select(this).classed('word-tab-clicked', flag);
+    // 此处需要重新获取下标，这是由于原始数据导致原始下标可能会发生变化
+    const nowIdx = textData.indexOf(clickedData);
+    if (flag) {
+      if (preClickedIndex && Math.abs(preClickedIndex - nowIdx) == 1) {
+        const minIdx = Math.min(preClickedIndex, nowIdx),
+            maxIdx = Math.max(preClickedIndex, nowIdx);
+        textData[minIdx][0] += '_' + textData[maxIdx][0];
+        textData[minIdx][1] = 'cc'
+        textData.splice(maxIdx, 1);
+        preClickedIndex = minIdx;
+      } else {
+        preClickedIndex = nowIdx;
+      }
+      createNewTab(textData)
+      updatePOILayer();
+    } else {
+      preClickedIndex = null;
+    }
   })
 
 

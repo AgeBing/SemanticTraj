@@ -8,3 +8,7 @@
   stroke-width: 2px;
   stroke: #444444;
 }
+
+.word-tab-clicked {
+  border: 2px solid blue;
+}
