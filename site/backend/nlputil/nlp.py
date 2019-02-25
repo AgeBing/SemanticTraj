@@ -51,11 +51,11 @@ def get_participle(sentence):
 
 def get_similiar_sites(words):
   """
+  需要注意_site_cover不能简单地缓存，这是因为用户单独删掉某个单词不能简单的从_site_cover中去掉
   @return 获取词意最相近的基站ID，以set形式返回
   """
   sites = set()
   _site_cover = {}
-  pois = []
   for i in range(0, len(words)):
     nlp_socket = nlpqueryutil.NlpSocket()
     poi_complex = nlp_socket.query_nlp_new(words[i][0].split('_'), 
@@ -63,23 +63,41 @@ def get_similiar_sites(words):
     if len(poi_complex['simple']) == 0:
       print(words, 'has no vector')
     for node in poi_complex['simple']:
-      pois.append("'" + str(node['id']) + "'")
+      
       sites.add(node['site_id'])
       state = _site_cover.get(node['site_id'], 0)
       _site_cover[node['site_id']] = state | (1 << i)
-    if words[i][0] not in word_cache:
-      word_cache[words[i][0]] = {
-        'name': words[i][0],
-        'data': poi_complex['complex']
-      }
-  # print(','.join(pois))
   print('sites:', sites)
-  datamanager.update_pois(pois)
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)
 
+def get_similiar_sites_simple(words):
+  """
+  用于get_poi_layer()函数，简化了get_similiar_sites()函数
+  将已经计算的缓存一下
+  """
+  pois = []
+  for i in range(0, len(words)):
+    nlp_socket = nlpqueryutil.NlpSocket()
+    if words[i][0] in word_cache:
+      continue
+    poi_complex = nlp_socket.query_nlp_new(words[i][0].split('_'), 
+        MAX_K_NUM, K_NEARST_NUM)
+    if len(poi_complex['simple']) == 0:
+      print(words, 'has no vector')
+    for node in poi_complex['simple']:
+      pois.append("'" + str(node['id']) + "'")
+    word_cache[words[i][0]] = {
+      'name': words[i][0],
+      'data': poi_complex['complex']
+    }
+  # print(','.join(pois))
+  if len(pois) > 0:
+    datamanager.update_pois(pois)
+  logging.info('get_similiar_sites_simple done!')
+
 def get_poi_layer(words):
-  get_similiar_sites(words)
+  get_similiar_sites_simple(words)
   results = []
   for word, word_type in words:
     if word in word_cache:
