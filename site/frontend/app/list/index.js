@@ -10,64 +10,82 @@ import { highLightTrajContorl ,
 
 let topicPids = []
 
-function init(argument) {
 
+
+let resultlist={
+	container:d3.select("#list-contain"),
+	maxNum : 500,
+	init:function(argument){}
 }
 
 
+resultlist.draw = function(data){
+	console.log(data)
+
+	if(data.length>resultlist.maxNum)
+		data = data.slice(0,resultlist.maxNum)
+
+	let alltraj = resultlist.container
+		.select("#resultlist")
+		.selectAll("#list-item")
+		.data(data)
+
+	let addtraj = alltraj.enter().append("div")
+						.classed("list-item",true)
+						.attr('id',d=>d.pid)
+
+	alltraj.exit().remove()
+
+	let mergetraj = addtraj.merge(alltraj)
 
 
-export function draw(data){
-	let maxNum = 500    // 設置最多顯示數目
-
-
-	for(let i = 0 ;i < data.length;i++){
-		appendOne( data[i] )
-		if( i > maxNum) break;
-	}
-
-}
-//添加一条 记录
-function appendOne(Onetraj){
-
-	let item = d3.select('.list-window')
-				.append('div')
-					.attr('class','list-item')
-					.attr('id',Onetraj.pid)
-					
-	item.append('div').attr('class',"check-contain")
+	// chechbox
+	addtraj.append('div').attr('class',"check-contain")
 		.append('input').attr('type','checkbox')
-		.on('change',function(){
-			topicAdd( Onetraj.pid  , d3.select(this).property('checked')  )   // TopicAdd 添加勾选的记录至 已选列表中
+	mergetraj.select(".check-contain")
+		.select("input")
+		.on('change',function(d){
+			topicAdd( d.pid  , d3.select(this).property('checked')  )   // TopicAdd 添加勾选的记录至 已选列表中
 		})
 
-	item.append('div').attr('class','id-word')
-		.text(Onetraj.pid)
 
-	item.append('div').attr('class','percent-rect')
-			.append('div').attr('class','percent-rect-color')
 
-	item.append('div').attr('class','percent-word')
+	// id
+	addtraj.append('div').attr('class','id-word')
+	mergetraj.select(".id-word")
+		.text(d=>d.pid)
+
+	// rect
+	addtraj.append('div').attr('class','percent-rect')
+	mergetraj.select(".percent-rect")
+		.style("width","200px")
+
+
+	// value
+	addtraj.append('div').attr('class','percent-word')
+	mergetraj.select('.percent-word')
 		.text('98%')
 
-	item.on('mouseenter',function(){
-		highLightOneItem(Onetraj.pid)
-		highLightTrajContorl(Onetraj.pid)
 
-		let ifChecked = item.select('input').property('checked')
-		if( ifChecked ){
-			highLightTopiContorl(Onetraj.pid)
-		}
+	mergetraj.on('mouseenter',function(d){
+		highLightOneItem(d.pid)
+		highLightTrajContorl(d.pid)
+		if( d3.select(this).select('input').property('checked') )
+			highLightTopiContorl(d.pid)
 	})
-	.on('mouseleave',function(){
-		unhighLightOneItem(Onetraj.pid)
+	.on('mouseleave',function(d){
+		unhighLightOneItem(d.pid)
 		unHighLightTrajContorl()
-		let ifChecked = item.select('input').property('checked')
-		if( ifChecked ){
-			unHighLightTopiContorl(Onetraj.pid)
+		if( d3.select(this).select('input').property('checked') ){
+			unHighLightTopiContorl(d.pid)
 		}
 	})
 }
+
+export function draw(data){
+	resultlist.draw(data)
+}
+
 
 // 每一次勾选操作都重新绘制 已选列表中的 Topic
 function topicAdd(pid,add){
@@ -123,7 +141,6 @@ d3.select('#filter-btn')
 		}
 	})
 
-
 // 将未被选中的项 变成暗色
 // 对应项的  Checkbox 也为 false 
 // 在 app.js 中被引用
@@ -143,7 +160,7 @@ export function filter(filteredPids){
 			if(ifChecked){
 				curItem.select('input').property('checked',false)
 			}
-		}else{				//保留下的
+		}else{	//保留下的
 			curItem.attr('class','list-item')
 			curItem.select('input').attr('disabled', null)
 			if(ifChecked){
@@ -168,7 +185,7 @@ export function highLightOneItem(id){
 		let curItem = d3.select(this),
 			curId = curItem.attr('id')
 		if(curId == id){
-			curItem.style('background-color','#f5f5f5')
+			curItem.style('background-color','rgb(158, 158, 158)')
 		}
 	})
 }
@@ -182,3 +199,56 @@ export function unhighLightOneItem(id){
 		}
 	})
 }
+
+
+// export function draw(data){
+// 	let maxNum = 500    // 設置最多顯示數目
+
+// 	for(let i = 0 ;i < data.length;i++){
+// 		appendOne( data[i] )
+// 		if( i > maxNum) break;
+// 	}
+
+// 	console.log(data)
+// }
+// //添加一条 记录
+// function appendOne(Onetraj){
+
+// 	let item = d3.select('.list-window')
+// 				.append('div')
+// 				.attr('class','list-item')
+// 				.attr('id',Onetraj.pid)
+					
+// 	item.append('div').attr('class',"check-contain")
+// 		.append('input').attr('type','checkbox')
+// 		.on('change',function(){
+// 			topicAdd( Onetraj.pid  , d3.select(this).property('checked')  )   // TopicAdd 添加勾选的记录至 已选列表中
+// 		})
+
+// 	item.append('div').attr('class','id-word')
+// 		.text(Onetraj.pid)
+
+// 	item.append('div').attr('class','percent-rect')
+// 			.append('div').attr('class','percent-rect-color')
+
+// 	item.append('div').attr('class','percent-word')
+// 		.text('98%')
+
+// 	item.on('mouseenter',function(){
+// 		highLightOneItem(Onetraj.pid)
+// 		highLightTrajContorl(Onetraj.pid)
+
+// 		let ifChecked = item.select('input').property('checked')
+// 		if( ifChecked ){
+// 			highLightTopiContorl(Onetraj.pid)
+// 		}
+// 	})
+// 	.on('mouseleave',function(){
+// 		unhighLightOneItem(Onetraj.pid)
+// 		unHighLightTrajContorl()
+// 		let ifChecked = item.select('input').property('checked')
+// 		if( ifChecked ){
+// 			unHighLightTopiContorl(Onetraj.pid)
+// 		}
+// 	})
+// }

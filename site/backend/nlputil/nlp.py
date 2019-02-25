@@ -9,7 +9,6 @@ e/叹词 o/拟声词 g/语素 w/标点 x/其它
 """
 # import gensim, logging
 import thulac
-import jieba
 
 from sklearn import manifold
 from sklearn.metrics import euclidean_distances
