@@ -79,6 +79,7 @@ def get_similiar_sites(words):
   return traj.Traj(len(words), sites, _site_cover)
 
 def get_poi_layer(words):
+  get_similiar_sites(words)
   results = []
   for word, word_type in words:
     if word in word_cache:
@@ -91,6 +92,9 @@ def get_poi_layer(words):
   return results
 
 def get_k_vecs(word):
+  """
+  用于计算mds投影
+  """
   nlp_socket = nlpqueryutil.NlpSocket()
   k_words_vecs = nlp_socket.query_vecs(word, K_NEARST_NUM)
   seed = np.random.RandomState(seed=3)

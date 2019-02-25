@@ -67,6 +67,13 @@ function get_participle(data) {
       textData = o;
       createNewTab(o)
     })
+    .then(o => {
+      QueryUtil.get_poi_layer([['学校', 'n'], ['火车_南', 'cc']])
+          .then(results => {
+            // 获取POI的层次信息
+            console.log(results, '!!!!!!!!!!!!')
+          })
+    })
 }
 
 // 查询按钮监听click事件，首先查询符合条件的轨迹，然后查询POI的层次信息
@@ -84,13 +91,6 @@ function addSearchListener(o) {
         return results;
       })
       .then(results => dataTrans_YKJ())
-      .then(results => {
-        QueryUtil.get_poi_layer([['学校', 'n'], ['火车_南', 'cc']])
-          .then(results => {
-            // 获取POI的层次信息
-            console.log(results, '!!!!!!!!!!!!')
-          })
-      })
   });
 
 
