@@ -60,46 +60,38 @@
           </div>
       </div>
       <button id="search-button">
-         Search
+         Query
       </button>
-
-      <button id="select-btn">
-         Select
-      </button>
-
   </div>
 
 
 
-	<div class="contain">
-		
-		<div class="up-contain">
-<!-- 			<div class="panel left-panel" id="hexagon-container">
-          <div class="default-word"><span> - </span></div> 
-			</div> -->
-			<div class="panel right-panel" id="map-container">
-          <div class="default-word"><span> - </span></div>  
-      </div>			
-		</div>
+  <div id = "Specification_view">
+  </div>
 
-    <div class="down-contain">
+
+  
+  <div id="map-view" class="panel right-panel" >
+        <div id="select-btn" style= "position: absolute;
+    background: #6f6f6f;left: 13px;top: 83px; z-index: 2;cursor: pointer;">
+          <img style="    height: 30px;" src="../assets/icons/others.svg">
+        </div>
+    <div id="map-container" style= "position: absolute;z-index: 1;"   class="panel right-panel" >
+        <div class="default-word"><span> - </span></div>  
+    </div>   
+  </div>    
+  
+
+  <div  id="topic-container" style = "
+      position: absolute;"
+      class="panel down-panel">
+      <div class="default-word"><span> - </span></div> 
       <div class="panel up-panel" id="topic-legend">
-          
             <div class="legend-intro">
                 Function Categories :
             </div>
-<!--             <div class="legend-item">
-              <div class="legend-rect"></div>
-              <div class="legend-name">Entertainment Area</div>
-            </div> -->
-
-      </div>     
-      
-      <div class="panel down-panel" id="topic-container">
-          <div class="default-word"><span> - </span></div> 
-        
-      </div>
-    </div>
+      </div>  
+  </div>
 
 <!-- 		<div class="sub-contain down-contain">
 			<div class="panel left-panel"  id="control">
@@ -154,60 +146,17 @@
 	</div>
 
 
-  <div class="list-contain panel">
+  <div id = "list-contain" class="panel">
           <!-- <div class="default-word"><span> - </span></div>  -->
-      <div class="list-window">
-        <div class="btn-container">
-          <button id="filter-btn" filtered>filter</button>
-        </div>
-         <!--  <div class="list-item">
-            <div class="check-contain">
-              <input type="checkbox" name="check">
-            </div>
-            <div class="id-word">
-                460000000000
-            </div>
-            <div class="percent-rect">
-              <div class="percent-rect-color"></div>
-            </div>
-            <div class="percent-word">
-              98%
-            </div>
-          </div>
-
-            <div class="list-item filtered">
-            <div class="check-contain">
-              <input type="checkbox" name="check">
-            </div>
-            <div class="id-word">
-                460000000000
-            </div>
-            <div class="percent-rect">
-              <div class="percent-rect-color"></div>
-            </div>
-            <div class="percent-word">
-              98%
-            </div>
-          </div>
-
-
-            <div class="list-item">
-            <div class="check-contain">
-              <input type="checkbox" name="check">
-            </div>
-            <div class="id-word">
-                460000000000
-            </div>
-            <div class="percent-rect">
-              <div class="percent-rect-color"></div>
-            </div>
-            <div class="percent-word">
-              98%
-            </div>
-          </div>
- -->
-
+      <div class="btn-container" >
+        <div style="text-align: center; margin: 5px;">Result List</div>
+      <!--   
+        <ul class="nav navbar-nav" style="margin: 6px 0;">
+              <input type="checkbox" checked  id="norm-input">
+        </ul> -->
+        <button id="filter-btn" filtered>filter</button>
       </div>
+      <div id="resultlist"/>
   </div>
 
   <!-- {% render_bundle 'main' %} -->

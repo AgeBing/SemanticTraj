@@ -32,6 +32,7 @@
 	条数超出界高度时可上下移动
 */
 .rect-group-container{
+	    height: calc(100% - 35px);
 	display: flex;
 	flex-direction: column;
 	padding: 10px 0;
