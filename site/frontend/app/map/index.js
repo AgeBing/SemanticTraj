@@ -38,11 +38,13 @@ let selectSvg = d3.select(map.getPanes().overlayPane)
     .attr("height",height)
 
 
-let poiSvg = d3.select(map.getPanes().overlayPane)
-	.append("svg")
-	.attr('id','svg-poi')
-	.attr("width",  width)
-    .attr("height",height)
+// let poiSvg = d3.select(map.getPanes().overlayPane)
+// 	.append("svg")
+// 	.attr('id','svg-poi')
+// 	.attr("width",  width)
+//     .attr("height",height)
+
+
 
 // let loading = d3.select(map.getPanes().overlayPane)
 // 	.append("div")
@@ -127,8 +129,8 @@ async function drawPic() {
     selectSvg.style("left", left)
         .style("top",  top);
 
-    poiSvg.style("left", left)
-        .style("top",  top);
+    // poiSvg.style("left", left)
+    //     .style("top",  top);
 
 
  	draw()  //绘制轨迹

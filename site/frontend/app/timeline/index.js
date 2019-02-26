@@ -1,15 +1,20 @@
-import * as Topic from './topic.js'
+import * as d3 from 'd3';
+import { topicZoomRect as Topic } from './topic.js'
+// import { init as  timeInit }  from './time.js'
 import * as Hexa from './hexa.js'
 
 
-const topicNames = ["Beauty","Food","Shop","Uptown","Education","Hospital"]
 
 let objsT = []
 
 export function draw(data){
-
-	Topic.init(getTimeRange(data))
+	console.log(data)
+	// timeInit(getTimeRange(data))
 	// Hexa.init()
+	
+	d3.select('.rect-group-container')
+		.selectAll('.rect-container')
+		.remove() 
 
 	objsT = []  
 	data.forEach((traj,i)=>{
@@ -21,8 +26,7 @@ export function draw(data){
 
 export function addTopic(traj,i) {
 	// console.log(traj,i)
-
-	let t = new Topic.topicZoomRect()
+	let t = new Topic()
 	t._init(traj,i)
 	t._render()
 
@@ -64,6 +68,5 @@ function getTimeRange(data){
 				}
 		})
 	})
-
 	return timeRange
 }

@@ -20,14 +20,13 @@ let resultlist={
 
 
 resultlist.draw = function(data){
-	console.log(data)
-
+	// console.log(data)
 	if(data.length>resultlist.maxNum)
 		data = data.slice(0,resultlist.maxNum)
 
 	let alltraj = resultlist.container
 		.select("#resultlist")
-		.selectAll("#list-item")
+		.selectAll(".list-item")
 		.data(data)
 
 	let addtraj = alltraj.enter().append("div")
@@ -58,7 +57,7 @@ resultlist.draw = function(data){
 	// rect
 	addtraj.append('div').attr('class','percent-rect')
 	mergetraj.select(".percent-rect")
-		.style("width","200px")
+		// .style("width","200px")
 
 
 	// value
@@ -169,7 +168,7 @@ export function filter(filteredPids){
 		}
 	})
 	topicPids = topicPidsFilter
-	console.log(topicPids)
+	// console.log(topicPids)
 	drawTopic(topicPids)
 }
 

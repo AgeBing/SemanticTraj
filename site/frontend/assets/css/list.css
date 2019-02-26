@@ -35,11 +35,12 @@
     color: #595959;
 }
 .percent-rect{
-	    min-width: 100px;
+    min-width: 40px;
     max-width: calc(100% - 10px);
     background-color: #595959;
     height: 19px;
     margin: 8px;
+    width: calc(100% - 208px);
 }
 .percent-word{
 	    font-size: 15px;

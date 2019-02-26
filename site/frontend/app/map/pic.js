@@ -30,8 +30,6 @@ import { filterGlobalData } from '../app.js'
 
 
 export async function draw(data) {
-
-
 	let isChanged = updateTileBoundry()
 
 	if(data){ //data 来自全局 ，表示数据更新

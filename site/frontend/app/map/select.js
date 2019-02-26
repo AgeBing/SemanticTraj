@@ -182,7 +182,6 @@ function addRectListener( index){
 				.attr('y1', p.y - l)
 				.attr('x2', p.x + l )
 				.attr('y2', p.y + l)
-
 	})
 
 	r.on('mousemove',function(){
