@@ -78,7 +78,10 @@ function updatePOILayer() {
   QueryUtil.get_poi_layer(textData)
     .then(results => {
       // 获取POI的层次信息
-      console.log(results, '!!!!!!!!!!!!')
+      let nodelist = require('../Specification/Node.js')
+
+      nodelist.data = results
+      nodelist.rendering()
     })
 }
 
