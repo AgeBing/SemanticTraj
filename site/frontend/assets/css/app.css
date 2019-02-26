@@ -90,12 +90,13 @@ html, body{
     margin: 0px 7px;
 }
 .word-tab{
-	    float: left;
-    border: 0;
-    margin: 2px 5px;
-    height: 32px;
+	float: left;
+    border: 2px solid transparent;
+    margin: 1px 5px;
+    height: 30px;
     border-radius: 3px;
     background: #e6e6e6;
+
 }
 .tab-text-container{
 	display: inline-block;

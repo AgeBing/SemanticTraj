@@ -61,6 +61,49 @@ nodelist.rendering = function(){
 
   //spatial constraints
   let spatial_constraints = addnode.append("div").classed("spatial_constraints",true)
+  let subtitlecontainer = spatial_constraints.append("div").style("height","27px")
+  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
+  .text("Spatial Constraints Words").style("float","left").style("width","185px")
+  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
+  .style("float","left").style("width","65px")
+  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
+  .text("Location List").style("float","left").style("width","95px")
+
+
+  let spatial_cc = spatial_constraints.append("div").style("height","calc(100% - 27px)")
+                .style("position","absolute")
+                .style("width","100%")
+  spatial_cc.append("div").style("width","205px")
+                  .style("float","left")
+                  .style("overflow-y","auto")
+                  .attr("dir","rtl")
+                  .style("height","100%")
+              .append("div").classed("spatial_words",true)
+                  .style("width","100%")
+                  .style("height","100%")
+                  .style("background","#ececec")
+                  .style("padding","0 0 5px 0")
+  spatial_cc.append("svg").style("width","90px")
+                  .style("float","left")
+                  .style("height","100%").classed("spatial_lines",true)
+  spatial_cc.append("div").classed("locationlistdiv",true)
+                  .append("div")
+                  .classed("spatial_POIs",true)
+                  .style("width","100%")
+                  .style("height",function(d){
+                     let poinumber = 0
+                     for(let i =0;i<d.data.length;i++){
+                      for(let j =0;j<d.data[i].data.length;j++){
+                        poinumber+= d.data[i].data[j].data.length
+                      }
+                     }
+                     return `${poinumber*20}px`
+                  })
+
+  renderingwordslist(mergenode)
+  renderingPOIlist(mergenode)
+
+
 
   //semantic constraints
   let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
@@ -74,6 +117,103 @@ nodelist.rendering = function(){
   addslide(semantic_constraints,"Traffic",mergenode)
 
 }
+function renderingwordslist(mergenode){
+
+    let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
+           .data(function(d){
+              let heightset=[]
+              for(let i = 0;i<d.data.length;i++){
+                heightset.push(d.data[i].data.length)
+                for(let j =0;j<d.data[i].length;j++){
+                  d.data[i].data[j].index = (i,j)
+                }
+              }
+              console.log(heightset)
+              console.log(d.data)
+            return d.data
+          },(d,i)=>d.name)
+
+  allwords.exit().remove()
+  let addwords = allwords.enter().append("div").classed("Worddiv",true)
+                  .style(    "margin", "5px")
+  let mergewords = addwords.merge(allwords)
+  mergewords.style("top",(d,i)=>`${i*24}px`)
+
+  addwords.append("div").classed("wordtitle",true)
+  addwords.append("div").classed("wordsubtitle",true)
+  addwords.append("div").classed("nei_words",true)
+  mergewords.select(".wordtitle").text((d,i)=>d.name)
+  mergewords.select(".wordsubtitle").text("Neighbors")
+  let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d){
+      return d.data
+  })
+
+  allneiwords.exit().remove()
+  let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv",true)
+  let mergeneiwords = addneiwords.merge(allneiwords)
+  mergeneiwords.text(d=>d.name)
+      .style("top",(d,i)=>`${i*24}px`)
+
+
+
+}
+
+
+function renderingPOIlist(mergenode){
+
+  let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
+           .data(function(d){
+                  let colorscale = d3.scaleLinear()
+                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
+                  let textcolorscale = 0
+
+                  // data
+                  let pois = []
+                   for(let i =0;i<d.data.length;i++){
+                    for(let j =0;j<d.data[i].data.length;j++){
+                      for(let m =0;m<d.data[i].data[j].data.length;m++){
+                        pois.push({
+                          index:pois.length,
+                          poi:d.data[i].data[j].data[m],
+                          words:{
+                            F:(i,d.data[i].name),
+                            S:(j,d.data[i].data[j].name)}
+                        })
+                      }
+                    }
+                   }
+
+                   //sort by val
+                     pois.sort(function(a, b) {
+                        return b.poi.val - a.poi.val})
+                     colorscale.domain([0, pois[0].poi.val])
+                     textcolorscale = pois[0].poi.val
+                   //update data index and color
+                   for(let i=0;i<pois.length;i++){
+                    pois[i].order = i
+                    pois[i].color = pois[i].poi.val >textcolorscale/2 ? "white":"rgb(28,28,28)"
+                    pois[i].background = colorscale(pois[i].poi.val)
+                   }
+
+                   //reorder
+                   pois.sort(function(a, b) {
+                      return a.poi.index - b.poi.index})
+                   
+                   return pois
+           },d=>d.poi.name)
+
+  allPOI.exit().remove()
+  allPOI.enter().append("div").classed("POIrect",true)
+    .text(function (d,i){
+           return  d.poi.name.length>8 ? d.poi.name.substring(0,8):d.poi.name
+    })
+    .merge(allPOI)
+    .style("top",d=>`${d.order*28}px`)
+    .style("background",d=>d.background)
+    .style("color",d=>d.color)
+}
+
+
 
 function addslide(container,containername,mergecontainer){
   container.append("div").attr("id",`${containername}_name`)
@@ -98,7 +238,6 @@ function addslide(container,containername,mergecontainer){
 
 // <svg width="130" height="25"></svg>
 function init_slider(svg,text){
-  console.log(svg.attr("width"))
   let margin = {right: 10, left: 10},
       width = +svg.attr("width") - margin.left - margin.right,
       height = +svg.attr("height");
@@ -250,9 +389,11 @@ module.exports = nodelist;
 //           });
 //     }
 //   DrawALLbar();
+
+
+
 //       <div class="down-contain"  style="width:700px">
 //           <div class="constraints">
-
 //                     </div>
 //                     <div class="constraints-bar">
 //           <div class="panel three-left-panel" >

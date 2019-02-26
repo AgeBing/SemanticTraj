@@ -29,7 +29,7 @@ let topicLists = [] , topicListsPids = []
 
 
 // 初始化
-// datamanager.init().then(o => SearchBar.init())
+datamanager.init().then(o => SearchBar.init())
 
 // mock()
 
