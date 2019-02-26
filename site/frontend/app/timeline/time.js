@@ -7,7 +7,6 @@ const visBox = document.getElementById("topic-container");
 let  h = visBox.offsetHeight;  //高度
 let  w = visBox.offsetWidth;   //宽度
 
-
 let syncAsixFunc		 	// 时间轴同步方法
 let timeRange 		 		// 时间范围 [start,end]\
 export let timeScale,timeScale2     //两个 timeScale 
@@ -15,7 +14,6 @@ export let func_list
 
 // for all instances 
 export function init(_timeRange){
-
 	d3.select('#topic-container')
 		.selectAll('*')
 		.remove() 
@@ -73,6 +71,7 @@ function setTopAxis(){
 						.attr('class','top-axis-container')
 						.append('svg')
 							.attr('width',w * 0.9)
+							.attr('height',40)
 						.append("g")
 					      .attr("class", "axis axis--top")
 					      .call(axisFunc);
@@ -90,7 +89,12 @@ function setZoom(){
 	let zoomFunc = d3.zoom()
 		.scaleExtent([1, 100]) 	//缩放比例
 		.on('zoom',()=>{
-			return func_zoomed()
+			// console.log('zoom')
+			func_zoomed()
+		})
+		.on('end',()=>{
+			// console.log('zoom end')
+			timeSelect()
 		})
 	// 底部的 zoom 监听svg
 	let listenerRect = 
@@ -104,19 +108,20 @@ function setZoom(){
 			.attr('y',0)
 			.attr('width',w)
 			.attr('height',40)
-		.on('mousemove',() =>{      //标线
-			let x = d3.event.offsetX
-			if(x <= w * 0.05 || x >= w * 0.95){
-				d3.select('#topic-container').selectAll('.tick-line').remove()
-			}else{
-				func_tickmove(x)
-			}
-		})
-		.on('mouseleave',()=>{
-			d3.select('#topic-container').selectAll('.tick-line').remove()
-		})
+		// .on('mousemove',() =>{      //标线
+		// 	let x = d3.event.offsetX
+		// 	if(x <= w * 0.05 || x >= w * 0.95){
+		// 		d3.select('#topic-container').selectAll('.tick-line').remove()
+		// 	}else{
+		// 		func_tickmove(x)
+		// 	}
+		// })
+		// .on('mouseleave',()=>{
+		// 	d3.select('#topic-container').selectAll('.tick-line').remove()
+		// })
 
-	listenerRect.call(zoomFunc)
+	d3.select('.top-axis-container').select('svg').call(zoomFunc)
+	// listenerRect.call(zoomFunc)
 }
 function func_zoomed(){
 	let t = d3.event.transform
@@ -128,8 +133,6 @@ function func_zoomed(){
 	func_list.forEach((f) =>  {
 		f.func.call(f.whos)
 	})
-
-	timeSelect()
 }
 function syncAllInstance(){
 	//将注册的函数一一调用
@@ -174,12 +177,16 @@ function setBrush(){
       	.call(brushFunc.move, [0,w * 0.9]); //拖动框
 
     let brushG = d3.select('.brush')
+
     	// brushG.select('.overlay')   
-    	// brushG.select('.selection')
-    	brushG.select('.handle--e')
-    	.attr('fill','red')
-    	brushG.select('.handle--w')
-    	.attr('fill','red')
+    	brushG.select('.selection')
+    			.attr('height',function(a){
+    				return 39
+    			})
+    	// brushG.select('.handle--e')
+    	// .attr('fill','red')
+    	// brushG.select('.handle--w')
+    	// .attr('fill','red')
 
 }
 function brushed(){

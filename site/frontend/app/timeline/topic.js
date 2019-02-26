@@ -201,7 +201,7 @@ export class topicZoomRect {
 				.style('background-color',Config.topicThemes[topic_top_name].color)
 
 			if(+width  <  Config.topicThemesConfig.min_width){
-					_rect.style('background-color','#e8e8e8')
+					_rect.style('background-color','#bfbfbf')
 			}else if(+width  <  Config.topicThemesConfig.max_width){
 				let box = _rect.append('div')
 							.attr('class','mid-box')

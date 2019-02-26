@@ -22,14 +22,16 @@ import { highLightOneItem , unhighLightOneItem } from './list/index.js'
  
 // import { mock } from '../mock/setData.js'
 
-
-// 初始化
-datamanager.init()
-	.then(o => SearchBar.init())
-
-
 let trajs  // 全量数据
 let topicLists = [] , topicListsPids = []
+
+
+
+
+// 初始化
+// datamanager.init().then(o => SearchBar.init())
+
+// mock()
 
 
 // 在 searchbar 中将 trajs 进行设置
@@ -86,7 +88,7 @@ export function topicAdd(topicPids){
 	drawTopic(topicLists)
 
 	//同时绘制线段
-	drawTraj(topicLists)
+	// drawTraj(topicLists)
 	topicListsPids = newTopicListsPids
 	// console.log("topic",topicListsPids,topicLists,trajs)
 }
@@ -134,7 +136,7 @@ export function filterDataInTime(_startTime,_endTime){
 
 
 
-// mock()
+
 
 
 
@@ -168,6 +170,9 @@ export function unHighLightTopiContorl(pid){
 export function HighLightTrajSectionContorl(i,t){ 
 	let traj = topicLists[i].traj
 	// console.log(traj,t)
+
+	highLightOneItem( topicLists[i].pid)
+	highLightTrajContorl( topicLists[i].pid  )
 	for(let j = 0;j < traj.length ; j++){
 		let startTime = traj[j].startTime
 
@@ -185,11 +190,11 @@ export function HighLightTrajSectionContorl(i,t){
 		}
 	}
 
-	highLightOneItem( topicLists[i].pid)
 
 }
 export function unHighLightTrajSectionContorl(i){
 	let id = topicLists[i].pid
 	unHighLightTrajSectionInMap()
 	unhighLightOneItem(id)
+	unHighLightTrajInMap()
 }

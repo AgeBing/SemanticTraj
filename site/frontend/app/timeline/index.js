@@ -8,7 +8,7 @@ import * as Hexa from './hexa.js'
 let objsT = []
 
 export function draw(data){
-	console.log(data)
+	// console.log(data)
 	// timeInit(getTimeRange(data))
 	// Hexa.init()
 	
