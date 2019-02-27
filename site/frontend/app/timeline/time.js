@@ -20,8 +20,9 @@ export function init(_timeRange){
 
 	func_list	= []
 	timeRange = _timeRange
-	console.log(timeRange)
-	
+	// console.log(timeRange)
+
+	// timerange 为多有查询出来轨迹的最大时间范围
 	appendWidgets()
 }
 

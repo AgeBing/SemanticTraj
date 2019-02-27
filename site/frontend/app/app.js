@@ -9,7 +9,7 @@ import * as SearchBar from './search/searchbar'
 
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
-import { draw as drawList , filter as filterList } from './list/index.js'
+import { draw as drawList , filterGeo as filterListGeo , filterTime as filterListTime } from './list/index.js'
 import { draw as drawTopic } from './timeline/index.js'
 import { init as timeInit }  from './timeline/time.js'
 
@@ -37,26 +37,15 @@ datamanager.init().then(o => SearchBar.init())
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
 	trajs = data
-	// console.log(data)
-	// drawViews(data)
+	drawList(data)
+	drawPic(data)
 	timeLineInit()
 }
 
 
-// 点击查询按钮后 进行绘制图片
-export function drawViews(data) {
-	// list view
-	drawList(data)
-
-	// map view
-	drawPic(data)
-	// semantic view
-}
-
 // 初始化 TimeLine 的时间范围
 function timeLineInit() {
 	let timeRange = []
-
 	for(let i = 0;i < trajs.length;i++){
 		let traj = trajs[i].traj,
 			startPoint = traj[0],
@@ -74,39 +63,26 @@ function timeLineInit() {
 }
 
 
-// 绘制 Topic
-export function topicAdd(topicPids){
-	topicLists = []
-	let newTopicListsPids = []
+// 框选操作后的轨迹被筛选了， 因此 列表现实的轨迹是筛选后的
+export function filterGlobalData(availableTrajs){
+	console.log("filterGlobalData num",availableTrajs.length)
+	let availablePids = [] , filteredPids = []
+	availableTrajs.forEach((traj)=>{
+		availablePids.push(traj.pid)
+	})
 	trajs.forEach((traj)=>{
-		if(topicPids.indexOf(traj.pid) != -1){
-			topicLists.push(traj)
-			newTopicListsPids.push(traj.pid)
-			// console.log("push")
+		let pid = traj.pid
+		if( availablePids.indexOf(pid) == -1){
+			filteredPids.push(pid)
 		}
 	})
-	drawTopic(topicLists)
-
-	//同时绘制线段
-	// drawTraj(topicLists)
-	topicListsPids = newTopicListsPids
-	// console.log("topic",topicListsPids,topicLists,trajs)
-}
-
-// 框选操作后的轨迹被筛选了  ， 因此 列表现实的轨迹是筛选后的
-export function filterGlobalData(filteredTrajs){
-
-	let filteredPids = []
-	filteredTrajs.forEach((traj)=>{
-		filteredPids.push(traj.pid)
-	})
-
-	filterList(filteredPids)
+	filterListGeo(filteredPids)
 }
 
 //timeLine的选择框过滤轨迹
 export function filterDataInTime(_startTime,_endTime){
-	let filteredTrajs = []
+	let filteredPids = [] , availableTrajs = []
+
 	for(let i = 0;i < trajs.length;i++){
 		let traj = trajs[i].traj,
 			startPoint = traj[0],
@@ -116,21 +92,33 @@ export function filterDataInTime(_startTime,_endTime){
 
 		if( startTime.getTime() >= _endTime 
 			|| endTime.getTime() <=  _startTime){
+			filteredPids.push(trajs[i].pid)
 			continue
 		}else{
-			filteredTrajs.push(trajs[i])
+			availableTrajs.push(trajs[i])
 		}		
 	}
 
 	// console.log(startTime,endTime)
 	// console.log("time filter:",filteredTrajs,topicLists,topicListsPids)
 
-	// 重新绘制列表，轨迹
-	drawViews(filteredTrajs)
-	topicAdd(topicListsPids)
+	// list
+	drawList(trajs)
+	// filterListTime(filteredPids)
+
+	// map view
+	drawPic(availableTrajs)
 }
-
-
+// 绘制 Topic
+export function topicAdd(topicPids){
+	topicLists = []
+	trajs.forEach((traj)=>{
+		if(topicPids.indexOf(traj.pid) != -1){
+			topicLists.push(traj)
+		}
+	})
+	drawTopic(topicLists)
+}
 
 
 
