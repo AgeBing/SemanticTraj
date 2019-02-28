@@ -1,16 +1,21 @@
 #resultlist{
-	    overflow-y: auto;
+    overflow-y: auto;
     height: calc(100% - 50px);
     overflow-x: hidden;
+    position: relative;
 }
 
 
 .list-item{
 	    height: 35px;
-    margin: 5px;    
-    line-height: 40px;
-        transition-duration: 0.3s;
-	/*overflow:  hidden; 清除浮动*/
+	    margin: 5px;
+	    line-height: 40px;
+	    transition: visibility;
+	    /*overflow:  hidden; 清除浮动*/
+	    transition: visibility 0s, opacity 2s,top 0.5s linear;
+	    position: absolute;
+	    visibility: visible;
+	    opacity: 1;
 }
 
 
@@ -59,7 +64,8 @@
 	color:#e8e8e8;
 }
 .hide{
-	display: none
+	visibility: hidden;
+	opacity: 0;
 }
 .btn-container{
 	padding: 5px;

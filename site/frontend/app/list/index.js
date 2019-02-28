@@ -121,6 +121,7 @@ function btnEventHandler(){
 		d3.select(this).attr('filtered',true)
 	}
 	filterDisplay()
+	reflowItems()
 }
 function filterDisplay(){
 	let isFiltered =  d3.select('#filter-btn').attr('filtered')
@@ -180,6 +181,7 @@ function filter(){
 	drawTopic(checkedPids)
 	updatePerNum()
 	filterDisplay()
+	reflowItems()
 }
 export function filterGeo(pids){
 	filteredPidsGeo = pids
@@ -240,6 +242,26 @@ function updatePerNum(){
 	console.log(text)
 	d3.select("#list-contain").select('.per-num')
 		.html(text)
+}
+
+function reflowItems(){
+	console.log('---------------reflow------------')
+	let allItems = d3.selectAll('.list-item')
+	let flowIndex = 0 , itemHeight = 40 ,topHeight = 0 
+
+	// 该 flowIndex 为排序的顺序 ，
+
+
+	allItems.each(function(d,i){
+		// console.log(i)
+		let curItem = d3.select(this)
+		if(curItem.attr('class').indexOf('hide') == -1){
+			// console.log('one hide')
+			topHeight = (flowIndex * itemHeight)
+			curItem.style('top',topHeight + 'px')
+			flowIndex += 1
+		}
+	})
 }
 
 // export function draw(data){
