@@ -58,7 +58,7 @@
 	white-space: nowrap;   /*white-space这个属性防止父容器内容换行， */
 	overflow : hidden      /*防止子元素溢出 ,前提是本身需要设置 width */;
 	/*box-shadow: 0px 2px 6px 0px;*/
-	background-color: #e8e8e8;
+	background-color: #fff;
 }
 .topic-rect{
 	/*该元素不能有 padding 或 border  长度为0情况下总长度需要为0*/
@@ -163,10 +163,11 @@
 
 
 .brush rect.selection{
-	fill:red;
+	fill: #8c8c8c;
+	stroke-width: 0;
 }
 .brush rect.handle{
-	fill:red;
+	fill: #8c8c8c;
 	opacity: 0.5;
 }
 .brush rect.overlay{
