@@ -95,11 +95,29 @@
 .condition_node .spatial_constraints .wordtitle{
     font-size: 13px;
     text-align: center;
-    background: #b1b1b1;
+    background: white;
     line-height: 23px;
     color: white;
 }
-
+.condition_node .spatial_constraints .wordtitle .hide_nei_words{
+    font-size: 13px;
+    text-align: center;
+    background: #b1b1b1;
+    line-height: 23px;
+    width:23px;
+    color: white;
+    display:inline-block;
+    float:left;
+}
+.condition_node .spatial_constraints .wordtitle .real_wordtitle{
+    font-size: 13px;
+    text-align: center;
+    background: #b1b1b1;
+    line-height: 23px;
+    color: white;
+    display:inline-block;
+    width: calc(100% - 30px);
+}
 
 .condition_node .spatial_constraints .wordsubtitle{
     font-size: 12px;
