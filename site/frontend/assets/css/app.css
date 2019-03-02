@@ -117,6 +117,7 @@ html, body{
     margin: 10px;
     border: 1px dashed #848484;
     height: calc(32% - 60px);
+    overflow: auto;
 }
 
 
