@@ -148,10 +148,11 @@ function renderingwordslist(mergenode){
   let mergewords = addwords.merge(allwords)
   mergewords.style("top",(d,i)=>`${i*24}px`)
 
-  addwords.append("div").classed("wordtitle",true)
-  addwords.append("div").classed("wordsubtitle",true)
-  addwords.append("div").classed("nei_words",true)
-  mergewords.select(".wordtitle").text((d,i)=>d.name)
+  let addwordtitle=addwords.append("div").classed("wordtitle",true)
+  addwords.append("div").classed("wordsubtitle",true).style('visibility','hidden');
+  addwords.append("div").classed("nei_words",true).style('visibility','hidden');
+  addwordtitle.append('div').classed('hide_nei_words',true).text('+').on('click',show_hide);
+    addwordtitle.append('div').classed('real_wordtitle',true).text((d,i)=>d.name);
   mergewords.select(".wordsubtitle").text("Neighbors")
   let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d){
       return d.data
@@ -391,6 +392,54 @@ d3.select('#'+nodelist.order[current_location]).style('left', current_location*(
     //target_node.attr('start_x',mouse_x);
     //target_node.attr('start_y',mouse_y);
 }
+
+
+
+
+function show_hide(){
+    console.log('show_hide');
+    let current_val = d3.select(this).text();
+    if(current_val=='+')//show
+    {
+        console.log(this.parentNode.parentNode)
+d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility','visible');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility','visible');
+d3.select(this).text('-');
+//create line
+    }
+    else{//hide
+d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility','hidden');
+ d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility','hidden');
+d3.select(this).text('+');
+jsPlumb.deleteConnectionsForElement( d3.select(this.parentNode.parentNode).select('.nei_words'),{});
+    }
+}
+
+
+ function create_line(source,targets) {
+         var common = {
+         endpoint: ['Dot',{ radius:5}],//'Blank',//'Rectangle','Image',//
+         connector: ['StateMachine'],//Bezier,Straight,Flowchart'],
+         anchor: ['Left', 'Right'],
+         paintStyle: { stroke: 'lightgray', strokeWidth: 3 },
+         maxConnections: -1,
+       endpointStyle: { fill: 'lightgray', outlineStroke: 'darkgray', outlineWidth: 2 },
+             ConnectionsDetachable: false, //连线是否可用鼠标分离
+       };
+ jsPlumb.ready(function () {
+     jsPlumb.importDefaults({//连线不被拖动
+         ConnectionsDetachable: false
+     })
+
+           jsPlumb.connect({
+         source: 'F-Tag1',//source,//'item_left',
+         target: 'S-Tag5',//targets[i],//'item_right',
+       },common)
+    //jsPlumb.draggable('F-Tag1')
+     //jsPlumb.draggable('S-Tag5')
+
+     })
+    }
 //     function show_more(id,show_id){
 //         var this_button=document.getElementById(id);
 //         var value=this_button.innerText;
