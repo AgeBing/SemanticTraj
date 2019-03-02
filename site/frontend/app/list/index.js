@@ -45,8 +45,17 @@ resultlist.draw = function(data){
 	mergetraj.attr('id',d=>d.pid)
 
 	// chechbox
-	addtraj.append('div').attr('class',"check-contain")
-		.append('input').attr('type','checkbox')
+	let checkContain = addtraj.append('div').attr('class',"check-contain")
+		checkContain.append('input')
+				.attr('type','checkbox')
+				.attr('id',(d)=>{
+					return 'input'+d.pid
+				})
+		checkContain.append('label')
+				.attr('for',(d)=>{
+					return 'input'+d.pid
+				})
+
 	mergetraj.select(".check-contain")
 		.select("input")
 		.property('checked',function(d){
@@ -81,12 +90,17 @@ resultlist.draw = function(data){
 
 
 	mergetraj.on('mouseenter',function(d){
+		let disable = d3.select(this).select('input').property('disabled')
+		if(disable) return
 		highLightOneItem(d.pid)
 		highLightTrajContorl(d.pid)
 		if( d3.select(this).select('input').property('checked') )
 			highLightTopiContorl(d.pid)
+
 	})
 	.on('mouseleave',function(d){
+		let disable = d3.select(this).select('input').property('disabled')
+		if(disable) return
 		unhighLightOneItem(d.pid)
 		unHighLightTrajContorl()
 		if( d3.select(this).select('input').property('checked') ){

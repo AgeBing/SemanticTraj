@@ -10,6 +10,20 @@ let svg
 
 
 
+/*
+结构
+.leaflet-pane .leaflet-overlay-pane
+	canvas #canvas-upon-map
+	canvas #canvas-upon-map-select
+	svg #svg-select
+		g .rect-group
+			rect .selection      //名字可能会被重名  被其他 css 修改掉
+			g .del-icon
+		g .rect-group
+		g .rect-group
+	svg #svg-poi
+*/
+
 export function draw(){
 	addSelect()
 
@@ -47,6 +61,8 @@ export function draw(){
 
 function selectFunctionEventHandler(){
 		d3.select('#svg-poi').style('display','none')
+		// d3.select('#svg-poi').remove()
+
 		svg = d3.select('#svg-select')
 		svg.style('cursor','crosshair')
 		map.dragging.disable()
@@ -133,8 +149,6 @@ function addSelectRect(){
 		addSelection()
 
 		d3.select('#svg-poi').style('display','block')
-
-
 	})
 }
 

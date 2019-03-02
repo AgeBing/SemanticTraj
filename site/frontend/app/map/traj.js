@@ -198,8 +198,9 @@ export function highLightTrajSectionInMap(siteId1,siteId2){
 	// 	drawOneSection( pa, pb)
 	// }
 
+	// 可能 vertice1 数据为空
 	drawOneSectonPolygon(vertice1)
-	drawOneSectonPolygon(vertice2)
+	// drawOneSectonPolygon(vertice2)
 }
 
 function drawOneSection( pa , pb){
@@ -217,7 +218,10 @@ function drawOneSectonPolygon(vertice){
 	let vertices = [] ,points = ""
 	for(let i = 0 ;i < vertice.length;i++){
 		let v = vertice[i].split(',')
-		vertices.push(v)
+		v.forEach((_v)=>{
+			_v = parseFloat(_v)
+		})
+		vertices.push([parseFloat(v[0]) , parseFloat(v[1])] )
 	}
 	let box = [ boundry.bottom_left.lng , boundry.bottom_left.lat 
 				, boundry.top_right.lng , boundry.top_right.lat ]
@@ -231,10 +235,15 @@ function drawOneSectonPolygon(vertice){
 			
 			points +=  pa[0] + "," + pa[1] + " "
 			points +=  pb[0] + "," + pb[1] + " "
+			
+			console.log(pa,pb,da,db)
 		}
 	}
 	//points 可能为空
 	let svg = d3.select('#svg-poi').select('#traj-section')
+
+	// 有的点可能超出界外
+
 	//多边形
 	svg.append('polygon')
 		.attr('points',points)

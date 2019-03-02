@@ -90,7 +90,10 @@ function _p2l(x,y){
 
 
 // 相对视图边界的像素坐标
-function _l2pb(lat,lng) {    
+function _l2pb(lat,lng) {
+	lat = parseFloat(lat)
+	lng = parseFloat(lng)
+
 	let lngWidth = boundry.top_right.lng - boundry.bottom_left.lng,
 		latHeight = boundry.top_right.lat - boundry.bottom_left.lat,
 		widthPixel = width,
@@ -102,16 +105,16 @@ function _l2pb(lat,lng) {
 	// 	|| lng > boundry.top_right.lng || lng < boundry.bottom_left.lng)  //超出视窗
 	// 	return [-1,-1]
 
-	if(lat > boundry.top_right.lat || lat < boundry.bottom_left.lat){
-		if(lat > boundry.top_right.lat) re[1] = 0
-		if(lat < boundry.bottom_left.lat) re[1] = heightPixel
+	if(lat >= boundry.top_right.lat || lat <= boundry.bottom_left.lat){
+		if(lat >= boundry.top_right.lat) re[1] = 0
+		if(lat <= boundry.bottom_left.lat) re[1] = heightPixel
 	}else{
 		re[1]  = Math.round( (boundry.top_right.lat - lat) / latHeight*heightPixel)
 	}
 
-	if(lng > boundry.top_right.lng || lng < boundry.bottom_left.lng){
-		if(lng > boundry.top_right.lng)  re[0]  = widthPixel
-		if(lng < boundry.bottom_left.lng) re[0] = 0
+	if(lng >= boundry.top_right.lng || lng <= boundry.bottom_left.lng){
+		if(lng >= boundry.top_right.lng)  re[0]  = widthPixel
+		if(lng <= boundry.bottom_left.lng) re[0] = 0
 	}else{
 		re[0] = Math.round( (lng - boundry.bottom_left.lng) / lngWidth*widthPixel)
 	}

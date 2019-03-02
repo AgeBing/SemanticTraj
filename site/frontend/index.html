@@ -75,26 +75,40 @@
 
 
   <div id="map-view" class="panel right-panel" >
-        <div id="select-btn" style= "position: absolute;
-    background: #6f6f6f;left: 13px;top: 83px; z-index: 2;cursor: pointer;">
-          <img style="    height: 30px;" src="../assets/icons/others.svg">
+        
+        <div id="select-area">
+
+        <div id="select-btn">
+          <img style="    height: 30px;" src="../assets/icons/select.svg">
         </div>
+        <div class="range-area">
+          <input type="range" name="1">          
+        </div>        
+        </div>
+
+
     <div id="map-container" style= "position: absolute;z-index: 1;"   class="panel right-panel" >
         <div class="default-word"><span> - </span></div>
     </div>
   </div>
 
 
-  <div  id="topic-container" style = "
+  <div  id="timeline-container" style = "
       position: absolute;"
       class="panel down-panel">
-      <div class="default-word"><span> - </span></div>
+      <!-- <div class="default-word"><span> - </span></div> -->
+  
       <div class="panel up-panel" id="topic-legend">
             <div class="legend-intro">
                 Function Categories :
             </div>
       </div>
+  
+      <div id="topic-container" style = "
+      position: absolute;"  > </div>
   </div>
+
+
 
 <!-- 		<div class="sub-contain down-contain">
 			<div class="panel left-panel"  id="control">

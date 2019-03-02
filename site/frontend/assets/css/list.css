@@ -16,6 +16,7 @@
 	    position: absolute;
 	    visibility: visible;
 	    opacity: 1;
+        width: calc(100% - 10px);
 }
 
 
@@ -24,14 +25,54 @@
 	float: left ;
 }
 .check-contain{
-	width: 20px;
+    width: 20px;
+    margin: 2px;
+    position: relative;
+    height: 35px;
+}
+.check-contain input[type=checkbox]{
+    visibility: hidden;
+}
+.check-contain label{
+    cursor: pointer;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 6px;
+    left: 0;
+    background: #eee;
+    border: 1px solid #ddd;
+}
+.check-contain label:after {
+    opacity: 0.2;
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 4px;
+    background: transparent;
+    top: 3px;
+    left: 3px;
+    border: 3px solid #333;
+    border-top: none;
+    border-right: none;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+.check-contain label:hover::after {
+    opacity: 0.5;
+}
+.check-contain input[type=checkbox]:checked + label:after {
+    opacity: 1;
+}
+.filtered label{
+    cursor: auto;
+    opacity: 0.4;
 }
 
-.check-contain input{
-	width: 16px;
-	height: 16px;
-	margin: 2px;
-}
+
 .id-word{
 	line-height: 35px;
     float: left;
@@ -45,7 +86,7 @@
     background-color: #595959;
     height: 19px;
     margin: 8px;
-    width: calc(100% - 208px);
+    width: calc(100% - 220px);
 }
 .percent-word{
 	    font-size: 15px;
@@ -57,7 +98,7 @@
 .filtered .id-word{
 	color:#e8e8e8;
 }
-.filtered .percent-rect-color{
+.filtered .percent-rect{
 	background-color: #e8e8e8
 }
 .filtered .percent-word{
@@ -72,7 +113,7 @@
 	height: 38px;
 }
 #filter-btn{
-	background-color: #40a9ff;
+	background-color: #595959;
     color: #fff;
     cursor: pointer;
     border: 0px solid transparent;
@@ -80,7 +121,7 @@
     height: 23px;
     font-size: 12px;
     margin: 0px 22px 0px 0px;
-
+    border-radius: 3px;
     position: absolute;
     top: 10px;
     right: 10px;
