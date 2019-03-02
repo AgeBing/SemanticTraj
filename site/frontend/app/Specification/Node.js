@@ -4,22 +4,29 @@
 
 let nodelist={
   container:d3.select("#Specification_view"),
-  data : []
+  data : [],
+    order:[],
 }
 
 
 nodelist.rendering = function(){
-  console.log(nodelist.data)
-
   for(let i =0;i<nodelist.data.length;i++){
     nodelist.data[i].order = i +1
   }
-  let allnode = this.container.selectAll(".condition_node")
-    .data(nodelist.data, (d,i)=>d.name)
 
-  allnode.exit().remove()
+  let allnode = this.container.selectAll(".condition_node")
+    .data(nodelist.data, (d,i)=>d.name);
+
+
+  allnode.exit().remove();
+
   let addnode = allnode.enter().append("div")
                       .classed("condition_node",true)
+      .attr('id',function(d){return 'condition_node'+d.order})
+    .call(d3.drag()
+         .on("start", drag_start)
+          .on("drag", newdrag)
+          .on('end',drag_end));
   let mergenode = addnode.merge(allnode)
 
   mergenode.style("left",d=>`${622*(d.order-1)}px`)
@@ -33,7 +40,10 @@ nodelist.rendering = function(){
   mergenode.select(".title").select(".constraints_order").text(d=>d.order)
   mergenode.select(".title").select(".text").text(d=>d.name)
 
-
+    nodelist.order=[];
+    this.container.selectAll(".condition_node").each(function(){
+      nodelist.order.push(d3.select(this).attr('id'));
+  });
 
   //time constraints
   let timeconstraings = addnode.append("div").classed("timeconstraints",true)
@@ -115,7 +125,6 @@ nodelist.rendering = function(){
   addslide(semantic_constraints,"Education",mergenode)
   addslide(semantic_constraints,"Industry",mergenode)
   addslide(semantic_constraints,"Traffic",mergenode)
-
 }
 function renderingwordslist(mergenode){
 
@@ -277,6 +286,111 @@ function init_slider(svg,text){
 module.exports = nodelist;
 
 
+function drag_start(){
+    //let mouse_x = d3.event.x;
+    //let mouse_y = d3.event.y;
+    //d3.select(this).style.cursor = "move";
+    d3.select(this).style("z-index",10000);
+    //target_node.attr('start_x', mouse_x);
+    //target_node.attr('start_y',mouse_y);
+    //console.log('target_node:',target_node.style)
+//this.attr("x", mouse_x);
+
+}
+function newdrag() {
+     let dx = d3.event.dx, dy = d3.event.dy;
+    let prex = parseInt(d3.select(this).style('left'));
+    if(((dx + prex)<=0))
+    {
+        d3.select(this).style('left', prex);
+    }
+    else{
+        d3.select(this).style('left', (dx + prex) + 'px');
+        let current_id=d3.select(this).attr('id');
+        let current_location=0;
+
+        for( let i=0;i<nodelist.order.length;i++)
+        {
+            if(current_id==nodelist.order[i])
+            {
+                current_location=i;
+                break;
+            }
+        }
+        let next_node=null;
+        if(current_location+1<nodelist.order.length){
+            next_node=d3.select('#'+nodelist.order[current_location+1]);
+        }
+        let prev_node=null;
+        if(current_location-1>=0){
+            prev_node=d3.select('#'+nodelist.order[current_location-1]);
+        }
+        //let change_next=(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
+        //let change_prev=(prev_node!=null&&((parseInt(prev_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
+            if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
+{
+    d3.select(this).style('-webkit-transition-duration','2s');
+    next_node.style('-webkit-transition-duration','2s');
+   let next_left=parseInt(next_node.style('left'))
+   let now_left=next_left - parseInt(d3.select(this).style('width'))-22;
+
+            d3.select(this).style('left', next_left+'px');
+            next_node.style('left',now_left+'px');
+            let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+            let next_num = next_node.select('.title').select('.constraints_order').text();
+            d3.select(this).select('.title').select('.constraints_order').text(next_num);
+            next_node.select('.title').select('.constraints_order').text(current_num);
+            //d3.select(this).attr('start_x',target_node.style('left'));
+            let temp=nodelist.order[current_location];
+            nodelist.order[current_location]=nodelist.order[current_location+1];
+            nodelist.order[current_location+1]=temp;
+}
+            else{
+                if(prev_node!=null&&((parseInt(d3.select(this).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(this).style('width'))/2))
+{
+    d3.select(this).style('-webkit-transition-duration','2s');
+    prev_node.style('-webkit-transition-duration','2s');
+   let prev_left=parseInt(prev_node.style('left'))
+   let now_left=parseInt(d3.select(this).style('width'))+22+prev_left;
+   d3.select(this).style('left', prev_left+'px');
+            prev_node.style('left',now_left+'px');
+            let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+            let prev_num = prev_node.select('.title').select('.constraints_order').text();
+            d3.select(this).select('.title').select('.constraints_order').text(prev_num);
+            prev_node.select('.title').select('.constraints_order').text(current_num);
+
+            //d3.select(this).attr('start_x',target_node.style('left'));
+            let temp=nodelist.order[current_location];
+            nodelist.order[current_location]=nodelist.order[current_location-1];
+            nodelist.order[current_location-1]=temp;
+}
+            }
+        }
+
+
+
+}
+function drag_end(){
+    d3.select(this).style('-webkit-transition-duration','0s');
+    let current_id=d3.select(this).attr('id');
+        let current_location=0;
+        for( let i=0;i<nodelist.order.length;i++)
+        {
+            if(current_id==nodelist.order[i])
+            {
+                current_location=i;
+                break;
+            }
+        }
+d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(this).style('width'))+22)+"px");
+        d3.select(this).style('z-index',0);
+   // }
+
+    //target_node.style('left', mouse_x);
+    //target_node.style('top', mouse_y);
+    //target_node.attr('start_x',mouse_x);
+    //target_node.attr('start_y',mouse_y);
+}
 //     function show_more(id,show_id){
 //         var this_button=document.getElementById(id);
 //         var value=this_button.innerText;

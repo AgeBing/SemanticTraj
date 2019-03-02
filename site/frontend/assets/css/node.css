@@ -5,6 +5,7 @@
     margin: 10px;
     background: #fbfbfb;
     border-radius: 2px;
+    z-index:0;
 }
 .condition_node .title{
     padding: 7px;
