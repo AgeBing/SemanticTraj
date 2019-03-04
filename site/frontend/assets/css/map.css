@@ -124,3 +124,8 @@ rect.selection {
 	background-color: #dddddd;
     cursor: auto; 
 }
+
+
+#poi-icon{
+	position: absolute;
+}

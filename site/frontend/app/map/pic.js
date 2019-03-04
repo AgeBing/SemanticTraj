@@ -29,8 +29,7 @@ import { filterGlobalData } from '../app.js'
 import * as Config from './config.js';
 
 
-
-export async function draw(data) {
+export function draw(data) {
 	let isChanged = updateTileBoundry(),
 		originPiexelPoints , selectPiexelPoints , urlCache = {}
 

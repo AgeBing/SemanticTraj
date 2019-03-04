@@ -47,6 +47,12 @@ let selectSvg = d3.select(map.getPanes().overlayPane)
     .attr("height",height)
 
 
+d3.select(map.getPanes().overlayPane)
+	.append("img")
+	.attr('id','poi-icon')
+	.attr('src','../assets/icons/poi_map.svg')
+	.attr("width",  20)
+    .attr("height", 20)
 
 // let loading = d3.select(map.getPanes().overlayPane)
 // 	.append("div")
@@ -115,7 +121,7 @@ function resize(){
 
 
 
-async function drawPic() {
+function drawPic() {
 
 
 	let left = -(map.getPixelOrigin().x -map.getPixelBounds().min.x ) + 'px',
@@ -136,7 +142,6 @@ async function drawPic() {
 
 
  	draw()  //绘制轨迹
-	drawPoi()  //绘制poi点
 	drawTraj() //绘制勾选的轨迹
 }
 

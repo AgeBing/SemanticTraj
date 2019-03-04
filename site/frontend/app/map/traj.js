@@ -170,7 +170,7 @@ export function unHighLightTrajInMap(){
 
 
 // 高亮轨迹片段
-export function highLightTrajSectionInMap(siteId1,siteId2){
+export function highLightTrajSectionInMap(siteId1,siteId2,fillColor){
 
 	let poiSvg = d3.select('#svg-poi')
 	poiSvg.append('g').attr('id','traj-section')
@@ -199,7 +199,7 @@ export function highLightTrajSectionInMap(siteId1,siteId2){
 	// }
 
 	// 可能 vertice1 数据为空
-	drawOneSectonPolygon(vertice1)
+	drawOneSectonPolygon(vertice1,fillColor)
 	// drawOneSectonPolygon(vertice2)
 }
 
@@ -214,7 +214,7 @@ function drawOneSection( pa , pb){
 		.style('stroke',Config.oneSectionTrajColor)
 		.style('stroke-width',2)
 }
-function drawOneSectonPolygon(vertice){   
+function drawOneSectonPolygon(vertice,fillColor){   
 	let vertices = [] ,points = ""
 	for(let i = 0 ;i < vertice.length;i++){
 		let v = vertice[i].split(',')
@@ -236,7 +236,7 @@ function drawOneSectonPolygon(vertice){
 			points +=  pa[0] + "," + pa[1] + " "
 			points +=  pb[0] + "," + pb[1] + " "
 			
-			console.log(pa,pb,da,db)
+			// console.log(pa,pb,da,db)
 		}
 	}
 	//points 可能为空
@@ -244,13 +244,14 @@ function drawOneSectonPolygon(vertice){
 
 	// 有的点可能超出界外
 
+	console.log(fillColor)
 	//多边形
 	svg.append('polygon')
 		.attr('points',points)
 		.style('stroke','black')
 		.style('stroke-width',1)
-		.style('fill','lime')
-		.style('opacity',0.3)
+		.style('fill',fillColor)
+		.style('opacity',0.6)
 }
 
 
