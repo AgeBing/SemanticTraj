@@ -129,7 +129,7 @@ html, body{
     margin: 10px;
 }
 
-#topic-container{
+#timeline-container{
 	position: absolute;
     width: calc(75% - 35px);
     height: calc(28% - 33px);
@@ -137,14 +137,19 @@ html, body{
     margin: 10px;
     border: 1px dashed #848484;
 }
+#topic-container{
+    /*position: absolute;*/
+    width: 100%;
+    height: calc(100% - 50px);
+}
 
 #list-contain{
 	position: absolute;
-    width: 25%;
-    right: 0;
-    height: calc(100% - 84px);
-    margin: 10px 10px;
-    border: 1px dashed #848484;
+	width: 25%;
+	right: 0;
+	height: calc(100% - 84px);
+	margin: 10px 10px;
+	border: 1px dashed #848484;
 }
 
 .panel{
@@ -174,7 +179,7 @@ html, body{
 	margin: 10px 10px;
 }
 .up-panel{
-	width: 100%;
+	width: calc(100%-5px);
 }
 .down-panel{
 	width: 100%;

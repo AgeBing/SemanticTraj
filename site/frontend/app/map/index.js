@@ -22,25 +22,24 @@ let  width = visBox.offsetWidth; //宽度
 let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
 let zoomRate = 12;
 let map = L.map('map-container').setView([28.0152686, 120.6558736], zoomRate);
-let osmLayer = L.tileLayer(tilemapservice, {
-  attribution: 'Wikimedia maps beta | &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+let osmLayer = L.tileLayer(tilemapservice).addTo(map);
 
 
 let canvas = d3.select(map.getPanes().overlayPane).append("canvas").attr('id','canvas-upon-map')
 d3.select(map.getPanes().overlayPane).append("canvas").attr('id','canvas-upon-map-select')
 
 
-let selectSvg = d3.select(map.getPanes().overlayPane)
-	.append("svg")
-	.attr('id','svg-select')
-	.attr("width",  width)
-    .attr("height",height)
-
 
 let poiSvg = d3.select(map.getPanes().overlayPane)
 	.append("svg")
 	.attr('id','svg-poi')
+	.attr("width",  width)
+    .attr("height",height)
+
+
+let selectSvg = d3.select(map.getPanes().overlayPane)
+	.append("svg")
+	.attr('id','svg-select')
 	.attr("width",  width)
     .attr("height",height)
 

@@ -13,6 +13,12 @@ let  w = visBox.offsetWidth; //宽度
 
 // 数据格式转换
 function dataAdapter(_line_data){
+	
+
+	// 将 topics 为空的项去掉 用后面的数据连起来
+
+
+
 	let ps = _line_data.traj.map((line) => {
 		return {
 			date : line.startTime.split(' ')[0],
@@ -177,8 +183,9 @@ export class topicZoomRect {
 
 			//移除 child elements 
 			_rect.selectAll('div').remove() 
-			if(!data.ps[i].topics){
 
+			if(!data.ps[i].topics){
+				console.log('have empty topic!!')
 				return
 			}
 

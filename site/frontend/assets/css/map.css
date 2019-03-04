@@ -35,3 +35,55 @@ rect.selection {
 	stroke:purple;
 	stroke-width: 1px;
 }
+
+
+#select-area{
+	position: absolute;
+    /*background: #fff;*/
+    right: 10px;
+    bottom: 10px; 
+    z-index: 2;
+    height: 40px;
+	width: 162px;
+
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
+
+}
+
+
+#select-btn{
+	height: 100%;
+	width: 40px;
+	float: left;
+    background: #fff;
+ 	display: inline-block;
+    cursor: pointer; 
+    border-right: 1px solid #ccc;
+}
+#select-btn:hover{
+	background-color: #dddddd;
+}
+#select-btn img{
+	height: 30px;
+    margin: 5px;
+}
+
+.range-area{
+	height: 100%;
+	width: 120px;
+	float: right;
+	display: inline-block;
+	background: #fff;
+}
+.range-area:hover{
+	background-color: #dddddd;
+}
+.range-area input{
+	width: 110px;
+    margin: 12px 5px;
+}
+.range-area input:hover{
+    cursor: pointer; 
+	
+}

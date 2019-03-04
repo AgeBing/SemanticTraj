@@ -34,12 +34,11 @@
 	条数超出界高度时可上下移动
 */
 .rect-group-container{
-	    height: calc(100% - 35px);
-	display: flex;
-	flex-direction: column;
-	padding: 10px 0;
-	overflow: overlay;
-	margin-bottom: 10px;
+	    height: calc(100% - 70px);
+	    display: flex;
+	    flex-direction: column;
+	    overflow: overlay;
+	    margin-bottom: 5px;
 }
 .rect-container{
 	display: inline-block;
@@ -137,6 +136,7 @@
 */
 #topic-legend{
 	padding: 5px 0px;
+	height: 50px;
 }
 .legend-item{
 	display: inline-block;
