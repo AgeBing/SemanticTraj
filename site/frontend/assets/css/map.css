@@ -39,16 +39,14 @@ rect.selection {
 
 #select-area{
 	position: absolute;
-    /*background: #fff;*/
-    right: 10px;
-    bottom: 10px; 
-    z-index: 2;
-    height: 40px;
-	width: 162px;
-
-    border: 2px solid rgba(0,0,0,0.2);
-    background-clip: padding-box;
-
+	/*background: #fff;*/
+	right: 10px;
+	bottom: 10px;
+	z-index: 2;
+	height: 40px;
+	width: 243px;
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
 }
 
 
@@ -86,4 +84,43 @@ rect.selection {
 .range-area input:hover{
     cursor: pointer; 
 	
+}
+.color-area{
+	height: 100%;
+	width: 40px;
+	float: left;
+    background: #fff;
+ 	display: inline-block;
+    cursor: pointer; 
+    border-right: 1px solid #ccc;
+}
+.color-area:hover{
+	background-color: #dddddd;
+}
+.color-area input{
+	height: 26px;
+	margin: 7px;
+	width: 20px;
+}
+
+.color-area-select{
+	height: 100%;
+	width: 40px;
+	float: left;
+    background: #fff;
+ 	display: inline-block;
+    cursor: pointer; 
+    border-right: 1px solid #ccc;
+}
+.color-area-select:hover{
+	background-color: #dddddd;
+}
+.color-area-select input{
+	height: 26px;
+	margin: 7px;
+	width: 20px;
+}
+.color-area-select.disable{
+	background-color: #dddddd;
+    cursor: auto; 
 }
