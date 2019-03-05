@@ -2,14 +2,42 @@ from . import querymysqlutil
 from datetime import datetime, timedelta
 import math
 from . import datamanager
+from ctypes import *
 
 # 认定在某个地点停留的时间长度阈值
 STOPTIME_THRESHOLD = 20 * 60
 
+class CA(Structure):
+    _fields_ = [('peopleid',c_char_p),
+                ('count', c_int),
+                ('traj', c_char_p)]
+    def __init__(self, peopleid, count, traj):
+      self.peopleid = peopleid.encode('utf8')
+      self.count = count
+      self.traj = traj.encode('utf8')
+
+class CNode(Structure):
+  _fields_ = [('isStop', c_bool),
+              ('startTime', c_char_p),
+              ('endTime', c_char_p),
+              ('stopTime', c_int),
+              ('site', c_char_p),
+              ('stoppoint', c_int)]
+
+class Traj(Structure):
+  _fields_ = [('peopleid', c_char_p),
+              ('matching', c_bool),
+              ('trajs', POINTER(CNode)),
+              ('trajLen', c_int)]
+
+class returnType(Structure):
+  _fields_ = [('traj', POINTER(Traj)),
+              ('cnt', c_int)]
+
 class Traj(object):
   def __init__(self, stop_num, sites, site_cover, 
       start_time_str = '2014-01-14 08:00:00.00', 
-      end_time_str = '2014-01-14 08:00:20.00'):
+      end_time_str = '2014-01-14 08:02:00.00'):
     self.__stop_num = stop_num
     self.__sites = sites
     self.__site_cover = site_cover
@@ -56,6 +84,47 @@ class Traj(object):
         pid_site[pid] = state | site_state
     return valid_pids
 
+  def __use_c_handle_traj(self, traj_results, ):
+    preTime = datetime.now()
+    ca_list = [CA(d['peopleid'], d['count'], d['traj']) for d in traj_results]
+    ca_array = (CA * len(ca_list))(*ca_list)
+    k_list = []
+    v_list = []
+    for k, v in self.__site_cover.items():
+      k_list.append(str(k).encode('utf8'))
+      v_list.append(v)
+    k_array = (c_char_p * len(k_list))(*k_list)
+    v_array = (c_int * len(v_list))(*v_list)
+    f = open('c_traj_handle.dll', 'r')
+    lib = cdll.LoadLibrary("c_traj_handle.dll") 
+    lib.c_handle_traj.argtypes = POINTER(CA), c_int, c_int, POINTER(c_char_p), POINTER(c_int), c_int, c_int
+    lib.c_handle_traj.restype = returnType
+    ans = lib.c_handle_traj(ca_array, STOPTIME_THRESHOLD, len(ca_array), 
+        k_array, v_array, len(k_array), self.__stop_num)
+    time2 = datetime.now()
+    print('C++ 计算时间：', (time2 - preTime).seconds)
+    traj_list = [None] * ans.cnt
+    for i in range(0, ans.cnt):
+      tmp_trajs = [None] * ans.traj[i].trajLen
+      for j in range(0, ans.traj[i].trajLen):
+        now_node = ans.traj[i].trajs[j];
+        tmp_trajs[j] = {
+          'isStop': now_node.isStop,
+          'startTime': now_node.startTime.decode(),
+          'endTime': now_node.endTime.decode(),
+          'stopTime': now_node.stopTime,
+          'site': now_node.site.decode(),
+        }
+        if (now_node.stoppoint >= 0):
+          tmp_trajs[j]['stoppoint'] = now_node.stoppoint
+      traj_list[i] = {
+        'peopleid': ans.traj[i].peopleid.decode(),
+        'matching': ans.traj[i].matching,
+        'traj': tmp_trajs
+      }
+    print('整理轨迹时间', (datetime.now() - time2).seconds)
+    return traj_list
+
   def __get_trajs_by_pids(self, pids):
     """
     根据轨迹ID找到所有轨迹
@@ -73,25 +142,25 @@ class Traj(object):
         from phonetrajectory_sortbyid
         where date in ({0}) and peopleid in ({1})
         order by peopleid, count
-        limit 10000
         """.format(','.join(dates), ','.join(pids))
     # print(sql_str)
     traj_results = mysql.get_all(sql_str)
     print('query sql finish')
-    trajs = {}
-    for node in traj_results:
-      now_traj = trajs.get(node['peopleid'], {
-        'pid': node['peopleid'],
-        'traj': []
-        })
-      traj_strs = filter(lambda x: len(x) > 0, node['traj'].split(';'))
-      now_traj['traj'].extend(
-        [dict(zip(
-          ('time', 'site'), x.split(','))) for x in traj_strs
-        ]
-      )
-      trajs[node['peopleid']] = now_traj
-    print('get trajs finished!')
+    return traj_results
+    # trajs = {}
+    # for node in traj_results:
+    #   now_traj = trajs.get(node['peopleid'], {
+    #     'pid': node['peopleid'],
+    #     'traj': []
+    #     })
+    #   traj_strs = filter(lambda x: len(x) > 0, node['traj'].split(';'))
+    #   now_traj['traj'].extend(
+    #     [dict(zip(
+    #       ('time', 'site'), x.split(','))) for x in traj_strs
+    #     ]
+    #   )
+    #   trajs[node['peopleid']] = now_traj
+    # print('get trajs finished!')
     return trajs
 
   def __get_diff_seconds(self, t1, t2):
@@ -178,10 +247,13 @@ class Traj(object):
     print('filter pid ....')
     o = self.__filter_pid(o)
     print('get trajs by pids ...')
+    preTime = datetime.now()
     o = self.__get_trajs_by_pids(o)
-    print('handle traj ....')
-    o = self.__handle_traj(o)
-    return self.__filter_trajs(o)
+    print('传输时间：', (datetime.now() - preTime).seconds)
+    return self.__use_c_handle_traj(o)
+    # print('handle traj ....')
+    # o = self.__handle_traj(o)
+    # return self.__filter_trajs(o)
 
 
   

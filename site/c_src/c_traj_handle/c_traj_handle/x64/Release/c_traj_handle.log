@@ -1,0 +1,14 @@
+﻿  stdafx.cpp
+  c_traj_handle.cpp
+e:\gsj\repositories\newsemantictraj\site\c_src\c_traj_handle\c_traj_handle\c_traj_handle.cpp(83): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+e:\gsj\repositories\newsemantictraj\site\c_src\c_traj_handle\c_traj_handle\c_traj_handle.cpp(128): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+e:\gsj\repositories\newsemantictraj\site\c_src\c_traj_handle\c_traj_handle\c_traj_handle.cpp(136): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+e:\gsj\repositories\newsemantictraj\site\c_src\c_traj_handle\c_traj_handle\c_traj_handle.cpp(165): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+e:\gsj\repositories\newsemantictraj\site\c_src\c_traj_handle\c_traj_handle\c_traj_handle.cpp(206): warning C4190: “c_handle_traj”有指定的 C 链接，但返回了与 C 不兼容的 UDT“returnType”
+  e:\gsj\repositories\newsemantictraj\site\c_src\c_traj_handle\c_traj_handle\c_traj_handle.cpp(87): note: 参见“returnType”的声明
+  dllmain.cpp
+    正在创建库 E:\GSJ\repositories\newSemanticTraj\site\c_src\c_traj_handle\x64\Release\c_traj_handle.lib 和对象 E:\GSJ\repositories\newSemanticTraj\site\c_src\c_traj_handle\x64\Release\c_traj_handle.exp
+  正在生成代码
+  All 833 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  c_traj_handle.vcxproj -> E:\GSJ\repositories\newSemanticTraj\site\c_src\c_traj_handle\x64\Release\c_traj_handle.dll

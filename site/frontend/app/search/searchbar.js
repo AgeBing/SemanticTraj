@@ -51,10 +51,11 @@ function addInputListener(o) {
     } else if (e.keyCode == '8') {
       const nowText = $('#search-input-text').val().trim()
       if (nowText.length == 0) {
+        //只有删除这个词才会更新
         textData.pop();
         get_participle('')
       } else {
-        get_participle(nowText)
+        // get_participle(nowText)
       }
     }
   })
