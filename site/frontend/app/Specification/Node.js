@@ -7,8 +7,7 @@ let nodelist={
   data : [],
     order:[],
 }
-
-
+let line_data=[];
 nodelist.rendering = function(){
   for(let i =0;i<nodelist.data.length;i++){
     nodelist.data[i].order = i +1
@@ -23,6 +22,9 @@ nodelist.rendering = function(){
   let addnode = allnode.enter().append("div")
                       .classed("condition_node",true)
       .attr('id',function(d){return 'condition_node'+d.order})
+      .each(function(){
+                          line_data[d3.select(this).attr('id')]={left:[],right:[]};
+      })
     .call(d3.drag()
          .on("start", drag_start)
           .on("drag", newdrag)
@@ -83,11 +85,40 @@ nodelist.rendering = function(){
   let spatial_cc = spatial_constraints.append("div").style("height","calc(100% - 27px)")
                 .style("position","absolute")
                 .style("width","100%")
-  spatial_cc.append("div").style("width","205px")
+  spatial_cc.append("div")
+      .attr('id',function(d){return 'spatial_left'+d.order}).style("width","205px")
                   .style("float","left")
                   .style("overflow-y","auto")
                   .attr("dir","rtl")
                   .style("height","100%")
+      .each(function(d){
+let current_id = d3.select(this).attr('id');
+console.log('#'+current_id,'current_id--------------');
+let index='condition_node' + d.order;
+$('#'+current_id).scroll(function(){
+    line_data[index].left=[];
+     let top_height=$('#'+current_id).scrollTop();
+     let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
+    d3.select('#'+current_id).selectAll('.spatial_words')//主题词div集合
+        .each(function(){
+            let top_length=parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
+            let show_hide=$('#'+current_id).find('.hide_nei_words').innerHTML;
+            if(show_hide=='-'){
+                $('#'+current_id).find('.Worddiv')[0].find('.neiwordsdiv').each(function(){
+                    let current_element_top=parseInt(d3.select(this).style('top'))+top_length;
+                    let element_height=$(this)[0].getBoundingClientRect().height;
+                    if((current_element_top >=top_height &&(current_element_top+element_height*3/5)<=bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/3)))
+                    {
+line_data[index].left.push(this);
+                    }
+                })
+            }
+        })
+
+
+     console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
+})
+      })
               .append("div").classed("spatial_words",true)
                   .style("width","100%")
                   .style("height","100%")
@@ -97,6 +128,27 @@ nodelist.rendering = function(){
                   .style("float","left")
                   .style("height","100%").classed("spatial_lines",true)
   spatial_cc.append("div").classed("locationlistdiv",true)
+      .attr('id',function(d){return 'spatial_POIs'+d.order})
+      .each(function(d){
+let current_id = d3.select(this).attr('id');
+let index='condition_node'+d.order
+console.log('#'+current_id,'current_id--------------');
+$('#'+current_id).scroll(function(){
+        let top_height=$('#'+current_id).scrollTop();
+    let element_height=parseInt(d3.select('#'+current_id).select('.spatial_POIs').select('.POIrect').style('height'))+4;
+    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
+    line_data[index].right=[];//当前显示在窗口中的元素
+        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
+            let current_element_top=parseInt(d3.select(this).style('top'));
+            if((current_element_top >=top_height &&(current_element_top+element_height*2/3)<=bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/3))){
+                line_data[index].right.push(this);
+            }
+        })
+
+
+     console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
+})
+      })
                   .append("div")
                   .classed("spatial_POIs",true)
                   .style("width","100%")
@@ -109,6 +161,8 @@ nodelist.rendering = function(){
                      }
                      return `${poinumber*20}px`
                   })
+
+
 
   renderingwordslist(mergenode)
   renderingPOIlist(mergenode)
@@ -395,7 +449,7 @@ d3.select('#'+nodelist.order[current_location]).style('left', current_location*(
 
 
 
-
+let left_elements=[];//保存左边的元素列表
 function show_hide(){
     console.log('show_hide');
     let current_val = d3.select(this).text();
@@ -405,6 +459,9 @@ function show_hide(){
 d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility','visible');
         d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility','visible');
 d3.select(this).text('-');
+
+
+
 //create line
     }
     else{//hide
