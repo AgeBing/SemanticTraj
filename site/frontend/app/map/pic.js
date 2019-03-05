@@ -22,38 +22,36 @@ import { clip } from './clip'  // 库函数 用于 判断直线是否经过矩�
 
 import { boundry,zoom, width,height } from './index'
 
-import { _l2p, updateTileBoundry , showLoading ,hideLoading, loadTrajsData ,
+import { _l2p, updateTileBoundry , showLoading ,hideLoading, loadTrajsData , color2rgb ,
 	t_boundry , t_width , t_height ,left as t_left ,top as t_top } from './util'
 
-
 import { filterGlobalData } from '../app.js'
+import * as Config from './config.js';
 
 
-export async function draw(data) {
-	let isChanged = updateTileBoundry()
+export function draw(data) {
+	let isChanged = updateTileBoundry(),
+		originPiexelPoints , selectPiexelPoints , urlCache = {}
 
-	if(data){ //data 来自全局 ，表示数据更新
-		trajsData = data
-	}else {
-		if(!trajsData) return  //没有数据
 
-		let resizeFlag = true
-	}
-	// showLoading()
 
 	// 视窗变化时 选择框需要重新绘制
-	let originPiexelPoints , selectPiexelPoints , urlCache = {}
 	clearCanvas()
-	
- 
-	if(data){  // 数据改变
+
+
+	if(data){ 					//data 来自全局 ，表示数据更新
+		trajsData = data 
 		stack = []      //数据重置
 		processTrajsData(trajsData)
 		originPiexelPoints = stack[0].pixel
 		selectPiexelPoints = null
 		stack[0].url =  GetTrajsPicUrl(originPiexelPoints , 0)
-		// console.log( trajs_pixel_points.length  ,trajsData.length)
-	}else if(isChanged){		//数据未改变 ， 视图改变了
+	}else {
+		if(!trajsData) return   //没有数据 且 无data 
+	}
+
+	if( (!data  && isChanged)  || (!data && Config.PicUpdateFlag)){  		//数据未改变 ，视图边界变化了 需要重新绘制 
+		
 		// 将 stack 原 rect 数据记录下来
 		let newStack = []
 		for(let s = 1;s < stack.length; s++){
@@ -61,19 +59,25 @@ export async function draw(data) {
 				rect : stack[s].rect
 			}
 		}
-		//更新stack[0]
 		stack = []     
+
 		processTrajsData(trajsData)
 		originPiexelPoints = stack[0].pixel
 		selectPiexelPoints = null
 		stack[0].url =  GetTrajsPicUrl(originPiexelPoints , 0)
+
 		//替换
 		for(let s = 1;s < newStack.length; s++){
 			stack[s] = newStack[s]
 		}
-		console.log("Stack Update",stack)
+
+		if(Config.PicUpdateFlag) Config.PicUpdateFlag = false
 	}
 
+
+	// ----------------------------------------
+	// 进行框选动作 
+	// ----------------------------------------
 
 	if(stack.length >= 2){
 
@@ -116,26 +120,22 @@ export async function draw(data) {
 
 
 	}else{
-
 		urlCache = {
 			origin : stack[0].url,
 			select : null
 		}
-	
 		filterGlobalData(stack[0].pixel)
 
 	}
 
-	console.log("Stack",stack)
+	// console.log("Stack",stack)
 	drawTrajs(urlCache)
-	// hideLoading()
 }
 
 
 // #canvas-upon-map 	   上绘制未选择的轨迹
 // #canvas-upon-map-select 上为选择后留下的轨迹
 function drawTrajs(url){
-
 	if(url.origin){
 		let canvasOrigin = document.getElementById('canvas-upon-map');
 	    let ctxOrigin = canvasOrigin.getContext('2d');
@@ -154,7 +154,7 @@ function drawTrajs(url){
 	   	imgOrigin.onload = function(){
 	    	ctxOrigin.drawImage(imgOrigin ,t_left,t_top,width,height,0,0,width,height)
 	    	let  t2 = new Date().getTime();
-			console.log('draw origin pic: ' + (t2-t1) + 'ms')
+			// console.log('draw origin pic: ' + (t2-t1) + 'ms')
 		}
 	}
 	if(url.select){
@@ -171,10 +171,8 @@ function drawTrajs(url){
 	   	imgSelect.onload = function(){
 	    	ctxSelect.drawImage(imgSelect ,t_left,t_top,width,height,0,0,width,height)
 	    	let  t4= new Date().getTime();
-			console.log('draw select pic: ' + (t4-t3) + 'ms')
+			// console.log('draw select pic: ' + (t4-t3) + 'ms')
 		}
-
-
 	}
 
 }
@@ -252,7 +250,7 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 
 
 	let  t2 = new Date().getTime();
-	console.log('process : ' + (t2-t1) + 'ms')
+	// console.log('process : ' + (t2-t1) + 'ms')
 
 	stack.push({
 		latlng : trajdataInTileBoundry,
@@ -362,34 +360,21 @@ function GetTrajsPicUrl(trajs,stackIndex){
     canvas.height = t_height
 	ctx.clearRect(0,0,t_width,t_height)
 
-	// let colors = [
-	// 	// 'rgb(230, 247, 255,',
-	// 	// 'rgb(186, 231, 255,',
-	// 	// 'rgb(145, 213, 255,',
-	// 	// 'rgb(105, 192, 255,',
-	// 	'rgb(64, 169, 255,',
-	// 	// 'rgb(24, 144, 255,',
-	// 	'rgb(9, 109, 217,',
-	// 	'rgb(0, 80, 179,',
-	// 	'rgb(0, 58, 140,',
-	// 	'rgb(0, 39, 102,',
-	// 	'rgb(247, 89, 171,',
-	// 	'rgb(196, 29, 127,',
-	// 	'rgb(120, 6, 80,'
-	// ]
 
 
-	let colors = [
-		'rgba(69,117,180,' ,
-		'rgba(215,48,39,'   ,
-	]
+	// color and opacity
 
-	let config = lineShowConfig(trajs.length)
+
+	if(stackIndex == 0){
+   		ctx.strokeStyle = color2rgb(Config.picTrajColor  , Config.picTrajOpacity )
+	}else{
+   		ctx.strokeStyle = color2rgb(Config.picTrajSelectColor , Config.picTrajOpacity )
+	}
 
 	ctx.lineJoin = 'round'
-	ctx.lineWidth = config.width
-   	ctx.strokeStyle = colors[stackIndex] + config.opacity +')';
+	ctx.lineWidth = 2
    
+
    	console.log("轨迹条数：",trajs.length , " 线色：",ctx.strokeStyle , "  线宽：",ctx.lineWidth )
 	console.log('Drawing....')
 	let  t3 = new Date().getTime();
@@ -401,6 +386,8 @@ function GetTrajsPicUrl(trajs,stackIndex){
 
 	return canvas.toDataURL()
 }
+
+
 
 
 function drawOneTraj(ctx,points){ 

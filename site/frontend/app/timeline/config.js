@@ -2,9 +2,9 @@
 export let topicNameList = ["Beauty","Food","Shop","Uptown","Education",
 				"Hospital","Hotel","Life","Finance","Traffic",
 				"Enterprise","Scenicspot","Government"]
-export let colorList = ['#8dd3c7','#bebada','#fb8072','#80b1d3','#fdb462',
-				'#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5',
-				'#80b1d3','#fdb462','#b3de69','#fccde5']
+export let colorList = ['#8dd3c7','#bebada','#fb8072','#28B78D','#fdb462',
+				'#FFD034','#fccde5','#d9d9d9','#bc80bd','#ccebc5',
+				'#80b1d3','#F40076','#b3de69','#fccde5']
 
 export let topicThemes = {}
 topicNameList.forEach((topic,i)=>{

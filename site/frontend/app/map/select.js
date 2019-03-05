@@ -269,6 +269,14 @@ function removeSelection(i){
 		// console.log(stack)
 		// stack = stack.slice(0,1).concat(newStak)   // stack undefined ??? 不能改变stack地址
 	}
+
+
+	if(stack.length == 1){
+		let selectColorArea = d3.select('#map-view').select('#select-area').select('.color-area-select')
+			selectColorArea.attr('class','color-area-select disable')
+			selectColorArea.select('input').attr('disabled',true)
+	}
+
 	drawPic()
 }
 
@@ -291,5 +299,9 @@ function addSelection(){
 		}
 	})
 	drawPic()
+
+	let selectColorArea = d3.select('#map-view').select('#select-area').select('.color-area-select')
+		selectColorArea.attr('class','color-area-select')
+		selectColorArea.select('input').attr('disabled',null)
 }
 
