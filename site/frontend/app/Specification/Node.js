@@ -22,6 +22,7 @@ nodelist.rendering = function(){
 
   let addnode = allnode.enter().append("div")
                       .classed("condition_node",true)
+      .style('-webkit-transition-duration','0.5s')
       .attr('id',function(d){return 'condition_node'+d.order})
       .each(function(){
                           line_data[d3.select(this).attr('id')]={left:[],right:[]};
@@ -122,9 +123,6 @@ $('#'+current_id).scroll(function(){
       })
               .append("div").classed("spatial_words",true)
                   .style("width","100%")
-                  .style("height","100%")
-                  .style("background","#ececec")
-                  .style("padding","0 0 5px 0")
   spatial_cc.append("svg").style("width","90px")
                   .style("float","left")
                   .style("height","100%").classed("spatial_lines",true)
@@ -164,7 +162,7 @@ $('#'+current_id).scroll(function(){
 
 
 
-  renderingwordslist(mergenode)
+  let show_hide_div = renderingwordslist(mergenode)
   renderingPOIlist(mergenode)
 
 
@@ -180,6 +178,16 @@ $('#'+current_id).scroll(function(){
   addslide(semantic_constraints,"Industry",mergenode)
   addslide(semantic_constraints,"Traffic",mergenode)
 
+
+    show_hide_div.each(function(){
+        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
+        d3.select(this).text('-');
+        let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
+        let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
+        console.log(current_id,index,'thisiiiiiiiiiiiiiiiiiiii')
+        get_left_nodes(index, current_id);
+    });
     console.log(nodelist.order,'nodelist.order---------------')
 }
 function renderingwordslist(mergenode){
@@ -204,14 +212,17 @@ function renderingwordslist(mergenode){
           let grand_id = d3.select(this.parentNode.parentNode).attr('id')
           let num=grand_id.substr(grand_id.length-1,1);
           return 'Worddiv'+num})
-                  .style(    "margin", "5px")
+                  .style("background","#ececec")
+.style(    "margin", "5px")
   let mergewords = addwords.merge(allwords)
   mergewords.style("top",(d,i)=>`${i*24}px`)
 
   let addwordtitle=addwords.append("div").classed("wordtitle",true)
-  addwords.append("div").classed("wordsubtitle",true).style('visibility','hidden');
-  addwords.append("div").classed("nei_words",true).style('visibility','hidden');
-  addwordtitle.append('div').classed('hide_nei_words',true).text('+').on('click',show_hide);
+  addwords.append("div").classed("wordsubtitle",true);
+  addwords.append("div").classed("nei_words",true);
+  let show_hide_div=addwordtitle.append('div').classed('hide_nei_words',true).text('-')
+      show_hide_div.on('click',show_hide)
+          //console.log(,'d3.select(show_hide_div)---------');
     addwordtitle.append('div').classed('real_wordtitle',true).text((d,i)=>d.name);
   mergewords.select(".wordsubtitle").text("Neighbors")
   let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d){
@@ -223,11 +234,8 @@ function renderingwordslist(mergenode){
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.text(d=>d.name)
       .style("top",(d,i)=>`${i*24}px`)
-
-
-
+    return show_hide_div
 }
-
 
 function renderingPOIlist(mergenode){
 
@@ -362,7 +370,8 @@ function drag_start(){
     //let mouse_x = d3.event.x;
     //let mouse_y = d3.event.y;
     //d3.select(this).style.cursor = "move";
-    d3.select(this).style("z-index",10000);
+    d3.select(this).style("z-index",10000)
+    .style('-webkit-transition-duration','0s');
     //target_node.attr('start_x', mouse_x);
     //target_node.attr('start_y',mouse_y);
     //console.log('target_node:',target_node.style)
@@ -378,17 +387,9 @@ function newdrag() {
     }
     else{
         d3.select(this).style('left', (dx + prex) + 'px');
-        let current_id=d3.select(this).attr('id');
-        let current_location=0;
+        let current_id=d3.select(this).attr('id'),
+            current_location= nodelist.order.indexOf(current_id)
 
-        for( let i=0;i<nodelist.order.length;i++)
-        {
-            if(current_id==nodelist.order[i])
-            {
-                current_location=i;
-                break;
-            }
-        }
         let next_node=null;
         if(current_location+1<nodelist.order.length){
             next_node=d3.select('#'+nodelist.order[current_location+1]);
@@ -399,51 +400,47 @@ function newdrag() {
         }
         //let change_next=(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
         //let change_prev=(prev_node!=null&&((parseInt(prev_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
-            if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
-{
-    d3.select(this).style('-webkit-transition-duration','2s');
-    next_node.style('-webkit-transition-duration','2s');
-   let next_left=parseInt(next_node.style('left'))
-   let now_left=next_left - parseInt(d3.select(this).style('width'))-22;
+        if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
+        {
+           let next_left=parseInt(next_node.style('left'))
+           let now_left=next_left - parseInt(d3.select(this).style('width'))-22;
 
-            d3.select(this).style('left', next_left+'px');
-            next_node.style('left',now_left+'px');
-            let current_num=d3.select(this).select('.title').select('.constraints_order').text();
-            let next_num = next_node.select('.title').select('.constraints_order').text();
-            d3.select(this).select('.title').select('.constraints_order').text(next_num);
-            next_node.select('.title').select('.constraints_order').text(current_num);
-            //d3.select(this).attr('start_x',target_node.style('left'));
-            let temp=nodelist.order[current_location];
-            nodelist.order[current_location]=nodelist.order[current_location+1];
-            nodelist.order[current_location+1]=temp;
-}
-            else{
-                if(prev_node!=null&&((parseInt(d3.select(this).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(this).style('width'))/2))
-{
-    d3.select(this).style('-webkit-transition-duration','2s');
-    prev_node.style('-webkit-transition-duration','2s');
-   let prev_left=parseInt(prev_node.style('left'))
-   let now_left=parseInt(d3.select(this).style('width'))+22+prev_left;
-   d3.select(this).style('left', prev_left+'px');
-            prev_node.style('left',now_left+'px');
-            let current_num=d3.select(this).select('.title').select('.constraints_order').text();
-            let prev_num = prev_node.select('.title').select('.constraints_order').text();
-            d3.select(this).select('.title').select('.constraints_order').text(prev_num);
-            prev_node.select('.title').select('.constraints_order').text(current_num);
+                    // d3.select(this).style('left', next_left+'px');
+                    next_node.style('left',now_left+'px');
+                    let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+                    let next_num = next_node.select('.title').select('.constraints_order').text();
+                    d3.select(this).select('.title').select('.constraints_order').text(next_num);
+                    next_node.select('.title').select('.constraints_order').text(current_num);
+                    //d3.select(this).attr('start_x',target_node.style('left'));
+                    let temp=nodelist.order[current_location];
+                    nodelist.order[current_location]=nodelist.order[current_location+1];
+                    nodelist.order[current_location+1]=temp;
+        }
+        else{
+            if(prev_node!=null&&((parseInt(d3.select(this).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(this).style('width'))/2))
+            {
+               let prev_left=parseInt(prev_node.style('left'))
+               let now_left=parseInt(d3.select(this).style('width'))+22+prev_left;
+               // d3.select(this).style('left', prev_left+'px');
+                        prev_node.style('left',now_left+'px');
+                        let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+                        let prev_num = prev_node.select('.title').select('.constraints_order').text();
+                        d3.select(this).select('.title').select('.constraints_order').text(prev_num);
+                        prev_node.select('.title').select('.constraints_order').text(current_num);
 
-            //d3.select(this).attr('start_x',target_node.style('left'));
-            let temp=nodelist.order[current_location];
-            nodelist.order[current_location]=nodelist.order[current_location-1];
-            nodelist.order[current_location-1]=temp;
-}
+                        //d3.select(this).attr('start_x',target_node.style('left'));
+                        let temp=nodelist.order[current_location];
+                        nodelist.order[current_location]=nodelist.order[current_location-1];
+                        nodelist.order[current_location-1]=temp;
             }
         }
+    }
 
 
 
 }
 function drag_end(){
-    d3.select(this).style('-webkit-transition-duration','0s');
+    d3.select(this).style('-webkit-transition-duration','0.5s').style("z-index",0);
     let current_id=d3.select(this).attr('id');
         let current_location=0;
         for( let i=0;i<nodelist.order.length;i++)
@@ -467,105 +464,101 @@ d3.select('#'+nodelist.order[current_location]).style('left', current_location*(
 
 
 let left_elements=[];//保存左边的元素列表
-function show_hide(){
+function show_hide() {
+//<<<<<<< HEAD
     let current_val = d3.select(this).text();
-    if(current_val=='+')//show
+    if (current_val == '+')//show
     {
-d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility','visible');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility','visible');
-d3.select(this).text('-');
-let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv','spatial_left');
-let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv','condition_node');
-get_left_nodes(index,current_id);
+        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
+        d3.select(this).text('-');
+        let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
+        let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
+        get_left_nodes(index, current_id);
 
 
 //create line
-    }
-    else{//hide
+    } else {//hide
 
-         let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv','condition_node');
- let hide_nodes = d3.select(this.parentNode.parentNode).select('.nei_words').selectAll('.neiwordsdiv');
-         let current_show_nodes=[];
-for(let i=0;i<line_data[index].left.length;i++)
-{
-    let is_delete=false;
-hide_nodes.each(function(){
-    if(this==line_data[index].left[i])
-    {
-        is_delete=true;
+        let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
+        let hide_nodes = d3.select(this.parentNode.parentNode).select('.nei_words').selectAll('.neiwordsdiv');
+        let current_show_nodes = [];
+        for (let i = 0; i < line_data[index].left.length; i++) {
+            let is_delete = false;
+            hide_nodes.each(function () {
+                if (this == line_data[index].left[i]) {
+                    is_delete = true;
+                }
+            })
+            if (!is_delete)
+                current_show_nodes.push(line_data[index].left[i])
+        }
+        line_data[index].left = current_show_nodes;
+        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'hidden');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'hidden');
+        d3.select(this).text('+');
+
+        create_line(index);
+//=======
+
     }
-})
-    if(!is_delete)
-        current_show_nodes.push(line_data[index].left[i])
 }
-line_data[index].left = current_show_nodes;
-d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility','hidden');
- d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility','hidden');
-d3.select(this).text('+');
-
-create_line(index);
-    }
-}
-
 //每次滚动都要调用该方法
-function create_line(index){
-    let left_nodes = line_data[index].left;
-    let right_nodes =line_data[index].right;
-    if(left_nodes.length>0&&right_nodes.length>0)
-    {
-        let current_line_dta=[];
-    for(let i=0;i<left_nodes.length;i++)
-    {
-        for(let j=0;j<right_nodes.length;j++)
-            current_line_dta.push({left:left_nodes[i],right:right_nodes[j]});
-    }
-    d3.select('#'+index).select('.spatial_lines').selectAll('path').remove();
-    d3.select('#'+index).select('.spatial_lines').selectAll('path')
-        .data(current_line_dta)
-        .enter()
-        .append('path')
-        .attr('d',function(d){
-            let left_y=parseInt(d3.select(d.left).attr('current_top'))+parseInt(d3.select(d.left).style('height'))/2
-            //let left_x=parseInt(d3.select(d.left).style('left'))
-            let right_x=parseInt(d3.select(this.parentNode).style('width'))
-            let right_y=parseInt(d3.select(d.right).attr('current_top'))+parseInt(d3.select(d.right).style('height'))/2
-            return 'M -4 '+' '+left_y+' '+'Q '+(0+right_x)/2+' '+(left_y+right_y)/2+' '+right_x+' '+right_y;
-        })
-        .attr('stroke','blue')
-        .attr('stroke-width',1)
-        .attr('fill','none');
-    }
-    else{
-        d3.select('#'+index).select('.spatial_lines').selectAll('path').remove();
-    }
-}
-
-
-function get_left_nodes(index,current_id){
-    //current_id:spatial_left1
-    //index:condition_node1
-    line_data[index].left=[];
-     let top_height=$('#'+current_id).scrollTop();
-     let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    d3.select('#'+current_id).selectAll('.spatial_words')//主题词div集合
-        .each(function(){
-            let top_length=parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
-            let show_hide=$('#'+current_id).find('.hide_nei_words').text()//.innerHTML;
-            if(show_hide=='-'){
-                $('#'+current_id).find('.Worddiv').find('.neiwordsdiv').each(function(){
-                    let current_element_top=parseInt(d3.select(this).style('top'))+top_length;
-                    let element_height=$(this)[0].getBoundingClientRect().height;
-                    if((current_element_top >=top_height &&(current_element_top+element_height/2)<=bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2)))
-                    {
-                        d3.select(this).attr('current_top',current_element_top-top_height);
-                        line_data[index].left.push(this);
-                    }
-                })
+    function create_line(index) {
+        let left_nodes = line_data[index].left;
+        let right_nodes = line_data[index].right;
+        if (left_nodes.length > 0 && right_nodes.length > 0) {
+            let current_line_dta = [];
+            for (let i = 0; i < left_nodes.length; i++) {
+                for (let j = 0; j < right_nodes.length; j++)
+                    current_line_dta.push({left: left_nodes[i], right: right_nodes[j]});
             }
-        })
-     //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
-     create_line(index);
-}
+            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
+            d3.select('#' + index).select('.spatial_lines').selectAll('path')
+                .data(current_line_dta)
+                .enter()
+                .append('path')
+                .attr('d', function (d) {
+                    let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
+                    //let left_x=parseInt(d3.select(d.left).style('left'))
+                    let right_x = parseInt(d3.select(this.parentNode).style('width'))
+                    let right_y = parseInt(d3.select(d.right).attr('current_top')) + parseInt(d3.select(d.right).style('height')) / 2
+                    return 'M -4 ' + ' ' + left_y + ' ' + 'Q ' + (0 + right_x) / 2 + ' ' + (left_y + right_y) / 2 + ' ' + right_x + ' ' + right_y;
+                })
+                .attr('stroke', 'blue')
+                .attr('stroke-width', 1)
+                .attr('fill', 'none');
+        } else {
+            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
+        }
+    }
+
+
+    function get_left_nodes(index, current_id) {
+        //current_id:spatial_left1
+        //index:condition_node1
+        line_data[index].left = [];
+        let top_height = $('#' + current_id).scrollTop();
+        let bottom_height = top_height + parseInt($('#' + current_id)[0].getBoundingClientRect().height);
+        d3.select('#' + current_id).selectAll('.spatial_words')//主题词div集合
+            .each(function () {
+                let top_length = parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
+                let show_hide = $('#' + current_id).find('.hide_nei_words').text()//.innerHTML;
+                if (show_hide == '-') {
+                    $('#' + current_id).find('.Worddiv').find('.neiwordsdiv').each(function () {
+                        let current_element_top = parseInt(d3.select(this).style('top')) + top_length;
+                        let element_height = $(this)[0].getBoundingClientRect().height;
+                        if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
+                            d3.select(this).attr('current_top', current_element_top - top_height);
+                            line_data[index].left.push(this);
+                        }
+                    })
+                }
+            })
+        //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
+        create_line(index);
+    }
+
  /*
  * function create_line111(source,targets) {
          var common = {
