@@ -155,6 +155,7 @@ export class topicZoomRect {
 					//选中的这块变亮
 					d3.select(this).style('opacity',1)
 					// 联动
+
 					self.high_light_rect(t)
 				})
 				.on('mouseleave',function(){
@@ -264,8 +265,13 @@ export class topicZoomRect {
 		d3.selectAll('.topic-rect').style('opacity',1)
 	}
 	high_light_rect(t){    //t 如 Tue Jan 14 2014 05:37:06 GMT+0800 (China Standard Time)
-		let { index }  = this
-		HighLightTrajSectionContorl(index,t)
+		let { index,data,dates }  = this 
+		let topicIndex = dates.indexOf(t),
+			mainTopic = data.ps[topicIndex].topics[0]['topic'],
+			fillColor = Config.topicThemes[mainTopic].color
+		console.log(fillColor)
+
+		HighLightTrajSectionContorl(index,t,fillColor)
 	}
 	unhigh_light_rect(){  //所有亮的变亮
 		let { index }  = this
