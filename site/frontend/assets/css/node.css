@@ -31,26 +31,32 @@
 
 .condition_node .timeconstraints .textcon{
 	    float: left;
-    font-size: 16px;
-    padding: 2px 5px;
-    color: #3c3c3c;    
-    line-height: 25px;
+	    font-size: 19px;
+	    color: #3c3c3c;
+	    line-height: 25px;
 }
 .condition_node .timeconstraints .textinput{
 	    float: left;
-    font-size: 16px;
-    padding: 2px 5px;
-    color: #3c3c3c;    
-    line-height: 25px;
-    width: 125px;
-    height: 22px;
-    margin: 0 13px;
-    padding-top:5px;
-    border:0;
-    background: transparent;
+	    font-size: 16px;
+	    padding: 2px 5px;
+	    color: #3c3c3c;
+	    line-height: 25px;
+	    width: 125px;
+	    height: 27px;
+	    margin: 0;
+	    padding: 0 15px;
+	    border: 1px #b1b1b1 solid;
+}
+.condition_node .timeconstraints .textinput:focus{
+    outline: none
 }
 
-
+.conj.textcon{
+        width: 50px;
+    text-align: center;
+    font-size: 30px;
+    color: #b1b1b1;
+}
 .condition_node .spatial_constraints{
 	float: left;
     width: calc(70% - 10px);
@@ -177,4 +183,79 @@
   stroke: #000;
   stroke-opacity: 0.5;
   stroke-width: 1.25px;
+}
+
+
+
+/*
+    start for configuration Panel
+*/
+.high-level-desc{
+    font-size: 15px;
+    text-align: center;
+}
+.semantic_constraints .param-rect {
+    height: 40px;
+    width: 100%;
+    /*border: 1px dashed black;*/
+    margin: 0px 0px;
+    padding: 0 5px;
+}
+
+.param-rect .param-name{
+    display: inline-block;
+    float: left;
+    width: 53px;
+}
+.param-rect .param-num{
+    display: inline-block;
+    float: right;
+}
+
+.param-rect div{
+    font-size: 13px;
+    height: 100%;
+    line-height: 39px;
+}
+
+
+
+.color-rect{
+    position: absolute;
+    fill:#b1b1b1;
+}
+
+.param-range{
+    cursor: pointer;
+    margin: 14px 0;
+}
+
+
+
+.semantic_constraints .param-ab-rect {
+    height: 40px;
+    width: 100%;
+    margin: 0px 0px;
+    padding: 0 5px;
+}
+.param-half-rect{
+    height: 100%;
+    width: 45%;
+    display: inline-block;
+    margin: 0 2%;
+}
+.param-ab-rect .param-name{
+    display: inline-block;
+    float: left;
+    width: 13px;
+}
+.param-ab-rect .param-num{
+    display: inline-block;
+    float: right;
+}
+
+.param-ab-rect div{
+    font-size: 13px;
+    height: 100%;
+    line-height: 39px;
 }

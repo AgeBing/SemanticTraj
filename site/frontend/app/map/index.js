@@ -47,27 +47,6 @@ let selectSvg = d3.select(map.getPanes().overlayPane)
     .attr("height",height)
 
 
-d3.select(map.getPanes().overlayPane)
-	.append("img")
-	.attr('id','poi-icon')
-	.attr('src','../assets/icons/poi_map.svg')
-	.attr("width",  20)
-    .attr("height", 20)
-
-// let loading = d3.select(map.getPanes().overlayPane)
-// 	.append("div")
-// 		.attr('id','loading')
-// 		.style('width',width+'px')
-// 		.style('height',height+'px')
-// 		.style('display','none')
-// 	.append('div')
-// 		.attr('class','lds-ripple')
-// 		.style('float', 'right')
-// loading.append('div')
-// loading.append('div')
-
-
-
 
 let boundry ,pixelBoundry , zoom
 
@@ -101,22 +80,6 @@ function resize(){
 	drawSelect()  //添加选择事件
 }
 
-
-// 实验  经纬度与pixel位置的转换关系
-/*
-	console.log(map.latLngToLayerPoint(  {
-			lat : (boundry.top_right.lat + boundry.bottom_left.lat ) /2,
-			lng : boundry.top_right.lng
-		}
-	))
-
-
-	console.log(map.latLngToLayerPoint(  {
-			lng : (boundry.top_right.lng + boundry.bottom_left.lng ) /2,
-			lat : boundry.top_right.lat
-		}
-	))
-*/
 
 
 

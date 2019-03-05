@@ -2,6 +2,10 @@
 // import * as d3 from 'd3';
 // import $ from 'jquery';
 
+import { appendParamWidges } from './param.js'
+import { bindTimeChangeEvent } from './time.js'
+
+
 let nodelist={
   container:d3.select("#Specification_view"),
   data : [],
@@ -171,12 +175,15 @@ $('#'+current_id).scroll(function(){
   let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
   semantic_constraints.append("div").classed("node_subtitle",true)
           .style("font-size","15px").text("Semantic Parameters")
-  addslide(semantic_constraints,"Business",mergenode)
-  addslide(semantic_constraints,"Entertainment",mergenode)
-  addslide(semantic_constraints,"Resident",mergenode)
-  addslide(semantic_constraints,"Education",mergenode)
-  addslide(semantic_constraints,"Industry",mergenode)
-  addslide(semantic_constraints,"Traffic",mergenode)
+  // addslide(semantic_constraints,"Business",mergenode)
+  // addslide(semantic_constraints,"Entertainment",mergenode)
+  // addslide(semantic_constraints,"Resident",mergenode)
+  // addslide(semantic_constraints,"Education",mergenode)
+  // addslide(semantic_constraints,"Industry",mergenode)
+  // addslide(semantic_constraints,"Traffic",mergenode)
+  
+  appendParamWidges(semantic_constraints)
+  bindTimeChangeEvent() 
 
 
     show_hide_div.each(function(){

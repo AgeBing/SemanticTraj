@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { clip } from './clip'  // 库函数 用于 判断直线是否经过矩形
-import { boundry,zoom, width,height } from './index'
+import { map , boundry,zoom, width,height } from './index'
 import { _l2pb, updateTileBoundry , showLoading ,hideLoading, loadTrajsData ,
 	t_boundry , t_width , t_height ,left as t_left ,top as t_top } from './util'
 
@@ -2047,15 +2047,37 @@ let pois = [{
 ]
 
 //在地圖上绘制Poi
+
+let iconLayer 
+
 export  function draw(data) {
 
-	let poi = pois[0]['data'][0]['data'][0]
+  let poi = pois[0]['data'][0]['data'][0]
+  var PoiIcon = L.icon({
+    iconUrl: '../assets/icons/poi_map.svg',
+    iconSize:     [24, 24], // size of the icon
+});
 
-	if(!ifOutofBoundry(poi.latitude, poi.longitude)  && 
-			poi.name ){
-			drawPoi(poi)
-	}
+  iconLayer  = L.marker([poi.latitude , poi.longitude], {icon: PoiIcon , title : poi.name })
+  iconLayer.addTo(map).bindTooltip(poi.name,{direction : 'top' , offset : [0,-6], opacity :0.6}).openTooltip()
+}
 
+export function remove(){
+  iconLayer.remove()
+}
+
+
+
+
+/*
+export  function draw(data) {
+
+ let poi = pois[0]['data'][0]['data'][0]
+
+ if(!ifOutofBoundry(poi.latitude, poi.longitude)  && 
+     poi.name ){
+     drawPoi(poi)
+ }
 }
 
 function removePoi(){
@@ -2088,3 +2110,4 @@ function ifOutofBoundry(lat,lng){
 		return true   // 超出边界
 	return false
 }
+*/
