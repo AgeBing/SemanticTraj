@@ -6,12 +6,14 @@ let stack = []
 	stack = [{
 		latlng : 经纬度表示的在边界内的轨迹,              // stack[0]表示未经过框选的
 		pixel  : 像素表示的在边界内的轨迹,
-		url    : 绘制的图形的url
+		url    : 绘制的图形的url,
+		filter : 被筛去的轨迹id 数组
 	},{
 		rect   : 选择框的周围点经纬度表示,					// stack[1-n]表示每一次框选操作的结果
 		latlng : 同上（经过本次框选后的）,
 		pixel  : 同上（经过本次框选后的）.
-		url    : 对应的图形的url
+		url    : 对应的图形的url，
+		filter ， 同时加上上一次筛去的
 	},{
 		...
 	}]
@@ -90,7 +92,6 @@ export function draw(data) {
 			selectPiexelPoints = stack[stack.length - 1].pixel                     // 只生成最后一项 的url ? 画selct图时只需要最后一项的url
 			stack[stack.length - 1].url =  GetTrajsPicUrl(selectPiexelPoints , 1)   
 
-				filterGlobalData(selectPiexelPoints)
 
 		}else if(stack[stack.length - 1].rect && !stack[stack.length - 1].pixel ){   //刚增加一个选择框 , 只需filter最后一项
 
@@ -99,7 +100,6 @@ export function draw(data) {
 				selectPiexelPoints = stack[stack.length - 1].pixel 
 				stack[stack.length - 1].url =  GetTrajsPicUrl(selectPiexelPoints , 1)
 
-				filterGlobalData(selectPiexelPoints)
 		}else{
 			if(!stack[stack.length - 1].url){  //删去最后一个选择框，但是上一次是重排过的
 				selectPiexelPoints = stack[stack.length - 1].pixel
@@ -108,8 +108,6 @@ export function draw(data) {
 
 			}
 
-			filterGlobalData(stack[stack.length - 1].pixel)
-			//刚删去的是最后一个选择框 直接使用
 		}
 
 
@@ -124,10 +122,9 @@ export function draw(data) {
 			origin : stack[0].url,
 			select : null
 		}
-		filterGlobalData(stack[0].pixel)
-
 	}
 
+	filterGlobalData(stack[stack.length - 1].filter)
 	// console.log("Stack",stack)
 	drawTrajs(urlCache)
 }
@@ -194,11 +191,12 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 		trajs_in_tile_boundry = [] ,
 		latlng_points , 
 		trajdataInTileBoundry ,
-		tileBox = [t_boundry.bottom_left.lng , t_boundry.bottom_left.lat , t_boundry.top_right.lng , t_boundry.top_right.lat ]
-
+		tileBox = [t_boundry.bottom_left.lng , t_boundry.bottom_left.lat , t_boundry.top_right.lng , t_boundry.top_right.lat ],
+		filteredPids = []
+		
 	data.forEach((t)=>{      //  t 代表一条轨迹
 		let withinTraj = false
-		let pixel_points = [] , latlng_points_in_tile = []
+		let pixel_points = [] , latlng_points_in_tile = [] 
 		
 		latlng_points = t.traj		
 		if(t.pid == '460000000000000')  return true  //这条轨迹的点特别多
@@ -243,6 +241,8 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 				pid : t.pid,
 				traj : pixel_points,
 			})
+		}else{
+			filteredPids.push(t.pid)
 		}
 
 		trajdataInTileBoundry = trajs_in_tile_boundry
@@ -254,7 +254,8 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 
 	stack.push({
 		latlng : trajdataInTileBoundry,
-		pixel  : trajs_pixelpoints
+		pixel  : trajs_pixelpoints,
+		filter : filteredPids
 	})
 }
 
@@ -268,7 +269,7 @@ function filter(s_bottom_left , s_top_right , stackIndex ){
 
 	//数据来源上一个 选择 filter 后的数据
 	let  trajdataInTileBoundry = stack[stackIndex - 1].latlng , 
-		newTrajdataInTileBoundry  = []
+		newTrajdataInTileBoundry  = [] , filteredPids = []
 
 
 	if(!trajdataInTileBoundry)  return
@@ -335,6 +336,8 @@ function filter(s_bottom_left , s_top_right , stackIndex ){
 				pid :  t.pid,
 				traj : latlng_points_in_tile
 			})
+		}else{
+			filteredPids.push(t.pid)
 		}
 	})
 
@@ -343,6 +346,8 @@ function filter(s_bottom_left , s_top_right , stackIndex ){
 
 	stack[stackIndex]['latlng'] = newTrajdataInTileBoundry
 	stack[stackIndex]['pixel']  = selectedTrajs
+	stack[stackIndex]['filter'] =  stack[stackIndex - 1]['filter'].concat(filteredPids) 
+
 
 }
 
@@ -372,7 +377,7 @@ function GetTrajsPicUrl(trajs,stackIndex){
 	}
 
 	ctx.lineJoin = 'round'
-	ctx.lineWidth = 2
+	ctx.lineWidth = 1
    
 
    	console.log("轨迹条数：",trajs.length , " 线色：",ctx.strokeStyle , "  线宽：",ctx.lineWidth )
