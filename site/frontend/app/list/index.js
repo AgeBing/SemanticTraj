@@ -24,7 +24,7 @@ resultlist.draw = function(data){
 	// console.log('list ',data.slice(0,10))
 	allLength = data.length
 
-	if(allLength>resultlist.maxNum)
+	if(allLength > resultlist.maxNum)
 		data = data.slice(0,resultlist.maxNum)
 
 	let alltraj = resultlist.container
@@ -173,6 +173,7 @@ d3.select('#filter-btn')
 // 在 app.js 中被引用
 function filter(){
 	let allItems = d3.selectAll('.list-item')
+	console.log(1)
 
 	allItems.each(function(){
 		let curItem = d3.select(this),
@@ -192,22 +193,17 @@ function filter(){
 			curItem.select('input').attr('disabled', null)
 		}
 	})
+
+	console.log(2)
 	drawTopic(checkedPids)
 	updatePerNum()
-	filterDisplay()
+	filterDisplay()	
 	reflowItems()
 }
-export function filterGeo(pids){
-	filteredPidsGeo = pids
-	filteredPids = filteredPidsTime.concat(filteredPidsGeo)
+export function filterList(pids){
+	filteredPids = pids
 	filter()
 }
-export function filterTime(pids){
-	filteredPidsTime = pids
-	filteredPids = filteredPidsTime.concat(filteredPidsGeo)
-	filter()
-}
-
 
 
 
@@ -259,7 +255,7 @@ function updatePerNum(){
 }
 
 function reflowItems(){
-	console.log('---------------reflow------------')
+	// console.log('---------------reflow------------')
 	let allItems = d3.selectAll('.list-item')
 	let flowIndex = 0 , itemHeight = 40 ,topHeight = 0 
 
@@ -274,58 +270,8 @@ function reflowItems(){
 			topHeight = (flowIndex * itemHeight)
 			curItem.style('top',topHeight + 'px')
 			flowIndex += 1
+		}else{
+
 		}
 	})
 }
-
-// export function draw(data){
-// 	let maxNum = 500    // 設置最多顯示數目
-
-// 	for(let i = 0 ;i < data.length;i++){
-// 		appendOne( data[i] )
-// 		if( i > maxNum) break;
-// 	}
-
-// 	console.log(data)
-// }
-// //添加一条 记录
-// function appendOne(Onetraj){
-
-// 	let item = d3.select('.list-window')
-// 				.append('div')
-// 				.attr('class','list-item')
-// 				.attr('id',Onetraj.pid)
-					
-// 	item.append('div').attr('class',"check-contain")
-// 		.append('input').attr('type','checkbox')
-// 		.on('change',function(){
-// 			topicAdd( Onetraj.pid  , d3.select(this).property('checked')  )   // TopicAdd 添加勾选的记录至 已选列表中
-// 		})
-
-// 	item.append('div').attr('class','id-word')
-// 		.text(Onetraj.pid)
-
-// 	item.append('div').attr('class','percent-rect')
-// 			.append('div').attr('class','percent-rect-color')
-
-// 	item.append('div').attr('class','percent-word')
-// 		.text('98%')
-
-// 	item.on('mouseenter',function(){
-// 		highLightOneItem(Onetraj.pid)
-// 		highLightTrajContorl(Onetraj.pid)
-
-// 		let ifChecked = item.select('input').property('checked')
-// 		if( ifChecked ){
-// 			highLightTopiContorl(Onetraj.pid)
-// 		}
-// 	})
-// 	.on('mouseleave',function(){
-// 		unhighLightOneItem(Onetraj.pid)
-// 		unHighLightTrajContorl()
-// 		let ifChecked = item.select('input').property('checked')
-// 		if( ifChecked ){
-// 			unHighLightTopiContorl(Onetraj.pid)
-// 		}
-// 	})
-// }

@@ -76,7 +76,7 @@
 .id-word{
 	line-height: 35px;
     float: left;
-    font-size: 14px;
+    font-size: 12px;
     padding: 0 6px;
     color: #595959;
 }
@@ -89,7 +89,7 @@
     width: calc(100% - 220px);
 }
 .percent-word{
-	    font-size: 15px;
+	    font-size: 12px;
     line-height: 35px;
     padding: 0 6px;
     color: #595959;
@@ -128,7 +128,7 @@
 }
 
 .per-num{
-    font-size: 14px;
+    font-size: 12px;
     position: absolute;
     top: 10px;
     left: 20px;
