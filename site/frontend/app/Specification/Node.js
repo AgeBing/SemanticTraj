@@ -13,7 +13,6 @@ let nodelist={
 }
 let line_data=[];
 nodelist.rendering = function(){
-    //console.log(nodelist.data,'data---------------------')
   for(let i =0;i<nodelist.data.length;i++){
     nodelist.data[i].order = i +1
   }
@@ -102,7 +101,6 @@ let current_id = d3.select(this).attr('id');
 let index='condition_node' + d.order;
 $('#'+current_id).scroll(function(){
     line_data[index].left=[];
-    console.log('current_id',current_id);
      let top_height=$('#'+current_id).scrollTop();
      let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
     d3.select('#'+current_id).selectAll('.spatial_words')//主题词div集合
@@ -130,27 +128,9 @@ $('#'+current_id).scroll(function(){
   spatial_cc.append("svg").style("width","90px")
                   .style("float","left")
                   .style("height","100%").classed("spatial_lines",true)
-  spatial_cc.append("div").classed("locationlistdiv",true)
+  let locationlistdiv = spatial_cc.append("div").classed("locationlistdiv",true)
       .attr('id',function(d,i){return 'locationlistdiv'+d.order})
-      .each(function(d){
-let current_id = d3.select(this).attr('id');
-let index='condition_node'+d.order
-$('#'+current_id).scroll(function(){
-        let top_height=$('#'+current_id).scrollTop();
-    let element_height=parseInt(d3.select('#'+current_id).select('.spatial_POIs').select('.POIrect').style('height'))+4;
-    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    line_data[index].right=[];//当前显示在窗口中的元素
-        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
-            let current_element_top=parseInt(d3.select(this).style('top'));
-            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
-                d3.select(this).attr('current_top',current_element_top-top_height);
-                line_data[index].right.push(this);
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
-    create_line(index);
-})
-      })
+
                   .append("div")
                   .classed("spatial_POIs",true)
                   .style("width","100%")
@@ -163,8 +143,6 @@ $('#'+current_id).scroll(function(){
                      }
                      return `${poinumber*20}px`
                   })
-
-
 
   let show_hide_div = renderingwordslist(mergenode)
   renderingPOIlist(mergenode)
@@ -192,10 +170,48 @@ $('#'+current_id).scroll(function(){
         d3.select(this).text('-');
         let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
         let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
-        console.log(current_id,index,'thisiiiiiiiiiiiiiiiiiiii')
         get_left_nodes(index, current_id);
     });
-    console.log(nodelist.order,'nodelist.order---------------')
+  locationlistdiv.each(function(d){
+      //d3.select(this.parentNode)
+let current_id = d3.select(this.parentNode).attr('id');
+let index='condition_node'+d.order
+$('#'+current_id).scroll(function(){
+        let top_height=$('#'+current_id).scrollTop();
+    let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
+    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
+    line_data[index].right=[];//当前显示在窗口中的元素
+        d3.select(this).select('.spatial_POIs').selectAll('.POIrect').each(function(){
+            let current_element_top=parseInt(d3.select(this).style('top'));
+            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
+                d3.select(this).attr('current_top',current_element_top-top_height);
+                line_data[index].right.push(this);
+            }
+        })
+     //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
+    create_line(index);
+})
+  })
+  /*
+  *     .each(function(d){
+let current_id = d3.select(this).attr('id');
+let index='condition_node'+d.order
+$('#'+current_id).scroll(function(){
+        let top_height=$('#'+current_id).scrollTop();
+    let element_height=parseInt(d3.select('#'+current_id).select('.spatial_POIs').select('.POIrect').style('height'))+4;
+    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
+    line_data[index].right=[];//当前显示在窗口中的元素
+        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
+            let current_element_top=parseInt(d3.select(this).style('top'));
+            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
+                d3.select(this).attr('current_top',current_element_top-top_height);
+                line_data[index].right.push(this);
+            }
+        })
+     //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
+    create_line(index);
+})
+      })*/
 }
 function renderingwordslist(mergenode){
 
@@ -208,8 +224,6 @@ function renderingwordslist(mergenode){
                   d.data[i].data[j].index = (i,j)
                 }
               }
-              console.log(heightset)
-              console.log(d.data)
             return d.data
           },(d,i)=>d.name)
 
@@ -220,7 +234,7 @@ function renderingwordslist(mergenode){
           let num=grand_id.substr(grand_id.length-1,1);
           return 'Worddiv'+num})
                   .style("background","#ececec")
-.style(    "margin", "5px")
+//.style(    "margin", "5px")
   let mergewords = addwords.merge(allwords)
   mergewords.style("top",(d,i)=>`${i*24}px`)
 
@@ -283,14 +297,16 @@ function renderingPOIlist(mergenode){
                    //reorder
                    pois.sort(function(a, b) {
                       return a.poi.index - b.poi.index})
-                   
                    return pois
-           },d=>d.poi.name)
+           },function (d) {
+	        return d.poi.name;
+	    })
 
   allPOI.exit().remove()
   allPOI.enter().append("div").classed("POIrect",true)
     .text(function (d,i){
-           return  d.poi.name.length>8 ? d.poi.name.substring(0,8):d.poi.name
+        return d.poi.name
+           //return  d.poi.name.length>8 ? d.poi.name.substring(0,8):d.poi.name
     })
     .merge(allPOI)
     .style("top",d=>`${d.order*28}px`)
@@ -460,19 +476,12 @@ function drag_end(){
         }
 d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(this).style('width'))+22)+"px");
         d3.select(this).style('z-index',0);
-   // }
-
-    //target_node.style('left', mouse_x);
-    //target_node.style('top', mouse_y);
-    //target_node.attr('start_x',mouse_x);
-    //target_node.attr('start_y',mouse_y);
 }
 
 
 
-let left_elements=[];//保存左边的元素列表
+
 function show_hide() {
-//<<<<<<< HEAD
     let current_val = d3.select(this).text();
     if (current_val == '+')//show
     {
@@ -504,10 +513,7 @@ function show_hide() {
         d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'hidden');
         d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'hidden');
         d3.select(this).text('+');
-
         create_line(index);
-//=======
-
     }
 }
 //每次滚动都要调用该方法
@@ -516,27 +522,74 @@ function show_hide() {
         let right_nodes = line_data[index].right;
         if (left_nodes.length > 0 && right_nodes.length > 0) {
             let current_line_dta = [];
+            let data_num=index.substr(index.length-1,1);
+            let second_third_index={};
+            let path_colorscale = d3.scaleLinear()
+                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(132,60,12)")]);
+            let max_val=0;
             for (let i = 0; i < left_nodes.length; i++) {
-                for (let j = 0; j < right_nodes.length; j++)
-                    current_line_dta.push({left: left_nodes[i], right: right_nodes[j]});
-            }
+let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
+let third_title=d3.select(left_nodes[i]).text();
+if(!(second_third_index.hasOwnProperty(second_title)))
+{
+for(let i=0;i<nodelist.data[data_num-1].data.length;i++)
+{
+    if(second_title==nodelist.data[data_num-1].data[i].name)
+    {
+        second_third_index[second_title]=nodelist.data[data_num-1].data[i].data;
+        break;
+    }
+}
+}
+let third_forth_data=second_third_index[second_title];
+let forth_data=[];//location list
+for(let j=0;j<third_forth_data.length;j++)
+{
+    if(third_title==third_forth_data[j].name)
+    {
+forth_data=third_forth_data[j].data;
+break;
+    }
+}
+
+for(let m=0;m<right_nodes.length;m++)
+{
+    let rifght_nodename=d3.select(right_nodes[m]).text();
+    for(let n=0;n<forth_data.length;n++)
+    {
+        if(rifght_nodename==forth_data[n].name)
+        {
+            if(max_val<forth_data[n].val)
+                max_val=forth_data[n].val
+            current_line_dta.push({left:left_nodes[i],right:right_nodes[m],val:forth_data[n].val});
+        }
+    }
+}            }
+            path_colorscale.domain([0, max_val]);
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
-            d3.select('#' + index).select('.spatial_lines').selectAll('path')
+             d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
+            let spatial_lines = d3.select('#' + index).select('.spatial_lines').selectAll('path')
                 .data(current_line_dta)
                 .enter()
-                .append('path')
+                spatial_lines.append('path')
                 .attr('d', function (d) {
                     let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
                     //let left_x=parseInt(d3.select(d.left).style('left'))
                     let right_x = parseInt(d3.select(this.parentNode).style('width'))
                     let right_y = parseInt(d3.select(d.right).attr('current_top')) + parseInt(d3.select(d.right).style('height')) / 2
-                    return 'M -4 ' + ' ' + left_y + ' ' + 'Q ' + (0 + right_x) / 2 + ' ' + (left_y + right_y) / 2 + ' ' + right_x + ' ' + right_y;
+                    return 'M -0 ' + ' ' + left_y + ' ' + 'Q ' + (0 + right_x) / 3 + ' ' + (left_y + right_y) / 3 + ' ' + right_x + ' ' + right_y;
                 })
-                .attr('stroke', 'blue')
-                .attr('stroke-width', 1)
-                .attr('fill', 'none');
+                .attr('stroke', function(d){ return path_colorscale(d.val)})
+                .attr('stroke-width', 3)
+                .attr('fill', 'none')
+                spatial_lines.append('circle')
+                .attr('cx','0')
+                .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
+                .attr('r','3')
+                .attr('fill','#b9b9b9');
         } else {
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
+             d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
         }
     }
 

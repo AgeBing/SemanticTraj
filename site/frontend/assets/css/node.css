@@ -90,13 +90,17 @@
     border: 2px solid transparent;
     border-radius: 1px;
     transition-duration: 0.4s;
+    overflow-x: scroll;
+}
+.condition_node .spatial_constraints .POIrect::-webkit-scrollbar{
+    display:none;
 }
 .condition_node .spatial_constraints .POIrect:hover{
     border: 2px solid #e26b35;
 }
 
-.condition_node .spatial_constraints .worddiv{
-    padding: 2px;
+.condition_node .srealwordtitlepatial_constraints .worddiv{
+    //padding: 2px;
     background: whitesmoke;
 }
 .condition_node .spatial_constraints .wordtitle{
