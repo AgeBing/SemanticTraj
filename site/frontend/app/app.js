@@ -9,7 +9,7 @@ import * as SearchBar from './search/searchbar'
 
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
-import { draw as drawList , filterGeo as filterListGeo , filterTime as filterListTime } from './list/index.js'
+import { draw as drawList , filterListGeo  , filterListTime  } from './list/index.js'
 import { draw as drawTopic } from './timeline/index.js'
 import { init as timeInit }  from './timeline/time.js'
 
@@ -17,13 +17,16 @@ import { highLightTrajInMap ,unHighLightTrajInMap ,
 		 highLightTrajSectionInMap, unHighLightTrajSectionInMap,
 		 draw as drawTraj  } from './map/traj.js'
 import { highLightTopic , unHighLightTopic } from './timeline/index.js'
-import { highLightOneItem , unhighLightOneItem } from './list/index.js'
+import { highLightOneItem , unhighLightOneItem  } from './list/index.js'
 
  
-// import { mock } from '../mock/setData.js'
+import { mock } from '../mock/setData.js'
+import { mock as mockNode } from '../mock/setNode.js'
 
-let trajs  // 全量数据
-let topicLists = [] , topicListsPids = []
+
+let trajs  // 全量数据 
+let trajsPis = []
+let topicLists = [] 
 
 
 
@@ -32,11 +35,16 @@ let topicLists = [] , topicListsPids = []
 datamanager.init().then(o => SearchBar.init())
 
 // mock()
+// mockNode()
 
 
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
 	trajs = data
+	trajs.forEach((traj)=>{   
+		trajsPis.push(traj.pid)
+	})
+
 	drawList(data)
 	drawPic(data)
 	timeLineInit()
@@ -64,24 +72,15 @@ function timeLineInit() {
 
 
 // 框选操作后的轨迹被筛选了， 因此 列表现实的轨迹是筛选后的
-export function filterGlobalData(availableTrajs){
-	console.log("filterGlobalData num",availableTrajs.length)
-	let availablePids = [] , filteredPids = []
-	availableTrajs.forEach((traj)=>{
-		availablePids.push(traj.pid)
-	})
-	trajs.forEach((traj)=>{
-		let pid = traj.pid
-		if( availablePids.indexOf(pid) == -1){
-			filteredPids.push(pid)
-		}
-	})
-	filterListGeo(filteredPids)
+export function filterGlobalData(filteredPids){
+	// console.log("filter num : ",filteredPids.length)
+
+	filterListGeo(filteredPids) //传递被过滤掉的
 }
 
 //timeLine的选择框过滤轨迹
 export function filterDataInTime(_startTime,_endTime){
-	let filteredPids = [] , availableTrajs = []
+	let _filteredPids = [] , availableTrajs = []
 
 	for(let i = 0;i < trajs.length;i++){
 		let traj = trajs[i].traj,
@@ -92,22 +91,20 @@ export function filterDataInTime(_startTime,_endTime){
 
 		if( startTime.getTime() >= _endTime 
 			|| endTime.getTime() <=  _startTime){
-			filteredPids.push(trajs[i].pid)
+			_filteredPids.push(trajs[i].pid)
 			continue
 		}else{
 			availableTrajs.push(trajs[i])
 		}		
 	}
 
-	// console.log(startTime,endTime)
-	// console.log("time filter:",filteredTrajs,topicLists,topicListsPids)
 
 	// list
 	drawList(trajs)
-	// filterListTime(filteredPids)
+	filterListTime(_filteredPids)
 
 	// map view
-	drawPic(availableTrajs)
+	drawPic(availableTrajs) 
 }
 // 绘制 Topic
 export function topicAdd(topicPids){

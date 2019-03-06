@@ -75,6 +75,7 @@
         position: absolute;
     right: 0;
     bottom: 0;
+    overflow-y: auto;
 }
 
 
@@ -191,15 +192,16 @@
     start for configuration Panel
 */
 .high-level-desc{
-    font-size: 15px;
+font-size: 11px;
     text-align: center;
+    padding: 0 10px;
 }
 .semantic_constraints .param-rect {
-    height: 40px;
-    width: 100%;
+    height: 28px;
+    width: clac(100% - 20px);
     /*border: 1px dashed black;*/
     margin: 0px 0px;
-    padding: 0 5px;
+    padding: 0 10px;
 }
 
 .param-rect .param-name{
@@ -213,7 +215,7 @@
 }
 
 .param-rect div{
-    font-size: 13px;
+    font-size: 11px;
     height: 100%;
     line-height: 39px;
 }
@@ -234,7 +236,7 @@
 
 .semantic_constraints .param-ab-rect {
     height: 40px;
-    width: 100%;
+    width: clac(100%-10px);
     margin: 0px 0px;
     padding: 0 5px;
 }
@@ -255,7 +257,7 @@
 }
 
 .param-ab-rect div{
-    font-size: 13px;
+    font-size: 11px;
     height: 100%;
     line-height: 39px;
 }

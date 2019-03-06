@@ -196,13 +196,22 @@ function brushed(){
 function addLegend(){
 	//添加图例
     let container = d3.select('#topic-legend')
-    Config.topicNameList.forEach((name,i)=>{
+
+    Config.topicNames.forEach((topicType,i)=>{
     	let item = container.append('div').attr('class','legend-item')
    	 	item.append('div').attr('class','legend-rect')
    	 		.style('background-color',Config.colorList[i])
 	    item.append('div').attr('class','legend-name')
-	    	.text(name)
+	    	.text(topicType.name)
     })
+    // Config.topicNameList.forEach((name,i)=>{
+    // 	let item = container.append('div').attr('class','legend-item')
+   	//  	item.append('div').attr('class','legend-rect')
+   	//  		.style('background-color',Config.colorList[i])
+	   //  item.append('div').attr('class','legend-name')
+	   //  	.text(name)
+    // })
+
 }
 function timeSelect(){
 	
