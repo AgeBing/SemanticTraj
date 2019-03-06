@@ -129,6 +129,7 @@ function dataTrans_YKJ() {
         p.longitude = site.longitude
         p.topics = sitetopic
       })
+      traj.pid = traj.peopleid
     })
 
     let t2 = new Date().getTime()

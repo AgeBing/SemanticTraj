@@ -15,13 +15,13 @@ let filteredPids = [] , filteredPidsGeo = [] ,filteredPidsTime = []   // 被过�
 
 let resultlist={
 	container:d3.select("#list-contain"),
-	maxNum : 500,
+	maxNum : 50,
 	init:function(argument){}
 }
 
 
 resultlist.draw = function(data){
-
+	// console.log('list ',data.slice(0,10))
 	allLength = data.length
 
 	if(allLength>resultlist.maxNum)

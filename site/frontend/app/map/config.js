@@ -17,4 +17,4 @@ export let PicUpdateFlag   = true
 export let picTrajColor = '#4575b4' 
 export let picTrajSelectColor = '#D73027' 
 export let picTrajOpacitys = [0.004, 0.1 , 0.171,0.357,0.386,0.42, 0.461,0.569,0.643,0.735,0.843,0.945,0.994]
-export let picTrajOpacity = picTrajOpacitys[1]
+export let picTrajOpacity = picTrajOpacitys[0]

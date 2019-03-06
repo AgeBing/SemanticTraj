@@ -155,7 +155,7 @@ export function unHighLightTopiContorl(pid){
 		}
 	}
 }
-export function HighLightTrajSectionContorl(i,t){ 
+export function HighLightTrajSectionContorl(i,t,fillColor){ 
 	let traj = topicLists[i].traj
 	// console.log(traj,t)
 
@@ -173,7 +173,7 @@ export function HighLightTrajSectionContorl(i,t){
 			let siteId1 = +traj[j].site,
 				siteId2 = +traj[j+1].site
 
-			highLightTrajSectionInMap(siteId1,siteId2)
+			highLightTrajSectionInMap(siteId1,siteId2,fillColor)
 			break;
 		}
 	}
