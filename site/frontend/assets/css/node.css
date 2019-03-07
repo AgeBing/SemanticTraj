@@ -24,11 +24,67 @@
 .condition_node  .node_subtitle{
 	padding: 5px 10px;
     text-align: center;
-    font-size: 18px;
+    font-size: 10px;
     color: #3c3c3c;
 }
+.condition_node  .node_subtitle .real_node_subtitle{
+	//padding: 5px 10px;
+    text-align: center;
+    color: #3c3c3c;
+    display:inline-block;
+    float:left;
+}
 
+.condition_node  .node_subtitle .max_node_num{
+    text-align: center;
+    //color: #3c3c3c;
+    background: white;
+    display:inline-block;
+    float:right;
+}
+.condition_node  .node_subtitle .max_node_num .text{
+    text-align: center;
+    color: #3c3c3c;
+    display:inline-block;
+    float:left;
+    margin-right: 2px;
+}
+.condition_node  .node_subtitle .max_node_num .decrease{
+    text-align: center;
+    color: #3c3c3c;
+    display:inline-block;
+    margin-left: 5px;
+    margin-right: 2px;
+    background: rgb(171,171,171);
+    color:white;
+}
+.condition_node  .node_subtitle .max_node_num .increase{
+    text-align: center;
+    color: #3c3c3c;
+    display:inline-block;
+   margin-left: 5px;
+    background: rgb(171,171,171);
+    color:white;
+}
+element.style{
 
+}
+.condition_node  .node_subtitle .max_node_num .node_num{
+    text-align: center;
+    color: white;
+    display:inline-block;
+    margin-left: 5px;
+    margin-right: 2px;
+    background: rgb(171,171,171);
+}
+input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{
+    -webkit-appearance: none!important;
+
+}
+input{
+    margin:0;
+    border-style:none;
+}
 .condition_node .timeconstraints .textcon{
 	    float: left;
 	    font-size: 19px;
