@@ -1,10 +1,15 @@
 
-
-
 import * as d3 from 'd3';
 import * as Config from '../timeline/config'
 
+import { nodelist  } from './Node.js'
+
+import * as DataManager from '../search/datamanager.js';
+
 let scale = d3.scaleLinear()
+	.range([0,1])
+
+let scaleAB = d3.scaleLinear()
 	.range([0,1])
 
 export function appendParamWidges(roots) {
@@ -49,12 +54,33 @@ function paramHander() {
 		nodeId = item.parentNode.parentNode.id     
 	}
 
+	let n =	d3.select(item).select('.param-name').text(),
+		v , v_o , w_o , other_rect
 
-	let n =	d3.select(item).select('.param-name').text()
-	let v = scale(x).toFixed(2)
-	d3.select(item).select('.param-num').text(v)
-console.log(nodeId)
-	getParamVals(nodeId)
+	if(n == 'α' || n == 'β'){
+		v= scaleAB(x).toFixed(2)
+		v_o = 1 - v 
+		v_o = v_o.toFixed(2)
+		w_o = scaleAB.invert(v_o)
+		if(n == 'α'){
+			d3.select(item).select('.param-num').text(v)
+			other_rect = d3.select(item.parentNode).select('.param-b')
+			other_rect.select('.param-num').text(v_o)
+			other_rect.select('rect').attr('width',w_o)
+		}else{
+			d3.select(item).select('.param-num').text(v)
+			other_rect = d3.select(item.parentNode).select('.param-a')
+			other_rect.select('.param-num').text(v_o)
+			other_rect.select('rect').attr('width',w_o)
+		}
+
+	}else{
+		v =scale(x).toFixed(2)
+		d3.select(item).select('.param-num').text(v)
+	}
+
+	calcSims( nodeId )
+
 }
 function addOneParamRect(root,i){
 	let  visBox = document.getElementsByClassName("semantic_constraints")[0];
@@ -93,6 +119,8 @@ function addAB(root){
 	let Bgroup = group.append('div').attr('class','param-half-rect param-b')
 
 	let  rectWidth = 35 , rectHeight = 10
+	
+	scaleAB.domain([0,rectWidth])
 
 	group.selectAll('.param-half-rect')
 		.append('div').attr('class','param-name')
@@ -123,16 +151,103 @@ function addAB(root){
 function getParamVals(nodeId) {
 	// 第几个 
 	let container = d3.select('#'+nodeId).select('.semantic_constraints')
-	let params = {}
+	let params = { 
+		'T_I':[]
+	}
 	container.selectAll('.param-rect').each(function(){
 		let name = d3.select(this).select('.param-name').text()
 		let val = d3.select(this).select('.param-num').text()
-		params[name] = +val
+		params['T_I'].push(+val)
 	})
 	container.selectAll('.param-half-rect').each(function(){
 		let name = d3.select(this).select('.param-name').text()
 		let val = d3.select(this).select('.param-num').text()
 		params[name] = +val
 	})
-	console.log(params)
+	
+	return params
+}
+
+
+
+function calcSims(nodeId){
+
+  	let nodelist = require('../Specification/Node.js')
+
+  	let order  =  +nodeId.slice(-1)
+
+	let params = getParamVals(nodeId)
+
+	let T_I  = params['T_I'] ,
+		a = params['α'],
+		b=  params['β']
+
+	console.log(nodelist.data , a, b , params)
+	nodelist.data.forEach( (constrain) =>{
+		if( constrain.order == 1){
+
+			constrain.data.forEach( (words) =>{
+
+				words.data.forEach((locations)=>{
+					locations.data.forEach((location , i)=>{
+							location.simT = b * getSim( T_I , location.site_id )
+					})
+				
+				})
+
+			})
+
+		}
+	})
+
+
+
+	// reOrder( a , order)
+	console.log(nodelist)
+
+}
+
+
+function getSim(T_I , siteId){
+    let siteTopic = DataManager.siteTopic
+    let topics = siteTopic.get(''+siteId)
+    let T_L = [ 0 , 0 ,0 , 0 , 0 , 0]
+
+    if(!topics){
+    	console.log(" empty topics in site ", siteId)
+    	return 0
+	}
+
+    topics.forEach( (topic) =>{
+    	let name = topic.topic,
+    		val =  topic.val
+
+		Config.topicNames.forEach( (topic_,i) => {
+			if(topic_.contain.indexOf(name) != -1 ){
+				T_L[i] += val
+			}
+		})	
+    })
+	
+	return sim( T_I , T_L )
+}
+
+function sim( I , L ){
+
+	let i = 0 , denom = 0 , nume = 0 , l_I = 0 , l_L = 0
+
+	// 分子
+	for(i = 0;i < 6;i++){
+		 nume += I[i] * L[i]
+	}
+	//分母
+	for(i = 0;i < 6;i++){
+		l_I += I[i] * I[i]
+		l_L += L[i] * L[i]
+	}
+	l_I = Math.sqrt(l_I)
+	l_L = Math.sqrt(l_L)
+	denom = l_I * l_L
+
+	return nume / denom
 }

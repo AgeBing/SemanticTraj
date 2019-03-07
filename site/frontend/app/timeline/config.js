@@ -35,7 +35,7 @@ export let vRectHeight = 35
 
 export const  topicNames = [{
 			    	name : '娱乐', 
-			    	contain : ['Shop','Entertainment' ],
+			    	contain : ['Shop' ],
 			    	icon : 'food.png'
 			    },{
 			    	name : '生活', 
@@ -47,11 +47,11 @@ export const  topicNames = [{
 			    	icon : 'finance.png'
 			    },{
 			    	name : '文化', 
-			    	contain : ['Education','Tourist_attractions','Sports','Scenicspot' ],
+			    	contain : ['Education','Scenicspot' ],
 			    	icon : 'education.png'
 			    },{
 			    	name : '交通', 
-			    	contain : ['Car','Traffic' ],
+			    	contain : ['Traffic' ],
 			    	icon : 'traffic.png'
 			    },{
 			    	name : '政府', 
