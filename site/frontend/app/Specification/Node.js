@@ -13,6 +13,7 @@ let nodelist={
 }
 let line_data=[];
 nodelist.rendering = function(){
+    console.log('nodelist.data',nodelist.data);
   for(let i =0;i<nodelist.data.length;i++){
     nodelist.data[i].order = i +1
   }
@@ -148,7 +149,6 @@ $('#'+current_id).scroll(function(){
   renderingPOIlist(mergenode)
 
 
-
   //semantic constraints
   let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
   semantic_constraints.append("div").classed("node_subtitle",true)
@@ -192,26 +192,6 @@ $('#'+current_id).scroll(function(){
     create_line(index);
 })
   })
-  /*
-  *     .each(function(d){
-let current_id = d3.select(this).attr('id');
-let index='condition_node'+d.order
-$('#'+current_id).scroll(function(){
-        let top_height=$('#'+current_id).scrollTop();
-    let element_height=parseInt(d3.select('#'+current_id).select('.spatial_POIs').select('.POIrect').style('height'))+4;
-    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    line_data[index].right=[];//当前显示在窗口中的元素
-        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
-            let current_element_top=parseInt(d3.select(this).style('top'));
-            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
-                d3.select(this).attr('current_top',current_element_top-top_height);
-                line_data[index].right.push(this);
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
-    create_line(index);
-})
-      })*/
 }
 function renderingwordslist(mergenode){
 
@@ -262,6 +242,9 @@ function renderingPOIlist(mergenode){
 
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
            .data(function(d){
+               console.log(d,'d--------------------------');
+
+
                   let colorscale = d3.scaleLinear()
                     .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
                   let textcolorscale = 0
@@ -289,7 +272,7 @@ function renderingPOIlist(mergenode){
                      textcolorscale = pois[0].poi.val
                    //update data index and color
                    for(let i=0;i<pois.length;i++){
-                    pois[i].order = i
+                       pois[i].order = i
                     pois[i].color = pois[i].poi.val >textcolorscale/2 ? "white":"rgb(28,28,28)"
                     pois[i].background = colorscale(pois[i].poi.val)
                    }
@@ -325,7 +308,25 @@ function renderingPOIlist(mergenode){
       })
 }
 
-
+function refresh_list(a,current_node_id){
+    let alpha = a;
+    let current_conditionnode_order=current_node_id.substr(current_node_id.length-1,1);
+    let current_data=[];
+    for(let i=0;i<nodelist.data.length;i++)
+    {if(nodelist.data[i].order==current_conditionnode_order){
+            current_data=nodelist.data[i];//或者给这个结构在外面再套一层，跟listnode.data一样的结构
+            break;
+        }
+    }
+ for(let i=0;i<current_data.data.length;i++)
+        for(let j=0;j<current_data.data[i].data.length;j++)
+        for(let m=0;m<current_data.data[i].data[j].data.length;m++)
+        {
+            //current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*(current_data.data[i].data[j].data[m].relation_val)
+            current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*alpha+current_data.data[i].data[j].data[m].simT;
+        }
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]))
+}
 
 function addslide(container,containername,mergecontainer){
   container.append("div").attr("id",`${containername}_name`)
@@ -620,6 +621,45 @@ for(let m=0;m<right_nodes.length;m++)
     }
 
  /*
+
+function refresh_locationlist(a,current_node_id){
+    let Ti={}
+    let alpha = 1;
+    let beta = 0;
+        d3.select('.semantic_constraints').select('.param-ab-rect').selectAll('.param-half-rect').each(function(d,i){
+if(d3.select(this).select('param-name').text()=='α')
+    alpha=d3.select(this).select('.param-num').text();
+if(d3.select(this).select('param-name').text()=='β')
+    beta=d3.select(this).select('.param-num').text();
+    });
+    d3.select('.semantic_constraints').selectAll('.param-rect').each(function(){
+let semantic_name=d3.select(this).select('.param-name').text();
+let semantic_val=d3.select(this).select('.param-num').text();
+Ti[semantic_name]=semantic_val;
+    })
+let current_conditionnode_id=d3.select(this.parentNode).attr('id')
+ let current_conditionnode_order=current_conditionnode_id.substr(current_conditionnode_id.length-1,1);
+    let current_data=[];
+    for(let i=0;i<nodelist.data.length;i++)
+    {if(nodelist.data[i].order==current_conditionnode_order){
+            current_data.push(nodelist.data[i]);//或者给这个结构在外面再套一层，跟listnode.data一样的结构
+            break;
+        }
+    }
+    for(let i=0;i<current_data.data.length;i++)
+        for(let j=0;j<current_data[i].data.data.length;j++)
+        for(let m=0;m<current_data[i].data.data[j].data.length;m++)
+        {
+            let beta_val=beta*
+            current_data[i].data[j].data[m].relation_val*alpha;
+        }
+
+    console.log(current_data,'current_data=----------------------')
+    renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(current_data))
+
+}
+
+
  * function create_line111(source,targets) {
          var common = {
          endpoint: ['Dot',{ radius:5}],//'Blank',//'Rectangle','Image',//
