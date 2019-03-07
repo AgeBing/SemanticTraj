@@ -183,22 +183,18 @@ function calcSims(nodeId){
 		b=  params['β']
 
 	nodelist.data.forEach( (constrain) =>{
-		if( constrain.order == 1){
-
+		if( constrain.order == order){
 			constrain.data.forEach( (words) =>{
 
 				words.data.forEach((locations)=>{
 					locations.data.forEach((location , i)=>{
 							location.simT = b * getSim( T_I , location.site_id )
 					})
-				
 				})
 
 			})
-
 		}
 	})
-
 
 
 	nodelist.reOrder( a, nodeId)
