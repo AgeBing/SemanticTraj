@@ -148,7 +148,6 @@ $('#'+current_id).scroll(function(){
   let show_hide_div = renderingwordslist(mergenode)
   renderingPOIlist(mergenode)
 
-refresh_list(1,'condition_node1');
 
   //semantic constraints
   let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
@@ -323,8 +322,8 @@ function refresh_list(a,current_node_id){
         for(let j=0;j<current_data.data[i].data.length;j++)
         for(let m=0;m<current_data.data[i].data[j].data.length;m++)
         {
-            current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*(current_data.data[i].data[j].data[m].relation_val)
-            //current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*alpha+current_data.data[i].data[j].data[m].simT;
+            //current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*(current_data.data[i].data[j].data[m].relation_val)
+            current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*alpha+current_data.data[i].data[j].data[m].simT;
         }
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]))
 }
