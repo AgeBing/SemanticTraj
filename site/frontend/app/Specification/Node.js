@@ -322,10 +322,13 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
         for(let j=0;j<current_data.data[i].data.length;j++)
         for(let m=0;m<current_data.data[i].data[j].data.length;m++)
         {
+            console.log(current_data.data[i].data[j].data[m],'current_data.data[i].data[j].data[m]-----------------')
             //current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*(current_data.data[i].data[j].data[m].relation_val)
             current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*alpha+current_data.data[i].data[j].data[m].simT;
         }
-renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]))
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]));
+        get_right_nodes('locationlistdiv'+current_conditionnode_order,current_conditionnode_order)
+
 }
 
 function addslide(container,containername,mergecontainer){
@@ -567,6 +570,7 @@ for(let m=0;m<right_nodes.length;m++)
     }
 }            }
             path_colorscale.domain([0, max_val]);
+            console.log(index,max_val,'max_val--------------')
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
              d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
             let spatial_lines = d3.select('#' + index).select('.spatial_lines').selectAll('path')
@@ -620,6 +624,25 @@ for(let m=0;m<right_nodes.length;m++)
         create_line(index);
     }
 
+    function get_right_nodes(scroll_id,order){
+    let current_id = scroll_id;
+let index='condition_node'+order//
+        console.log(line_data[index].right,'before---------------------')
+        let top_height=$('#'+current_id).scrollTop();
+    let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
+    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
+    line_data[index].right=[];//当前显示在窗口中的元素
+        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
+            let current_element_top=parseInt(d3.select(this).style('top'));
+            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
+                d3.select(this).attr('current_top',current_element_top-top_height);
+                line_data[index].right.push(this);
+            }
+        })
+     console.log(top_height,bottom_height,line_data[index].right,'after---------------------')
+
+    create_line(index);
+    }
  /*
 
 function refresh_locationlist(a,current_node_id){
