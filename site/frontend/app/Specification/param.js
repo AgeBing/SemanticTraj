@@ -182,7 +182,6 @@ function calcSims(nodeId){
 		a = params['α'],
 		b=  params['β']
 
-	console.log(nodelist.data , a, b , params)
 	nodelist.data.forEach( (constrain) =>{
 		if( constrain.order == 1){
 
@@ -202,9 +201,7 @@ function calcSims(nodeId){
 
 
 
-	// reOrder( a , order)
-	console.log(nodelist)
-
+	nodelist.reOrder( a, nodeId)
 }
 
 

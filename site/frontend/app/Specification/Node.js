@@ -308,7 +308,7 @@ function renderingPOIlist(mergenode){
       })
 }
 
-function refresh_list(a,current_node_id){
+nodelist.reOrder = function refresh_list(a,current_node_id){
     let alpha = a;
     let current_conditionnode_order=current_node_id.substr(current_node_id.length-1,1);
     let current_data=[];
