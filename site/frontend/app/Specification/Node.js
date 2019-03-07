@@ -82,10 +82,44 @@ nodelist.rendering = function(){
   let subtitlecontainer = spatial_constraints.append("div").style("height","27px")
   subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
   .text("Spatial Constraints Words").style("float","left").style("width","185px")
-  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
-  .style("float","left").style("width","65px")
-  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
-  .text("Location List").style("float","left").style("width","95px")
+  //subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
+  //.style("float","left").style("width","65px")
+  let node_subtitle = subtitlecontainer.append("div").classed("node_subtitle",true).style("height","27px").style('overflow','hidden')
+      //.style("font-size","15px").text("Location List").style("float","left").style("width","95px")
+
+    node_subtitle.append('div').classed('real_node_subtitle',true).text("Location List").style("width","65px")
+    node_subtitle.append('div').classed('max_node_num',true).style("width","100px")
+    node_subtitle.select('.max_node_num').append('div').classed('text',true).text('Top').style("width","14px").style("height","14px")
+    node_subtitle.select('.max_node_num').append('div').classed('decrease',true).text('-').style("width","14px").style("height","14px").on('click',decrease_locationlist)
+    node_subtitle.select('.max_node_num').append('input').classed('node_num',true).attr('type','number').property('value',20).attr('min',0).style("width","30px").style("height","14px").attr('max',function(d){
+        let sum_location=0;
+for(let i=0;i<d.data.length;i++)
+    for(let j=0;j<d.data[i].data.length;j++)
+        for(let m=0;m<d.data[i].data[j].data.length;m++)
+            sum_location++;
+return parseInt(sum_location);
+
+    }).on('change',function(){
+        if(d3.select(this).property('value')<=parseInt(d3.select(this).attr('max'))&&(d3.select(this).property('value')>=parseInt(d3.select(this).attr('min')))){
+
+        let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
+        let current_data=[]
+        for(let i=0;i<nodelist.data.length;i++)
+            if(nodelist.data[i].order==current_conditionnode_order)
+                current_data=nodelist.data[i]
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),d3.select(this).property('value'));
+       get_right_nodes(current_conditionnode_order);
+        }
+        else{
+            if(d3.select(this).property('value')>d3.select(this).attr('max'))
+                d3.select(this).property('value',d3.select(this).attr('max'))
+            else
+                d3.select(this).property('value',d3.select(this).attr('min'))
+        }
+
+    })
+    node_subtitle.select('.max_node_num').append('div').classed('increase',true).text('+').style("width","14px").on('click',increase_locationlist)
 
 
   let spatial_cc = spatial_constraints.append("div").style("height","calc(100% - 27px)")
@@ -135,7 +169,7 @@ $('#'+current_id).scroll(function(){
                   .append("div")
                   .classed("spatial_POIs",true)
                   .style("width","100%")
-                  .style("height",function(d){
+                  /*.style("height",function(d){
                      let poinumber = 0
                      for(let i =0;i<d.data.length;i++){
                       for(let j =0;j<d.data[i].data.length;j++){
@@ -143,7 +177,7 @@ $('#'+current_id).scroll(function(){
                       }
                      }
                      return `${poinumber*20}px`
-                  })
+                  })*/
 
   let show_hide_div = renderingwordslist(mergenode)
   renderingPOIlist(mergenode)
@@ -238,13 +272,10 @@ function renderingwordslist(mergenode){
     return show_hide_div
 }
 
-function renderingPOIlist(mergenode){
+function renderingPOIlist(mergenode,max_num=20){
 
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
            .data(function(d){
-               console.log(d,'d--------------------------');
-
-
                   let colorscale = d3.scaleLinear()
                     .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
                   let textcolorscale = 0
@@ -276,7 +307,7 @@ function renderingPOIlist(mergenode){
                     pois[i].color = pois[i].poi.val >textcolorscale/2 ? "white":"rgb(28,28,28)"
                     pois[i].background = colorscale(pois[i].poi.val)
                    }
-
+                    pois=pois.slice(0,max_num)
                    //reorder
                    pois.sort(function(a, b) {
                       return a.poi.index - b.poi.index})
@@ -322,12 +353,11 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
         for(let j=0;j<current_data.data[i].data.length;j++)
         for(let m=0;m<current_data.data[i].data[j].data.length;m++)
         {
-            console.log(current_data.data[i].data[j].data[m],'current_data.data[i].data[j].data[m]-----------------')
             //current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*(current_data.data[i].data[j].data[m].relation_val)
             current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*alpha+current_data.data[i].data[j].data[m].simT;
         }
-renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]));
-        get_right_nodes('locationlistdiv'+current_conditionnode_order,current_conditionnode_order)
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),parseInt($('#'+current_node_id).find('.node_num').prop('value')));
+        get_right_nodes(current_conditionnode_order)
 
 }
 
@@ -563,14 +593,13 @@ for(let m=0;m<right_nodes.length;m++)
     {
         if(rifght_nodename==forth_data[n].name)
         {
-            if(max_val<forth_data[n].val)
-                max_val=forth_data[n].val
-            current_line_dta.push({left:left_nodes[i],right:right_nodes[m],val:forth_data[n].val});
+            if(max_val<forth_data[n].relation_val)
+                max_val=forth_data[n].relation_val
+            current_line_dta.push({left:left_nodes[i],right:right_nodes[m],val:forth_data[n].relation_val});
         }
     }
 }            }
             path_colorscale.domain([0, max_val]);
-            console.log(index,max_val,'max_val--------------')
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
              d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
             let spatial_lines = d3.select('#' + index).select('.spatial_lines').selectAll('path')
@@ -624,10 +653,9 @@ for(let m=0;m<right_nodes.length;m++)
         create_line(index);
     }
 
-    function get_right_nodes(scroll_id,order){
-    let current_id = scroll_id;
+    function get_right_nodes(order){
+    let current_id = 'locationlistdiv'+order;
 let index='condition_node'+order//
-        console.log(line_data[index].right,'before---------------------')
         let top_height=$('#'+current_id).scrollTop();
     let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
     let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
@@ -639,11 +667,50 @@ let index='condition_node'+order//
                 line_data[index].right.push(this);
             }
         })
-     console.log(top_height,bottom_height,line_data[index].right,'after---------------------')
+     //console.log(top_height,bottom_height,line_data[index].right,'after---------------------')
 
     create_line(index);
     }
- /*
+
+
+    function decrease_locationlist(){
+let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
+if(current_max-1>=d3.select(this.parentNode).select('.node_num').attr('min'))
+{
+    d3.select(this.parentNode).select('.node_num').property('value',current_max-1)
+let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
+        let current_data=[]
+        for(let i=0;i<nodelist.data.length;i++)
+            if(nodelist.data[i].order==current_conditionnode_order)
+                current_data=nodelist.data[i]
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max-1);
+       get_right_nodes(current_conditionnode_order);
+}
+    }
+function increase_locationlist(){
+let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
+console.log(d3.select(this.parentNode).select('.node_num').attr('max'),'max-----------------')
+if(current_max+1<=d3.select(this.parentNode).select('.node_num').attr('max'))
+{
+    d3.select(this.parentNode).select('.node_num').property('value',current_max+1)
+    let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
+        let current_data=[]
+        for(let i=0;i<nodelist.data.length;i++)
+            if(nodelist.data[i].order==current_conditionnode_order)
+                current_data=nodelist.data[i]
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max+1);
+       get_right_nodes(current_conditionnode_order);
+}
+}
+
+function put_locationlist_num(num){
+
+}
+
+
+    /*
 
 function refresh_locationlist(a,current_node_id){
     let Ti={}
