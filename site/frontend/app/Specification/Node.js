@@ -153,7 +153,7 @@ refresh_list(1,'condition_node1');
   //semantic constraints
   let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
   semantic_constraints.append("div").classed("node_subtitle",true)
-          .style("font-size","15px").text("Semantic Parameters")
+          .style("font-size","15px").text("Configuration Panel")
   // addslide(semantic_constraints,"Business",mergenode)
   // addslide(semantic_constraints,"Entertainment",mergenode)
   // addslide(semantic_constraints,"Resident",mergenode)

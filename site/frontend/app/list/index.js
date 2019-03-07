@@ -173,8 +173,6 @@ d3.select('#filter-btn')
 // 在 app.js 中被引用
 function filter(){
 	let allItems = d3.selectAll('.list-item')
-	console.log(1)
-
 	allItems.each(function(){
 		let curItem = d3.select(this),
 			curId = curItem.attr('id')
@@ -193,19 +191,23 @@ function filter(){
 			curItem.select('input').attr('disabled', null)
 		}
 	})
-
-	console.log(2)
 	drawTopic(checkedPids)
 	updatePerNum()
 	filterDisplay()	
 	reflowItems()
 }
-export function filterList(pids){
-	filteredPids = pids
+
+export function filterListGeo(pids){
+	filteredPidsGeo = pids
+	filteredPids = filteredPidsGeo.concat(filteredPidsTime)
 	filter()
 }
 
-
+export function filterListTime(pids){
+	filteredPidsTime = pids
+	filteredPids = filteredPidsGeo.concat(filteredPidsTime)
+	filter()
+}
 
 
 
