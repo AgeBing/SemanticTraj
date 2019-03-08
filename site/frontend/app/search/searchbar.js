@@ -10,7 +10,7 @@ import { draw as drawPoi } from '../map/poi'
 import { setGlobalTrajData } from '../app.js'
 
 
-let textData = []
+export let textData = []
 let preClickedIndex = null
 
 export function init() {
@@ -50,6 +50,7 @@ function addInputListener(o) {
       $('#search-input-text').val('')
     } else if (e.keyCode == '8') {
       const nowText = $('#search-input-text').val().trim()
+
       if (nowText.length == 0) {
         //只有删除这个词才会更新
         textData.pop();
@@ -63,6 +64,7 @@ function addInputListener(o) {
 
 function get_participle(data) {
   const rawText = textData.map(d => d[0]).join('') + data;
+  console.log(rawText,'rawText-----------------')
   QueryUtil.get_participle(rawText)
     .then(o => {
       o = o.filter(d => d[0].trim().length > 0)
