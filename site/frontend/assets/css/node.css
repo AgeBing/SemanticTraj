@@ -85,6 +85,16 @@ input{
     margin:0;
     border-style:none;
 }
+
+
+
+.delete{
+    float:right;
+    color:white;
+    background:transparent;
+    margin-top: 2px;
+    display:inline-block;
+}
 .condition_node .timeconstraints .textcon{
 	    float: left;
 	    font-size: 19px;
