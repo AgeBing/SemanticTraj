@@ -4,7 +4,7 @@
 
 import { appendParamWidges } from './param.js'
 import { bindTimeChangeEvent } from './time.js'
-
+import { textData } from '../search/searchbar.js'
 
 let nodelist={
   container:d3.select("#Specification_view"),
@@ -42,7 +42,32 @@ nodelist.rendering = function(){
   //title
   let title = addnode.append("div").classed("title",true)
   title.append("div").classed("constraints_order",true)
-  title.append("div").classed("text",true)
+  title.append("div").classed("text",true).style('display','inline-block')
+    title.append('div').classed('delete',true).text('X').style('margin','5px').on('click',function(d) {
+        d3.select('#condition_node' + d.order).remove();
+        for (let i = 0; i < nodelist.data.length; i++) {
+        if (nodelist.data[i].order == d.order) {
+
+            nodelist.data.splice(i, 1);
+            for (let j = i + 1; j < nodelist.data.length; j++) {
+                nodelist.data[j].order = nodelist.data[j] - 1;
+            }
+            break;
+        }
+    }
+        for(let i=0;i<textData.length;i++)
+            if(textData[i][0]==d.name)
+            {
+                textData.splice(i,1);
+                break;
+            }
+        d3.selectAll('.word-tab').each(function(){
+            if(d.name==d3.select(this).select('.tab-text-container').select('.tab-text').text())
+                d3.select(this).remove();
+        })
+        nodelist.rendering();
+        //nodelist.data.length---------------------------------------------------------------------------------------------------------------------
+    })
 
 
   mergenode.select(".title").select(".constraints_order").text(d=>d.order)
@@ -58,18 +83,23 @@ nodelist.rendering = function(){
 
   timeconstraings.append("div").classed("node_subtitle",true)
   let timecontainer = timeconstraings.append("div")
-  timecontainer.append("div").classed("text",true).classed("textcon",true)
+  let temp = timecontainer.append("div").classed("text",true).classed("textcon",true)
           .style("margin"," 0 20px")
           .style("width","170px")
           .style("background","#ababab")
           .style("color","white")
           .style("text-align","center")
+      .style('display','inline-block')
   timecontainer.append("input").classed("starttime",true).classed("textinput",true)
   timecontainer.append("div").classed("conj",true).classed("textcon",true)
   timecontainer.append("input").classed("endtime",true).classed("textinput",true)
 
   mergenode.select(".timeconstraints").select(".node_subtitle").text("Temporal Constraints")
   mergenode.select(".timeconstraints").select(".text").text("周日上午")
+      .append('div').classed('delete',true).style('margin-top','0px').style('margin-right','10px').style('font-size','15px').text('X')
+      .on('click',function(){
+//删除这部分干啥？？？？？？？？？？？？？？？？？？？？///////////////////////??????????????????????????????????????????????????????????????????????????????????
+    })
   mergenode.select(".timeconstraints").select(".starttime").property('value',"2018.01.10 9:00")
   mergenode.select(".timeconstraints").select(".conj").text("~")
   mergenode.select(".timeconstraints").select(".endtime").property('value',"2018.01.10 11:00")
@@ -202,9 +232,10 @@ $('#'+current_id).scroll(function(){
         d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
         d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
         d3.select(this).text('-');
-        let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
+        //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
         let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
-        get_left_nodes(index, current_id);
+        index=index.substr(index.length-1,1);
+        get_left_nodes(index);
     });
   locationlistdiv.each(function(d){
       //d3.select(this.parentNode)
@@ -258,7 +289,40 @@ function renderingwordslist(mergenode){
   let show_hide_div=addwordtitle.append('div').classed('hide_nei_words',true).text('-')
       show_hide_div.on('click',show_hide)
           //console.log(,'d3.select(show_hide_div)---------');
-    addwordtitle.append('div').classed('real_wordtitle',true).text((d,i)=>d.name);
+    addwordtitle.append('div').classed('real_wordtitle',true).text((d,i)=>d.name)
+        .append('div').classed('delete',true).text('X').style('margin-right','5px').on('click',function(d,i){
+            //let subtitle_before=d3.select(this.parentNode).text()
+        //let subtitle=subtitle_before.substr(0,subtitle_before.length-1);
+        let subtitle=d.name;
+            let delete_worddiv = d3.select(this.parentNode.parentNode.parentNode).attr('id')
+        let spatial_left_id=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+        let order=spatial_left_id.substr(spatial_left_id.length-1,1);
+for(let i=0;i<nodelist.data.length;i++)
+{
+    let get_target=false;
+    if(order==nodelist.data[i].order)
+
+    {
+        for(let j=0;j<nodelist.data[i].data.length;j++)
+        {
+            if(subtitle==nodelist.data[i].data[j].name)
+            {
+                nodelist.data[i].data.splice(j,1);
+                get_target=true;
+                break;
+            }
+        }
+    }
+    if(get_target)
+    {
+        console.log(' get_target------------------------')
+         break;
+    }
+}
+        d3.select('#'+delete_worddiv).remove();
+        get_left_nodes(order)
+            //删除温州，并对该卡片进行重新刷新，get_left_nodes()---------------------------------------------------------------------------------------------------
+    });
   mergewords.select(".wordsubtitle").text("Neighbors")
   let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d){
       return d.data
@@ -522,9 +586,10 @@ function show_hide() {
         d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
         d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
         d3.select(this).text('-');
-        let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
+        //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
         let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
-        get_left_nodes(index, current_id);
+        index=index.substr(index.length-1,1)
+        get_left_nodes(index);
 
 
 //create line
@@ -563,6 +628,7 @@ function show_hide() {
             let max_val=0;
             for (let i = 0; i < left_nodes.length; i++) {
 let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
+second_title=second_title.substr(0,second_title.length-1)
 let third_title=d3.select(left_nodes[i]).text();
 if(!(second_third_index.hasOwnProperty(second_title)))
 {
@@ -628,29 +694,30 @@ for(let m=0;m<right_nodes.length;m++)
     }
 
 
-    function get_left_nodes(index, current_id) {
-        //current_id:spatial_left1
-        //index:condition_node1
-        line_data[index].left = [];
-        let top_height = $('#' + current_id).scrollTop();
-        let bottom_height = top_height + parseInt($('#' + current_id)[0].getBoundingClientRect().height);
-        d3.select('#' + current_id).selectAll('.spatial_words')//主题词div集合
+    function get_left_nodes(index) {//index:1,2,3...
+        line_data['condition_node'+index].left = [];
+        let top_height = $('#spatial_left' + index).scrollTop();
+        let bottom_height = top_height + parseInt($('#spatial_left' + index)[0].getBoundingClientRect().height);
+        d3.select('#spatial_left' + index).selectAll('.spatial_words')//主题词div集合
             .each(function () {
-                let top_length = parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
-                let show_hide = $('#' + current_id).find('.hide_nei_words').text()//.innerHTML;
+                if($(this).find('.Worddiv').length>0)
+                {
+                    let top_length = parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
+                let show_hide = $('#spatial_left' + index).find('.hide_nei_words').text()//.innerHTML;
                 if (show_hide == '-') {
-                    $('#' + current_id).find('.Worddiv').find('.neiwordsdiv').each(function () {
+                    $('#spatial_left' + index).find('.Worddiv').find('.neiwordsdiv').each(function () {
                         let current_element_top = parseInt(d3.select(this).style('top')) + top_length;
                         let element_height = $(this)[0].getBoundingClientRect().height;
                         if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
                             d3.select(this).attr('current_top', current_element_top - top_height);
-                            line_data[index].left.push(this);
+                            line_data['condition_node'+index].left.push(this);
                         }
                     })
                 }
+                }
             })
         //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
-        create_line(index);
+        create_line('condition_node'+index);
     }
 
     function get_right_nodes(order){
@@ -690,7 +757,6 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
     }
 function increase_locationlist(){
 let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
-console.log(d3.select(this.parentNode).select('.node_num').attr('max'),'max-----------------')
 if(current_max+1<=d3.select(this.parentNode).select('.node_num').attr('max'))
 {
     d3.select(this.parentNode).select('.node_num').property('value',current_max+1)
