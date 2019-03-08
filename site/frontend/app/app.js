@@ -20,32 +20,43 @@ import { highLightTopic , unHighLightTopic } from './timeline/index.js'
 import { highLightOneItem , unhighLightOneItem  } from './list/index.js'
 
  
-import { mock } from '../mock/setData.js'
 import { mock as mockNode } from '../mock/setNode.js'
 
 
 let trajs  // 全量数据 
+let orderedTrajs = []
 let trajsPis = []
 let topicLists = [] 
 
-
-
+let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
 datamanager.init().then(o => SearchBar.init())
 
-// mock()
+// mockList()
 // mockNode()
 
 
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
 	trajs = data
+
+	  let t1 = new Date().getTime()
+
 	trajs.forEach((traj)=>{   
+		let stopPoints = []
+
+		traj.traj.forEach((p)=>{
+			if( p.stoppoint !== undefined){
+				stopPoints.push(p.site)
+			}
+		})
+
+		trajId2Points.set(traj.pid , stopPoints )
 		trajsPis.push(traj.pid)
 	})
 
-	drawList(data)
+	calTrajsOrder()
 	drawPic(data)
 	timeLineInit()
 }
@@ -73,8 +84,6 @@ function timeLineInit() {
 
 // 框选操作后的轨迹被筛选了， 因此 列表现实的轨迹是筛选后的
 export function filterGlobalData(filteredPids){
-	// console.log("filter num : ",filteredPids.length)
-
 	filterListGeo(filteredPids) //传递被过滤掉的
 }
 
@@ -97,12 +106,9 @@ export function filterDataInTime(_startTime,_endTime){
 			availableTrajs.push(trajs[i])
 		}		
 	}
-
-
 	// list
-	drawList(trajs)
+	drawList(orderedTrajs)
 	filterListTime(_filteredPids)
-
 	// map view
 	drawPic(availableTrajs) 
 }
@@ -182,4 +188,74 @@ export function unHighLightTrajSectionContorl(i){
 	unHighLightTrajSectionInMap()
 	unhighLightOneItem(id)
 	unHighLightTrajInMap()
+}
+
+
+
+
+
+
+export function calTrajsOrder(){  //计算轨迹的分数 排序
+	if(!trajs)  return
+
+	let scale = d3.scaleLinear().range([0,100])
+	let maxScore,minScore
+
+	trajs.forEach((traj)=>{
+		let score = getTrajScore(traj.pid)
+		traj.score = score
+
+		if(!maxScore){
+			maxScore = score,
+			minScore = score 
+		}
+
+		maxScore =  ( score > maxScore ? score : maxScore)
+		minScore =  ( score < minScore ? score : minScore ) 
+	})
+
+	scale.domain([minScore ,maxScore])
+
+	orderedTrajs = trajs.sort((t1,t2)=>{
+		let s1 = t1.score , s2 = t2.score
+		return s2 - s1  // 逆序 
+	})
+
+	orderedTrajs.forEach((traj)=>{
+		traj.per = scale(traj.score).toFixed(2)
+	})
+
+	console.log(orderedTrajs)
+	drawList(orderedTrajs)
+}
+
+function getTrajScore(pid){
+  	let nodelist = require('./Specification/Node.js')
+
+	let sites = trajId2Points.get(pid) 
+
+	// sites 基本上为一个   有些轨迹经过的site 差不多  因此得到的分数也差不多  
+
+	// sites 数据有bug  stoppoint 表示经过点的次数 ！！！！！！！！
+
+	if(!sites || sites.length == 0)  return 0 
+	let sum = 0 , sitescores 
+	sites.forEach((site)=>{
+		// sitescores 为该site周围的poi 的score ，大多为一个 
+		sitescores =  nodelist.siteScore.get(+site)
+
+		if(!sitescores)  return 0
+
+		sitescores.forEach((s)=>{
+			sum+= s
+		})
+
+		// if(sitescores.length >= 2){
+		// 	console.log(site ," : ",sitescores.length )
+		// }
+		// 加起来
+		// sum += sitescore
+	})
+
+	return sum
 }

@@ -2,13 +2,34 @@
 
 import {  setGlobalTrajData ,topicAdd } from '../app/app'
 
-
+import { filterListTime  } from '../app/list/index_.js'
 
 
 export function mock() {
 	// console.log(mockData)
 	setGlobalTrajData(mockData20)
 	// topicAdd([mockData[0].pid])
+
+
+  let filterPids = ['460000102807196','460000122835349','460000102839002','410060006060278']
+
+
+  setTimeout(()=>{
+    console.log('filter')
+    filterListTime(filterPids)
+  },4000)
+
+
+  let OrderedTrajs = mockData20.sort((t1,t2)=>{
+   let s1 = t1.pid , s2 = t2.pid
+   return s2 - s1  // 逆序 
+  })
+
+  setTimeout(()=>{
+      console.log('reOrder')
+      setGlobalTrajData(OrderedTrajs)
+  },8000)
+
 }
 
 
@@ -12928,7 +12949,7 @@ let mockData5 = [
 
 let mockData20 = [
   {
-    "pid": "204043688871489",
+    "pid": "460000102807196",
     "traj": [
       {
         "site": "8176",

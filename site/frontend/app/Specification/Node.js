@@ -5,11 +5,14 @@
 import { appendParamWidges } from './param.js'
 import { bindTimeChangeEvent } from './time.js'
 import { textData } from '../search/searchbar.js'
+import { calTrajsOrder } from '../app.js'
 
 let nodelist={
   container:d3.select("#Specification_view"),
   data : [],
     order:[],
+
+  siteScore : new Map()
 }
 let line_data=[];
 nodelist.rendering = function(){
@@ -419,10 +422,22 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
         {
             //current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*(current_data.data[i].data[j].data[m].relation_val)
             current_data.data[i].data[j].data[m].val = current_data.data[i].data[j].data[m].relation_val*alpha+current_data.data[i].data[j].data[m].simT;
+          
+            //  添加  site =>  arounded pois' socre  的 map
+            let { relation_val,simT,site_id } = current_data.data[i].data[j].data[m]
+            let score = alpha * relation_val + simT
+            let scores = this.siteScore.get(site_id)
+            if(!scores){
+              scores = [score]
+              this.siteScore.set(site_id,scores)
+            }
+            else  scores.push(score)
         }
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),parseInt($('#'+current_node_id).find('.node_num').prop('value')));
         get_right_nodes(current_conditionnode_order)
-
+    
+    
+    calTrajsOrder() //重新调整轨迹的order
 }
 
 function addslide(container,containername,mergecontainer){

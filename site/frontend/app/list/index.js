@@ -6,212 +6,39 @@ import { highLightTrajContorl ,
 		 highLightTopiContorl ,
 		 unHighLightTopiContorl
 		  }  from '../app.js'
- 
-let allLength           //总体轨迹数量
-let checkedPids = []    //用户勾选的 id , 
-let filteredPids = [] , filteredPidsGeo = [] ,filteredPidsTime = []   // 被过滤掉的 id
 
 
-
-let resultlist={
-	container:d3.select("#list-contain"),
-	maxNum : 50,
-	init:function(argument){}
+let resultlist = {
+	container	:d3.select("#list-contain"),
+	showNum 	: 50 ,
+	renderTrajs : [] ,
+	orderTrasjs : [] ,
+	filterPids  : [] ,
+	filterInGeoPids : [],
+	filterInTimePids : [],
+	checkPids  : [],
+	hide : false         //  按钮属性 , 表示是否隐藏 被过滤的属性
 }
 
+let  visBox = document.getElementById("resultlist");
+let  width = visBox.offsetWidth; //宽度
+let  rectWidth = width - 230
 
-resultlist.draw = function(data){
-	// console.log('list ',data.slice(0,10))
-	allLength = data.length
-
-	if(allLength > resultlist.maxNum)
-		data = data.slice(0,resultlist.maxNum)
-
-	let alltraj = resultlist.container
-		.select("#resultlist")
-		.selectAll(".list-item")
-		.data(data)
-
-	let addtraj = alltraj.enter().append("div")
-						.classed("list-item",true)
-						.attr('id',d=>d.pid)
-
-	alltraj.exit().remove()
-
-	let mergetraj = addtraj.merge(alltraj)
-
-
-	//UPDATE + ENTER  ID
-	mergetraj.attr('id',d=>d.pid)
-
-	// chechbox
-	let checkContain = addtraj.append('div').attr('class',"check-contain")
-		checkContain.append('input')
-				.attr('type','checkbox')
-				.attr('id',(d)=>{
-					return 'input'+d.pid
-				})
-		checkContain.append('label')
-				.attr('for',(d)=>{
-					return 'input'+d.pid
-				})
-
-	mergetraj.select(".check-contain")
-		.select("input")
-		.property('checked',function(d){
-			if( checkedPids.indexOf(d.pid) != -1 ){
-				return true
-			}else{
-				return false
-			}
-		})
-		.on('change',function(d){
-			console.log('add check')
-			topicAdd( d.pid  , d3.select(this).property('checked')  )   // TopicAdd 添加勾选的记录至 已选列表中
-		})
-
-
-
-	// id
-	addtraj.append('div').attr('class','id-word')
-	mergetraj.select(".id-word")
-		.text(d=>d.pid)
-
-	// rect
-	addtraj.append('div').attr('class','percent-rect')
-	mergetraj.select(".percent-rect")
-		// .style("width","200px")
-
-
-	// value
-	addtraj.append('div').attr('class','percent-word')
-	mergetraj.select('.percent-word')
-		.text('98%')
-
-
-	mergetraj.on('mouseenter',function(d){
-		let disable = d3.select(this).select('input').property('disabled')
-		if(disable) return
-		highLightOneItem(d.pid)
-		highLightTrajContorl(d.pid)
-		if( d3.select(this).select('input').property('checked') )
-			highLightTopiContorl(d.pid)
-
-	})
-	.on('mouseleave',function(d){
-		let disable = d3.select(this).select('input').property('disabled')
-		if(disable) return
-		unhighLightOneItem(d.pid)
-		unHighLightTrajContorl()
-		if( d3.select(this).select('input').property('checked') ){
-			unHighLightTopiContorl(d.pid)
-		}
-	})
+export function draw( data ){
+	let { showNum,hide } = resultlist
+	resultlist.orderTrasjs = data
+	resultlist.filter()
 }
-
-export function draw(data){
-	resultlist.draw(data)
+export function filterListGeo( pids  ){
+	resultlist.filterInGeoPids = pids
+	resultlist.filterPids = resultlist.filterInGeoPids.concat( resultlist.filterInTimePids )
+	resultlist.filter()
 }
-
-function topicAdd(pid,add){
-
-	if(add){   //add
-		checkedPids.push(pid)
-	}else{	   //remove
-		removeCheckedPid(pid)
-	}
-	// 重新绘制线框
-	drawTopic(checkedPids)
+export function filterListTime( pids  ){
+	resultlist.filterInTimePids = pids
+	resultlist.filterPids = resultlist.filterInGeoPids.concat( resultlist.filterInTimePids )
+	resultlist.filter()
 }
-
-
-function btnEventHandler(){
-	let isFiltered =  d3.select('#filter-btn').attr('filtered')
-	if(isFiltered){
-		d3.select(this).text('hide')
-		d3.select(this).attr('filtered',null)
-	}else{
-		d3.select(this).text('show')
-		d3.select(this).attr('filtered',true)
-	}
-	filterDisplay()
-	reflowItems()
-}
-function filterDisplay(){
-	let isFiltered =  d3.select('#filter-btn').attr('filtered')
-	let allItems = d3.selectAll('.list-item')
-	if(isFiltered){
-			allItems.each(function(){
-				let curItem  = d3.select(this),
-					curId = curItem.attr('id')
-
-				if(filteredPids.indexOf(curId) != -1) {
-					curItem.attr('class','list-item  hide')
-				}
-			})
-		}else{
-			allItems.each(function(){
-				let curItem  = d3.select(this),
-					curId = curItem.attr('id')
-				if( filteredPids.indexOf(curId) != -1 ){
-					curItem.attr('class','list-item filtered')
-				}
-			})
-	}
-}
-
-// 过滤按钮
-d3.select('#filter-btn')
-	.attr('filtered',null)
-	.on('mousedown',btnEventHandler)
-
-
-
-
-// 将未被选中的项 变成暗色
-// 对应项的  Checkbox 也为 false 
-// 在 app.js 中被引用
-function filter(){
-	let allItems = d3.selectAll('.list-item')
-	allItems.each(function(){
-		let curItem = d3.select(this),
-			curId = curItem.attr('id')
-
-		let ifChecked = curItem.select('input').property('checked')  //是否被勾选
-
-		if( filteredPids.indexOf(curId) != -1 ){     //被筛除
-			curItem.attr('class','list-item filtered')
-			curItem.select('input').attr('disabled','true')
-			if(ifChecked){
-				curItem.select('input').property('checked',false)
-				removeCheckedPid(curId)
-			}
-		}else{	//保留下的
-			curItem.attr('class','list-item')
-			curItem.select('input').attr('disabled', null)
-		}
-	})
-	drawTopic(checkedPids)
-	updatePerNum()
-	filterDisplay()	
-	reflowItems()
-}
-
-export function filterListGeo(pids){
-	filteredPidsGeo = pids
-	filteredPids = filteredPidsGeo.concat(filteredPidsTime)
-	filter()
-}
-
-export function filterListTime(pids){
-	filteredPidsTime = pids
-	filteredPids = filteredPidsGeo.concat(filteredPidsTime)
-	filter()
-}
-
-
-
-
 //样式高亮
 export function highLightOneItem(id){
 	let allItems = d3.selectAll('.list-item')
@@ -237,43 +64,204 @@ export function unhighLightOneItem(id){
 }
 
 
+resultlist.draw = function(){
+	let { renderTrajs } = this
+	let alltraj = this.container
+		.select("#resultlist")
+		.selectAll(".list-item")
+		.data(renderTrajs , d=>d.pid )
 
-function removeCheckedPid(pid){
+	let addtraj = alltraj.enter()        // 添加
+		.append("div")
+		.classed("list-item",true)
+		.attr('id',d=>d.pid)
+
+	let mergetraj = addtraj.merge(alltraj)  //更新
+	mergetraj.attr('id',d=>d.pid)
+			 .attr('class','list-item')
+
+
+	// checkbox
+	let checkContain = addtraj.append('div').attr('class',"check-contain")
+		checkContain.append('input')
+				.attr('type','checkbox')
+				.attr('id',d => 'input'+d.pid )
+		checkContain.append('label')
+				.attr('for',d => 'input'+d.pid )
+
+	// pid
+	addtraj.append('div').attr('class','id-word')
+	mergetraj.select(".id-word")
+		.text(d=>d.pid)
+
+	// rect 
+	addtraj.append('div').attr('class','percent-rect')
+	mergetraj.select(".percent-rect")
+		.style("width", d=> d.per * 0.01 * rectWidth + 'px')
+
+	// value
+	addtraj.append('div').attr('class','percent-word')
+	mergetraj.select('.percent-word')
+		.text(d=> d.per+'%')
+
+
+	mergetraj.on('mouseenter',enterEventHandler).on('mouseleave',leaveEventHander)
+
+
+	this.filterDisplay()
+	alltraj.exit().remove()
+}
+resultlist.reflow = function(){
+	let { container,renderTrajs,filterPids } = this
+	let flowIndex = 0 , itemHeight = 40 ,topHeight = 0 
+
+	let allItems = container.selectAll('.list-item')
+
+	resultlist.renderTrajs.forEach( (traj)=>{
+		let pid = traj.pid 
+		allItems.each(function(){
+			let curItem = d3.select(this),
+				curId = curItem.attr('id')
+				if(pid == curId && curItem.attr('class').indexOf('hide') == -1){
+					topHeight = (flowIndex * itemHeight)
+					curItem.style('top',topHeight + 'px')
+					flowIndex += 1
+				}
+		})
+	})
+}
+resultlist.filter = function(){
+
+	let { showNum,hide,filterPids,orderTrasjs } = resultlist
+	let i = 0 , count = showNum
+
+	for(i = 0;i < orderTrasjs.length;i++ ){
+		let  pid = orderTrasjs[i].pid
+		if(filterPids.indexOf(pid) == -1){
+			count--
+		}
+		if(count <= 0) break
+	}
+
+	resultlist.renderTrajs = resultlist.orderTrasjs.slice(0,i)
+
+	// console.log(resultlist.renderTrajs)
+	this.draw()
+
+}
+resultlist.filterDisplay = function(){
+	let { container,hide,filterPids   } = this
+	let allItems = container.selectAll('.list-item')
+
+	let filterClassName =  ( hide == true ?  'hide' : 'filtered')  
+	allItems.each(function(){
+		let curItem = d3.select(this),
+			curId = curItem.attr('id')
+
+		if(filterPids.indexOf(curId) != -1) {
+			curItem.attr('class','list-item ' + filterClassName)
+		}
+	})
+	this.filterCheckPid()
+	this.handleInput()
+	this.reflow()
+	updatePerNum()
+}
+resultlist.handleInput = function(){
+	let { container,checkPids  } = this
+	let allItems = container.selectAll('.list-item')
+	let self = this
+	allItems.select('input')
+		.property('checked',(d)=>{
+			if( checkPids.indexOf(d.pid) != -1) return true
+			else return false
+		})
+		.on('change',function(d){
+			let pid = d.pid 
+			let add = d3.select(this).property('checked') 
+
+			if(add){   //add
+				self.checkPids.push(pid)
+			}else{	   //remove
+				self.removeCheckPid(pid)
+			}
+			drawTopic( self.checkPids )
+
+		})
+
+
+}
+resultlist.filterCheckPid = function(){
+	let self = this
+	this.filterPids.forEach((fpid)=>{
+		if(self.checkPids.indexOf(fpid)!=-1) self.removeCheckPid(fpid)
+	})
+}
+resultlist.removeCheckPid = function(pid){
 	let newTopicPids = []
-	checkedPids.forEach((_pid)=>{
+	this.checkPids.forEach((_pid)=>{
 		if(_pid != pid){
 			newTopicPids.push(_pid)
 		}
 	})
-	checkedPids = newTopicPids
+	this.checkPids = newTopicPids
+}
+
+
+// 过滤按钮
+d3.select('#filter-btn')
+	.attr('filtered',null)
+	.on('mousedown',btnEventHandler)
+
+
+
+function btnEventHandler(){
+	let isFiltered =  d3.select('#filter-btn').attr('filtered')
+	if(isFiltered){
+		d3.select(this).text('hide')
+		d3.select(this).attr('filtered',null)
+		resultlist.hide = false
+	}else{
+		d3.select(this).text('show')
+		d3.select(this).attr('filtered',true)
+		resultlist.hide = true
+	}
+	resultlist.filterDisplay()
+}
+
+function enterEventHandler(){
+	let disable = d3.select(this).select('input').property('disabled')
+	if(disable) return
+	
+	let pid = d3.select(this).attr('id')
+
+	highLightOneItem(pid)
+	highLightTrajContorl(pid)
+	
+	if( d3.select(this).select('input').property('checked') )
+		highLightTopiContorl(pid)
+}
+function leaveEventHander(){
+	let disable = d3.select(this).select('input').property('disabled')
+	if(disable) return
+	let pid = d3.select(this).attr('id')
+	unhighLightOneItem(pid)
+	unHighLightTrajContorl()
+	if( d3.select(this).select('input').property('checked') ){
+		unHighLightTopiContorl(pid)
+	}
 }
 
 function updatePerNum(){
-	let avaNum = allLength - filteredPids.length
-	let text =  avaNum + '/' + allLength
-	console.log(text)
+	let { orderTrasjs ,filterPids } = resultlist
+
+	let avaNum = orderTrasjs.length - filterPids.length
+	let text =  avaNum + '/' + orderTrasjs.length
 	d3.select("#list-contain").select('.per-num')
 		.html(text)
 }
 
-function reflowItems(){
-	// console.log('---------------reflow------------')
-	let allItems = d3.selectAll('.list-item')
-	let flowIndex = 0 , itemHeight = 40 ,topHeight = 0 
 
-	// 该 flowIndex 为排序的顺序 ，
-
-
-	allItems.each(function(d,i){
-		// console.log(i)
-		let curItem = d3.select(this)
-		if(curItem.attr('class').indexOf('hide') == -1){
-			// console.log('one hide')
-			topHeight = (flowIndex * itemHeight)
-			curItem.style('top',topHeight + 'px')
-			flowIndex += 1
-		}else{
-
-		}
-	})
+export function demo(){
+	resultlist.draw()
 }
