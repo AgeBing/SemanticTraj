@@ -2048,22 +2048,27 @@ let pois = [{
 
 //在地圖上绘制Poi
 
-let iconLayer 
+let iconLayers 
 
-export  function draw(data) {
-
-  let poi = pois[0]['data'][0]['data'][0]
+export  function draw(pois) {
+  iconLayers = []
   var PoiIcon = L.icon({
-    iconUrl: '../assets/icons/poi_map.svg',
-    iconSize:     [24, 24], // size of the icon
-});
+      iconUrl: '../assets/icons/poi_map.svg',
+      iconSize:     [24, 24], // size of the icon
+  });
+  pois.forEach((poi)=>{
+      let iconLayer  = L.marker([poi.latitude , poi.longitude], {icon: PoiIcon , title : poi.name })
+      iconLayer.addTo(map).bindTooltip(poi.name,{direction : 'top' , offset : [0,-6], opacity :0.6}).openTooltip()
+      iconLayers.push(iconLayer)
+  })
 
-  iconLayer  = L.marker([poi.latitude , poi.longitude], {icon: PoiIcon , title : poi.name })
-  iconLayer.addTo(map).bindTooltip(poi.name,{direction : 'top' , offset : [0,-6], opacity :0.6}).openTooltip()
+  console.log(iconLayers)
 }
 
 export function remove(){
-  iconLayer.remove()
+  iconLayers.forEach((iconLayer)=>{
+      iconLayer.remove()
+  })
 }
 
 

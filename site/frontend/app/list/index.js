@@ -4,7 +4,9 @@ import { topicAdd  as drawTopic } from '../app.js'
 import { highLightTrajContorl , 
 		 unHighLightTrajContorl , 
 		 highLightTopiContorl ,
-		 unHighLightTopiContorl
+		 unHighLightTopiContorl,
+		 highlightPoisInTrajs,
+		 unHighlightPoisInTrajs
 		  }  from '../app.js'
 
 
@@ -237,7 +239,7 @@ function enterEventHandler(){
 
 	highLightOneItem(pid)
 	highLightTrajContorl(pid)
-	
+	highlightPoisInTrajs(pid)
 	if( d3.select(this).select('input').property('checked') )
 		highLightTopiContorl(pid)
 }
@@ -247,6 +249,7 @@ function leaveEventHander(){
 	let pid = d3.select(this).attr('id')
 	unhighLightOneItem(pid)
 	unHighLightTrajContorl()
+	unHighlightPoisInTrajs()
 	if( d3.select(this).select('input').property('checked') ){
 		unHighLightTopiContorl(pid)
 	}

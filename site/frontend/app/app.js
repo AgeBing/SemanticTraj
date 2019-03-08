@@ -9,6 +9,7 @@ import * as SearchBar from './search/searchbar'
 
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
+import { draw as drawPoi , remove as removePoi} from './map/poi.js'
 import { draw as drawList , filterListGeo  , filterListTime  } from './list/index.js'
 import { draw as drawTopic } from './timeline/index.js'
 import { init as timeInit }  from './timeline/time.js'
@@ -192,6 +193,40 @@ export function unHighLightTrajSectionContorl(i){
 
 
 
+
+export function highlightPoisInTrajs(pid){
+	let sites = trajId2Points.get(pid) 
+ 	let nodelist = require('./Specification/Node.js')
+
+ 	console.log(nodelist.data)
+	console.log(sites)
+
+	let pois = []
+
+	sites.forEach((site)=>{
+		nodelist.data.forEach((a)=>{
+			a.data.forEach((b)=>{
+				b.data.forEach((c)=>{
+					c.data.forEach((_site)=>{
+						if(_site.site_id == site){
+							pois.push(_site)
+						}
+					})
+				})
+			})
+
+		})
+
+	})
+
+	console.log(pois)
+	drawPoi(pois)
+}
+
+export function unHighlightPoisInTrajs(){
+	removePoi()
+	
+}
 
 
 
