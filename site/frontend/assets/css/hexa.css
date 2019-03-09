@@ -8,6 +8,16 @@
 .node-nomal{
 	fill: #4DB4CC;
 	opacity: 1;
+	r : 10;
+	cursor: grab;
+}
+.node-ring{
+	stroke: red;
+    stroke-width: 2px;
+}
+.node-item{
+	fill: purple;
+	opacity: 0.4;
 	r : 5;
 }
 .link-nomal{
@@ -33,7 +43,7 @@
 	width: 4px;
 }
 .title-mid{
-	font-size: 9px;
+	font-size: 15px;
 }
 .link-item{
 	stroke: gray;

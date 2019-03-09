@@ -1,7 +1,6 @@
 <!-- {% load render_bundle from webpack_loader %} -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <title>semanticTraj</title>
   <meta charset="UTF-8">
@@ -13,44 +12,23 @@
   <link rel="stylesheet" type="text/css" href="assets/css/list.css">
   <link rel="stylesheet" type="text/css" href="assets/css/node.css">
   <link rel="stylesheet" type="text/css" href="assets/css/searchbar.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/correlation_part.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/correlation_part.css">
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
    integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
    crossorigin=""></script>
 
-
-  <!-- <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.4.1/dist/g2.min.js"></script> -->
-  <!-- <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script> -->
-
   <script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="app/d3-simple-slider.js"></script>
+  <script src="app/d3-simple-slider.js"></script>
 
 </head>
 
 
 
 <body>
-
-<!--   <div id='leftcolumn'>
-    <div class='search-container'>
-      <div id='input-wrapper'>
-        <input type="text" id='search-input-text'>
-      </div>
-    </div>
-    <div class='tab-container'>
-      <span id='search-button'>
-        <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
-        </svg>
-      </span>
-    </div>
-  </div>
- -->
-
 
 
   <div class="top-bar" id = 'mds-gsj'>
@@ -76,6 +54,7 @@
 
   <div id="semantic-view" class="panel right-panel" >
   </div>
+
   <div id="map-view" class="panel right-panel" >
         
         <div id="select-area">
@@ -94,99 +73,38 @@
         </div>
 
 
-    <div id="map-container" style= "position: absolute;z-index: 1;"   class="panel right-panel" >
-        <div class="default-word"><span> - </span></div>
-    </div>
+        <div id="map-container" style= "position: absolute;z-index: 1;"   class="panel right-panel" >
+            <div class="default-word"><span> - </span></div>
+        </div>
   </div>
 
 
-  <div  id="timeline-container" style = "
-      position: absolute;"
-      class="panel down-panel">
-      <!-- <div class="default-word"><span> - </span></div> -->
-  
+  <div  id="timeline-container" style="position: absolute;" class="panel down-panel">
       <div class="panel up-panel" id="topic-legend">
             <div class="legend-intro">
                 Function Categories :
             </div>
       </div>
-  
       <div id="topic-container" style = "
       position: absolute;"  > </div>
   </div>
-
-
-
-<!-- 		<div class="sub-contain down-contain">
-			<div class="panel left-panel"  id="control">
-        <div class="left-small-panel">
-            <div class="control-box">
-              <span class="type-name">Opacity</span>    
-              <input id='range1'  type="range" name="进度条" min="0.01" max="1" step="0.01" value="0.2">
-              <span id="valBox1" class="type-value" > 0.2 </span> 
-
-              <button id="range8"> Select</button> 
-            </div>
-                         
-
-            <div class="control-box">
-              <span class="type-name">Threshold | min </span>    
-              <input id='range3'  type="range" name="进度条" min="0.001" max="20" step="0.00001" value="1">
-              <span id="valBox3" class="type-value"> 1 </span>  
-            </div>
-
-            <div class="control-box">
-              <span class="type-name">Links Force</span>    
-              <input id='range5'  type="range" name="进度条" min="1" max="10" step="1" value="5">
-              <span id="valBox5"class="type-value"> 5</span>  
-            </div>
-            <div class="control-box">
-              <span class="type-name">Charge Force</span>    
-              <input id='range7'  type="range" name="进度条" min="-500" max="500" step="10" value="-150">
-              <span id="valBox7" class="type-value"> -180</span>  
-            </div>
-
-            <div class="control-box">
-              <span class="type-name">Topic Num</span>    
-              <input id='range6'  type="number" name="进度条"  value="1">
-            </div>
-        </div>
-        <div class="right-small-panel">
-
-            <div class="control-box">
-              <span class="type-name">分布</span>    
-              <div id="tuli"></div>
-            </div>
-        </div>
-			</div>
-			<div class="panel right-panel" id='hexagon-container'>
-          <div class="default-word">
-            <span> · </span>
-          </div> 
-       </div> 
-      </div>	
-		</div> -->
-
 	</div>
 
 
   <div id = "list-contain" class="panel">
-          <!-- <div class="default-word"><span> - </span></div>  -->
       <div class="btn-container" >
         <div class="per-num"></div>
         <div style="text-align: center; margin: 5px;">Result List</div>
-      <!--   
-        <ul class="nav navbar-nav" style="margin: 6px 0;">
-              <input type="checkbox" checked  id="norm-input">
-        </ul> -->
         <button id="filter-btn">hide</button>
       </div>
       <div id="resultlist"/>
   </div>
 
+
+
   <!-- {% render_bundle 'main' %} -->
   <script src="bundle.js"></script>
-<script src="https://cdn.bootcss.com/jsPlumb/2.6.8/js/jsplumb.min.js"></script>
+  <script src="https://cdn.bootcss.com/jsPlumb/2.6.8/js/jsplumb.min.js"></script>
 </body>
 
 </html>

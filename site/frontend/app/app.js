@@ -20,8 +20,13 @@ import { highLightTrajInMap ,unHighLightTrajInMap ,
 import { highLightTopic , unHighLightTopic } from './timeline/index.js'
 import { highLightOneItem , unhighLightOneItem  } from './list/index.js'
 
+import { draw as drawHexagon } from './semantic/index.js'
+
+
  
 import { mock as mockNode } from '../mock/setNode.js'
+
+
 
 
 let trajs  // 全量数据 
@@ -32,18 +37,16 @@ let topicLists = []
 let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
-datamanager.init().then(o => SearchBar.init())
+// datamanager.init().then(o => SearchBar.init())
 
 // mockList()
 // mockNode()
-
+drawHexagon()
 
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
 	trajs = data
-
-	  let t1 = new Date().getTime()
-
+	let t1 = new Date().getTime()
 	trajs.forEach((traj)=>{   
 		let stopPoints = []
 
@@ -181,8 +184,6 @@ export function HighLightTrajSectionContorl(i,t,fillColor){
 			break;
 		}
 	}
-
-
 }
 export function unHighLightTrajSectionContorl(i){
 	let id = topicLists[i].pid
@@ -190,10 +191,6 @@ export function unHighLightTrajSectionContorl(i){
 	unhighLightOneItem(id)
 	unHighLightTrajInMap()
 }
-
-
-
-
 export function highlightPoisInTrajs(pid){
 	let sites = trajId2Points.get(pid) 
  	let nodelist = require('./Specification/Node.js')
@@ -225,8 +222,9 @@ export function highlightPoisInTrajs(pid){
 
 export function unHighlightPoisInTrajs(){
 	removePoi()
-	
 }
+
+
 
 
 
