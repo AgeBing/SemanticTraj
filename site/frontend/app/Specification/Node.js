@@ -35,7 +35,7 @@ nodelist.rendering = function(){
          .on("start", drag_start)
           .on("drag", newdrag)
           .on('end',drag_end));
-  let mergenode = addnode.merge(allnode)
+  let mergenode = addnode//.merge(allnode)
 
   mergenode.style("left",d=>`${622*(d.order-1)}px`)
 
@@ -44,29 +44,7 @@ nodelist.rendering = function(){
   title.append("div").classed("constraints_order",true)
   title.append("div").classed("text",true).style('display','inline-block')
     title.append('div').classed('delete',true).text('X').style('margin','5px').on('click',function(d) {
-        d3.select('#condition_node' + d.order).remove();
-        for (let i = 0; i < nodelist.data.length; i++) {
-        if (nodelist.data[i].order == d.order) {
-
-            nodelist.data.splice(i, 1);
-            for (let j = i + 1; j < nodelist.data.length; j++) {
-                nodelist.data[j].order = nodelist.data[j] - 1;
-            }
-            break;
-        }
-    }
-        for(let i=0;i<textData.length;i++)
-            if(textData[i][0]==d.name)
-            {
-                textData.splice(i,1);
-                break;
-            }
-        d3.selectAll('.word-tab').each(function(){
-            if(d.name==d3.select(this).select('.tab-text-container').select('.tab-text').text())
-                d3.select(this).remove();
-        })
-        nodelist.rendering();
-        //nodelist.data.length---------------------------------------------------------------------------------------------------------------------
+        nodelist.delete_node(d.order);
     })
 
 
@@ -258,6 +236,8 @@ $('#'+current_id).scroll(function(){
 })
   })
 }
+
+
 function renderingwordslist(mergenode){
 
     let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
@@ -315,7 +295,7 @@ for(let i=0;i<nodelist.data.length;i++)
     }
     if(get_target)
     {
-        console.log(' get_target------------------------')
+        //console.log(' get_target------------------------')
          break;
     }
 }
@@ -337,7 +317,6 @@ for(let i=0;i<nodelist.data.length;i++)
 }
 
 function renderingPOIlist(mergenode,max_num=20){
-
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
            .data(function(d){
                   let colorscale = d3.scaleLinear()
@@ -771,8 +750,36 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
 }
 }
 
-function put_locationlist_num(num){
+nodelist.delete_node=function (index){//例如删除condition_node1则index为1
 
+        d3.select('#condition_node' + index).remove();
+        for (let i = 0; i < nodelist.data.length; i++) {
+        if (nodelist.data[i].order == index) {
+
+            nodelist.data.splice(i, 1);
+            for (let j = i + 1; j < nodelist.data.length; j++) {
+                nodelist.data[j].order = nodelist.data[j] - 1;
+            }
+            break;
+        }
+    }
+        let current_order=0;
+        for(let j=0;j<nodelist.order.length;j++)
+        {
+            if(nodelist.order[j]=="condition_node" + index)
+            {
+                current_order=j;
+
+            }
+        }
+        for(let m=current_order;m<nodelist.order.length-1;m++)
+        {
+            nodelist.order[m]=nodelist.order[m+1];
+            d3.select('#'+nodelist.order[m]).style('left',622*m+'px').select('.title').select('.constraints_order').text(m+1);
+
+
+        }
+        nodelist.rendering();
 }
 
 
