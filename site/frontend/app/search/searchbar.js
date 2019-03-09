@@ -45,7 +45,7 @@ function addInputListener(o) {
       e = window.event;
     }
     // 13：回车，32：空格，8：删除
-    if (e.keyCode == "13" || e.keyCode == "32") {
+    if (e.keyCode == "13" || e.keyCode == "32") {//检查是否已经输入了该词
       get_participle($('#search-input-text').val())
       $('#search-input-text').val('')
     } else if (e.keyCode == '8') {
@@ -53,8 +53,16 @@ function addInputListener(o) {
 
       if (nowText.length == 0) {
         //只有删除这个词才会更新
-        textData.pop();
-        get_participle('')
+        let delete_word = textData.pop();
+        let nodelist = require('../Specification/Node.js')
+          for(let i=0;i<nodelist.data.length;i++)
+          {
+              if(delete_word[0]==nodelist.data[i].name)
+              {
+                  nodelist.delete_node(nodelist.data[i].order);
+              }
+          }
+        get_participle('',false)
       } else {
         // get_participle(nowText)
       }
@@ -62,9 +70,8 @@ function addInputListener(o) {
   })
 }
 
-function get_participle(data) {
+function get_participle(data,is_add=true) {
   const rawText = textData.map(d => d[0]).join('') + data;
-  console.log(rawText,'rawText-----------------')
   QueryUtil.get_participle(rawText)
     .then(o => {
       o = o.filter(d => d[0].trim().length > 0)
@@ -72,18 +79,39 @@ function get_participle(data) {
       createNewTab(o)
     })
     .then(o => {
-      updatePOILayer();
+        if(is_add)
+        {
+            updatePOILayer();
+        }
     })
 }
 
 function updatePOILayer() {
-  console.log('update poi layer...')
   QueryUtil.get_poi_layer(textData)
     .then(results => {
       // 获取POI的层次信息
       let nodelist = require('../Specification/Node.js')
+        results[results.length-1].order=nodelist.data.length
+        nodelist.data.push(results[results.length-1]);
 
-      nodelist.data = results
+       /* let current_index=0;
+for(let i=0;i<results.length;i++)
+{
+    let exist=false;
+    for(current_index;current_index <nodelist.data.length;current_index++)
+        if(nodelist.data[current_index].name==results[i].name)
+        {
+            results[i]=nodelist.data[current_index];
+            exist=true;
+            break;
+        }
+    /!*if(!exist)
+    {
+        results[i]=current_index;
+        current_index++;
+    }*!/
+}*/
+//nodelist.data=results;
       nodelist.rendering()
     })
 }
