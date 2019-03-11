@@ -4,19 +4,21 @@
 
 import { appendParamWidges } from './param.js'
 import { bindTimeChangeEvent } from './time.js'
-import { textData } from '../search/searchbar.js'
+//import { textData } from '../search/searchbar.js'
 import { calTrajsOrder } from '../app.js'
-
+import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,get_left_nodes,initial_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
+import {path_colorscale, path_colorsdomain} from "./node_interaction";
 let nodelist={
-  container:d3.select("#Specification_view"),
+  container:d3.select("#condition_node_list"),
   data : [],
     order:[],
 
   siteScore : new Map()
 }
-let line_data=[];
+export let line_data=[];
+let is_initial_right_content=false;
 nodelist.rendering = function(){
-    console.log('nodelist.data',nodelist.data);
+    fresh_list_width();
   for(let i =0;i<nodelist.data.length;i++){
     nodelist.data[i].order = i +1
   }
@@ -104,10 +106,12 @@ nodelist.rendering = function(){
     node_subtitle.select('.max_node_num').append('div').classed('decrease',true).text('-').style("width","14px").style("height","14px").on('click',decrease_locationlist)
     node_subtitle.select('.max_node_num').append('input').classed('node_num',true).attr('type','number').property('value',20).attr('min',0).style("width","30px").style("height","14px").attr('max',function(d){
         let sum_location=0;
-for(let i=0;i<d.data.length;i++)
-    for(let j=0;j<d.data[i].data.length;j++)
-        for(let m=0;m<d.data[i].data[j].data.length;m++)
-            sum_location++;
+d.data.map((x,i)=> {
+    x.data.map((y, j) =>{
+        y.data.map((z,m)=>sum_location++)
+        }
+    )
+})
 return parseInt(sum_location);
 
     }).on('change',function(){
@@ -120,7 +124,7 @@ let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.lengt
             if(nodelist.data[i].order==current_conditionnode_order)
                 current_data=nodelist.data[i]
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),d3.select(this).property('value'));
-       get_right_nodes(current_conditionnode_order);
+       initial_line('condition_node'+current_conditionnode_order);
         }
         else{
             if(d3.select(this).property('value')>d3.select(this).attr('max'))
@@ -166,7 +170,7 @@ $('#'+current_id).scroll(function(){
             }
         })
      //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
-     create_line(index);
+     initial_line(index);
 })
       })
               .append("div").classed("spatial_words",true)
@@ -238,11 +242,18 @@ $('#'+current_id).scroll(function(){
     create_line(index);
 })
   })
+
+
+    initial_right_content();
+
 }
 
+/*document.getElementById('Specification_view').offsetWidth.on('change',function(){
+   console.log('resize');
+ initial_right_content();
+})*/
 
 function renderingwordslist(mergenode){
-
     let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
            .data(function(d){
               let heightset=[]
@@ -262,7 +273,6 @@ function renderingwordslist(mergenode){
           let num=grand_id.substr(grand_id.length-1,1);
           return 'Worddiv'+num})
                   .style("background","#ececec")
-//.style(    "margin", "5px")
   let mergewords = addwords.merge(allwords)
   mergewords.style("top",(d,i)=>`${i*24}px`)
 
@@ -271,11 +281,8 @@ function renderingwordslist(mergenode){
   addwords.append("div").classed("nei_words",true);
   let show_hide_div=addwordtitle.append('div').classed('hide_nei_words',true).text('-')
       show_hide_div.on('click',show_hide)
-          //console.log(,'d3.select(show_hide_div)---------');
     addwordtitle.append('div').classed('real_wordtitle',true).text((d,i)=>d.name)
         .append('div').classed('delete',true).text('X').style('margin-right','5px').on('click',function(d,i){
-            //let subtitle_before=d3.select(this.parentNode).text()
-        //let subtitle=subtitle_before.substr(0,subtitle_before.length-1);
         let subtitle=d.name;
             let delete_worddiv = d3.select(this.parentNode.parentNode.parentNode).attr('id')
         let spatial_left_id=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
@@ -298,7 +305,6 @@ for(let i=0;i<nodelist.data.length;i++)
     }
     if(get_target)
     {
-        //console.log(' get_target------------------------')
          break;
     }
 }
@@ -319,7 +325,7 @@ for(let i=0;i<nodelist.data.length;i++)
     return show_hide_div
 }
 
-function renderingPOIlist(mergenode,max_num=20){
+export function renderingPOIlist(mergenode,max_num=20){
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
            .data(function(d){
                   let colorscale = d3.scaleLinear()
@@ -413,7 +419,7 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
             else  scores.push(score)
         }
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),parseInt($('#'+current_node_id).find('.node_num').prop('value')));
-        get_right_nodes(current_conditionnode_order)
+        initial_line('condition_node'+current_conditionnode_order)
     
     
     calTrajsOrder() //重新调整轨迹的order
@@ -480,289 +486,25 @@ function init_slider(svg,text){
 
 module.exports = nodelist;
 
-
-function drag_start(){
-    //let mouse_x = d3.event.x;
-    //let mouse_y = d3.event.y;
-    //d3.select(this).style.cursor = "move";
-    d3.select(this).style("z-index",10000)
-    .style('-webkit-transition-duration','0s');
-    //target_node.attr('start_x', mouse_x);
-    //target_node.attr('start_y',mouse_y);
-    //console.log('target_node:',target_node.style)
-//this.attr("x", mouse_x);
-
-}
-function newdrag() {
-     let dx = d3.event.dx, dy = d3.event.dy;
-    let prex = parseInt(d3.select(this).style('left'));
-    if(((dx + prex)<=0))
-    {
-        d3.select(this).style('left', prex);
-    }
-    else{
-        d3.select(this).style('left', (dx + prex) + 'px');
-        let current_id=d3.select(this).attr('id'),
-            current_location= nodelist.order.indexOf(current_id)
-
-        let next_node=null;
-        if(current_location+1<nodelist.order.length){
-            next_node=d3.select('#'+nodelist.order[current_location+1]);
-        }
-        let prev_node=null;
-        if(current_location-1>=0){
-            prev_node=d3.select('#'+nodelist.order[current_location-1]);
-        }
-        //let change_next=(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
-        //let change_prev=(prev_node!=null&&((parseInt(prev_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
-        if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
-        {
-           let next_left=parseInt(next_node.style('left'))
-           let now_left=next_left - parseInt(d3.select(this).style('width'))-22;
-
-                    // d3.select(this).style('left', next_left+'px');
-                    next_node.style('left',now_left+'px');
-                    let current_num=d3.select(this).select('.title').select('.constraints_order').text();
-                    let next_num = next_node.select('.title').select('.constraints_order').text();
-                    d3.select(this).select('.title').select('.constraints_order').text(next_num);
-                    next_node.select('.title').select('.constraints_order').text(current_num);
-                    //d3.select(this).attr('start_x',target_node.style('left'));
-                    let temp=nodelist.order[current_location];
-                    nodelist.order[current_location]=nodelist.order[current_location+1];
-                    nodelist.order[current_location+1]=temp;
-        }
-        else{
-            if(prev_node!=null&&((parseInt(d3.select(this).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(this).style('width'))/2))
-            {
-               let prev_left=parseInt(prev_node.style('left'))
-               let now_left=parseInt(d3.select(this).style('width'))+22+prev_left;
-               // d3.select(this).style('left', prev_left+'px');
-                        prev_node.style('left',now_left+'px');
-                        let current_num=d3.select(this).select('.title').select('.constraints_order').text();
-                        let prev_num = prev_node.select('.title').select('.constraints_order').text();
-                        d3.select(this).select('.title').select('.constraints_order').text(prev_num);
-                        prev_node.select('.title').select('.constraints_order').text(current_num);
-
-                        //d3.select(this).attr('start_x',target_node.style('left'));
-                        let temp=nodelist.order[current_location];
-                        nodelist.order[current_location]=nodelist.order[current_location-1];
-                        nodelist.order[current_location-1]=temp;
-            }
-        }
-    }
-
-
-
-}
-function drag_end(){
-    d3.select(this).style('-webkit-transition-duration','0.5s').style("z-index",0);
-    let current_id=d3.select(this).attr('id');
-        let current_location=0;
-        for( let i=0;i<nodelist.order.length;i++)
-        {
-            if(current_id==nodelist.order[i])
-            {
-                current_location=i;
-                break;
-            }
-        }
-d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(this).style('width'))+22)+"px");
-        d3.select(this).style('z-index',0);
-}
-
-
-
-
-function show_hide() {
-    let current_val = d3.select(this).text();
-    if (current_val == '+')//show
-    {
-        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
-        d3.select(this).text('-');
-        //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
-        let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
-        index=index.substr(index.length-1,1)
-        get_left_nodes(index);
-
-
-//create line
-    } else {//hide
-
-        let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
-        let hide_nodes = d3.select(this.parentNode.parentNode).select('.nei_words').selectAll('.neiwordsdiv');
-        let current_show_nodes = [];
-        for (let i = 0; i < line_data[index].left.length; i++) {
-            let is_delete = false;
-            hide_nodes.each(function () {
-                if (this == line_data[index].left[i]) {
-                    is_delete = true;
-                }
-            })
-            if (!is_delete)
-                current_show_nodes.push(line_data[index].left[i])
-        }
-        line_data[index].left = current_show_nodes;
-        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'hidden');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'hidden');
-        d3.select(this).text('+');
-        create_line(index);
-    }
-}
-//每次滚动都要调用该方法
-    function create_line(index) {
-        let left_nodes = line_data[index].left;
-        let right_nodes = line_data[index].right;
-        if (left_nodes.length > 0 && right_nodes.length > 0) {
-            let current_line_dta = [];
-            let data_num=index.substr(index.length-1,1);
-            let second_third_index={};
-            let path_colorscale = d3.scaleLinear()
-                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(132,60,12)")]);
-            let max_val=0;
-            for (let i = 0; i < left_nodes.length; i++) {
-let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
-second_title=second_title.substr(0,second_title.length-1)
-let third_title=d3.select(left_nodes[i]).text();
-if(!(second_third_index.hasOwnProperty(second_title)))
-{
-for(let i=0;i<nodelist.data[data_num-1].data.length;i++)
-{
-    if(second_title==nodelist.data[data_num-1].data[i].name)
-    {
-        second_third_index[second_title]=nodelist.data[data_num-1].data[i].data;
-        break;
-    }
-}
-}
-let third_forth_data=second_third_index[second_title];
-let forth_data=[];//location list
-for(let j=0;j<third_forth_data.length;j++)
-{
-    if(third_title==third_forth_data[j].name)
-    {
-forth_data=third_forth_data[j].data;
-break;
-    }
-}
-
-for(let m=0;m<right_nodes.length;m++)
-{
-    let rifght_nodename=d3.select(right_nodes[m]).text();
-    for(let n=0;n<forth_data.length;n++)
-    {
-        if(rifght_nodename==forth_data[n].name)
-        {
-            if(max_val<forth_data[n].relation_val)
-                max_val=forth_data[n].relation_val
-            current_line_dta.push({left:left_nodes[i],right:right_nodes[m],val:forth_data[n].relation_val});
-        }
-    }
-}            }
-            path_colorscale.domain([0, max_val]);
-            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
-             d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
-            let spatial_lines = d3.select('#' + index).select('.spatial_lines').selectAll('path')
-                .data(current_line_dta)
-                .enter()
-                spatial_lines.append('path')
-                .attr('d', function (d) {
-                    let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
-                    //let left_x=parseInt(d3.select(d.left).style('left'))
-                    let right_x = parseInt(d3.select(this.parentNode).style('width'))
-                    let right_y = parseInt(d3.select(d.right).attr('current_top')) + parseInt(d3.select(d.right).style('height')) / 2
-                    return 'M -0 ' + ' ' + left_y + ' ' + 'Q ' + (0 + right_x) / 3 + ' ' + (left_y + right_y) / 3 + ' ' + right_x + ' ' + right_y;
-                })
-                .attr('stroke', function(d){ return path_colorscale(d.val)})
-                .attr('stroke-width', 3)
-                .attr('fill', 'none')
-                spatial_lines.append('circle')
-                .attr('cx','0')
-                .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
-                .attr('r','3')
-                .attr('fill','#b9b9b9');
-        } else {
-            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
-             d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
-        }
-    }
-
-
-    function get_left_nodes(index) {//index:1,2,3...
-        line_data['condition_node'+index].left = [];
-        let top_height = $('#spatial_left' + index).scrollTop();
-        let bottom_height = top_height + parseInt($('#spatial_left' + index)[0].getBoundingClientRect().height);
-        d3.select('#spatial_left' + index).selectAll('.spatial_words')//主题词div集合
-            .each(function () {
-                if($(this).find('.Worddiv').length>0)
-                {
-                    let top_length = parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
-                let show_hide = $('#spatial_left' + index).find('.hide_nei_words').text()//.innerHTML;
-                if (show_hide == '-') {
-                    $('#spatial_left' + index).find('.Worddiv').find('.neiwordsdiv').each(function () {
-                        let current_element_top = parseInt(d3.select(this).style('top')) + top_length;
-                        let element_height = $(this)[0].getBoundingClientRect().height;
-                        if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
-                            d3.select(this).attr('current_top', current_element_top - top_height);
-                            line_data['condition_node'+index].left.push(this);
-                        }
-                    })
-                }
-                }
-            })
-        //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
-        create_line('condition_node'+index);
-    }
-
-    function get_right_nodes(order){
-    let current_id = 'locationlistdiv'+order;
-let index='condition_node'+order//
-        let top_height=$('#'+current_id).scrollTop();
-    let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
-    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    line_data[index].right=[];//当前显示在窗口中的元素
-        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
-            let current_element_top=parseInt(d3.select(this).style('top'));
-            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
-                d3.select(this).attr('current_top',current_element_top-top_height);
-                line_data[index].right.push(this);
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].right,'after---------------------')
-
-    create_line(index);
-    }
-
-
-    function decrease_locationlist(){
-let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
-if(current_max-1>=d3.select(this.parentNode).select('.node_num').attr('min'))
-{
-    d3.select(this.parentNode).select('.node_num').property('value',current_max-1)
-let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
-let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
-        let current_data=[]
-        for(let i=0;i<nodelist.data.length;i++)
-            if(nodelist.data[i].order==current_conditionnode_order)
-                current_data=nodelist.data[i]
-renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max-1);
-       get_right_nodes(current_conditionnode_order);
-}
-    }
-function increase_locationlist(){
-let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
-if(current_max+1<=d3.select(this.parentNode).select('.node_num').attr('max'))
-{
-    d3.select(this.parentNode).select('.node_num').property('value',current_max+1)
-    let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
-let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
-        let current_data=[]
-        for(let i=0;i<nodelist.data.length;i++)
-            if(nodelist.data[i].order==current_conditionnode_order)
-                current_data=nodelist.data[i]
-renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max+1);
-       get_right_nodes(current_conditionnode_order);
-}
+export function initial_right_content(){
+    nodelist.container.select('.right_content').remove()
+    console.log(document.getElementById('condition_node_list').offsetWidth,'document.getElementById(\'Specification_view\').offsetWidth')
+    let legend_list=[{name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},{name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
+    let height=parseInt($('#Specification_view').css('height'))
+    let left=document.getElementById('condition_node_list').offsetWidth
+    console.log(height,'height---------')
+    let right_content=nodelist.container.append('div').classed('right_content',true)//.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
+        right_content.append('div').classed('add_condition_node',true).text('+')//./style('height',height-100+'px');
+    legend_list.map((x,y)=>{
+    let legend=right_content.append('div').classed('legend',true)
+    legend.append('div').classed('text',true).text(x.name)
+    let content=legend.append('div').classed('content',true)
+    content.append('div').classed('max',true).text(parseFloat(path_colorsdomain.max).toFixed(1))
+    x.color.map((color,i)=>{
+        content.append('div').classed('color_bar',true).style('background',color)
+    })
+    content.append('div').classed('min',true).text(parseFloat(path_colorsdomain.min).toFixed(1))
+    })
 }
 
 nodelist.delete_node=function (index){//例如删除condition_node1则index为1
@@ -791,354 +533,16 @@ nodelist.delete_node=function (index){//例如删除condition_node1则index为1
         {
             nodelist.order[m]=nodelist.order[m+1];
             d3.select('#'+nodelist.order[m]).style('left',622*m+'px').select('.title').select('.constraints_order').text(m+1);
-
-
         }
-        nodelist.rendering();
+fresh_list_width();
+
+        refresh_path_color()
+        //nodelist.rendering();
 }
 
-
-    /*
-
-function refresh_locationlist(a,current_node_id){
-    let Ti={}
-    let alpha = 1;
-    let beta = 0;
-        d3.select('.semantic_constraints').select('.param-ab-rect').selectAll('.param-half-rect').each(function(d,i){
-if(d3.select(this).select('param-name').text()=='α')
-    alpha=d3.select(this).select('.param-num').text();
-if(d3.select(this).select('param-name').text()=='β')
-    beta=d3.select(this).select('.param-num').text();
-    });
-    d3.select('.semantic_constraints').selectAll('.param-rect').each(function(){
-let semantic_name=d3.select(this).select('.param-name').text();
-let semantic_val=d3.select(this).select('.param-num').text();
-Ti[semantic_name]=semantic_val;
-    })
-let current_conditionnode_id=d3.select(this.parentNode).attr('id')
- let current_conditionnode_order=current_conditionnode_id.substr(current_conditionnode_id.length-1,1);
-    let current_data=[];
-    for(let i=0;i<nodelist.data.length;i++)
-    {if(nodelist.data[i].order==current_conditionnode_order){
-            current_data.push(nodelist.data[i]);//或者给这个结构在外面再套一层，跟listnode.data一样的结构
-            break;
-        }
-    }
-    for(let i=0;i<current_data.data.length;i++)
-        for(let j=0;j<current_data[i].data.data.length;j++)
-        for(let m=0;m<current_data[i].data.data[j].data.length;m++)
-        {
-            let beta_val=beta*
-            current_data[i].data[j].data[m].relation_val*alpha;
-        }
-
-    console.log(current_data,'current_data=----------------------')
-    renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(current_data))
-
+export function fresh_list_width(){
+   let current_width=nodelist.data.length*622+120;
+    let spe_width=parseInt(document.getElementById('Specification_view').offsetWidth)
+    let width=current_width>spe_width?current_width:spe_width
+    nodelist.container.style('width',width+'px');
 }
-
-
- * function create_line111(source,targets) {
-         var common = {
-         endpoint: ['Dot',{ radius:5}],//'Blank',//'Rectangle','Image',//
-         connector: ['StateMachine'],//Bezier,Straight,Flowchart'],
-         anchor: ['Left', 'Right'],
-         paintStyle: { stroke: 'lightgray', strokeWidth: 3 },
-         maxConnections: -1,
-       endpointStyle: { fill: 'lightgray', outlineStroke: 'darkgray', outlineWidth: 2 },
-             ConnectionsDetachable: false, //连线是否可用鼠标分离
-       };
- jsPlumb.ready(function () {
-     jsPlumb.importDefaults({//连线不被拖动
-         ConnectionsDetachable: false
-     })
-
-           jsPlumb.connect({
-         source: 'F-Tag1',//source,//'item_left',
-         target: 'S-Tag5',//targets[i],//'item_right',
-       },common)
-    //jsPlumb.draggable('F-Tag1')
-     //jsPlumb.draggable('S-Tag5')
-
-     })
-    }
- * */
-//     function show_more(id,show_id){
-//         var this_button=document.getElementById(id);
-//         var value=this_button.innerText;
-//         //var value1=$("school_show_more").val();
-//         console.log(value);
-
-//         if(value=='+')
-//         {
-//             this_button.innerText='-';
-//             //create_line(paris);
-//         }
-//         else
-//         {
-//         this_button.innerText='+';
-//         var wrong_connections = ['F-Tag1'];
-
-
-//         jsPlumb.deleteConnectionsForElement("F-Tag1",{});
-
-//         }
-//         $("#"+show_id).slideToggle();
-//         if(value=='+')
-//         {
-//             create_line(paris);
-//         }
-
-
-//         };
-// var paris=[['F-Tag1','S-Tag5'],['F-Tag2','S-Tag5'],['F-Tag3','S-Tag5'],['F-Tag4','S-Tag5'],['F-Tag1','S-Tag2']];
-//     function create_line(source,targets) {
-//         var common = {
-//         endpoint: ['Dot',{ radius:5}],//'Blank',//'Rectangle','Image',//
-//         connector: ['StateMachine'],//Bezier,Straight,Flowchart'],
-//         anchor: ['Left', 'Right'],
-//         paintStyle: { stroke: 'lightgray', strokeWidth: 3 },
-//         maxConnections: -1,
-//         endpointStyle: { fill: 'lightgray', outlineStroke: 'darkgray', outlineWidth: 2 },
-//             ConnectionsDetachable: false, //连线是否可用鼠标分离
-//       };
-// jsPlumb.ready(function () {
-
-//           jsPlumb.connect({
-//         source: 'F-Tag1',//source,//'item_left',
-//         target: 'S-Tag5',//targets[i],//'item_right',
-//       },common)
-//     //jsPlumb.draggable('F-Tag1')
-//     //jsPlumb.draggable('S-Tag5')
-
-//     })
-//     }
-
-//     function DrawALLbar(){
-//         locations={'entertainment':{'tag':false,'ox':0,'left':0,'bgleft':0,'progress_width':0},'business':{'tag':false,'ox':0,'left':0,'bgleft':0,'progress_width':0},
-//         'living':{'tag':false,'ox':0,'left':0,'bgleft':0,'progress_width':0},'education':{'tag':false,'ox':0,'left':0,'bgleft':0,'progress_width':0},
-//         'industry':{'tag':false,'ox':0,'left':0,'bgleft':0,'progress_width':0},'traffic':{'tag':false,'ox':0,'left':0,'bgleft':0,'progress_width':0}};//var tag = false,ox = 0,left = 0,bgleft = 0;
-//   var parts=['entertainment','business','living','education','industry','traffic'];
-
-//           for(var i=0;i<parts.length;i++){
-//             var progress_btn="#"+parts[i]+'-part-progress_btn';
-//             var progress="#"+parts[i]+'-part-progress';
-//             var progress_bg="#"+parts[i]+'-part-progress_bg';
-//             var progress_bar="#"+parts[i]+'-part-progress_bar';
-//             var text="#"+parts[i]+'-part-progress_text';
-//             //var tag = false,ox = 0,left = 0,bgleft = 0;
-//                     draw_bar(progress_btn,progress,progress_bg,progress_bar,text);
-//         }
-//       };
-//   function draw_bar(progress_btn,progress,progress_bg,progress_bar,text){
-//       var part_name=progress.replace('#','').replace('-part-progress','');
-//       locations[part_name].progress_width=$(progress).width();
-//       $(progress_btn).mousedown(function(e) {
-//               var part_name=progress_btn.replace('#','').replace('-part-progress_btn','');
-//             locations[part_name].ox = e.pageX - locations[part_name].left;
-//           locations[part_name].tag = true;
-//         });
-//           $(progress_btn).mouseup(function() {
-//               var part_name=progress_btn.replace('#','').replace('-part-progress_btn','');
-//           locations[part_name].tag = false;
-//           });
-//           //var progress_width = $(progress).width();要改成全局变量
-//           $(progress).mousemove(function(e) {//鼠标移动
-//              var part_name=progress.replace('#','').replace('-part-progress','');
-//           if ((locations[part_name].tag)) {
-//               locations[part_name].left = e.pageX - locations[part_name].ox;
-//               if (locations[part_name].left <= 0) {
-//                 locations[part_name].left = 0;
-//               }else if (locations[part_name].left > locations[part_name].progress_width) {
-//                 locations[part_name].left = locations[part_name].progress_width;
-//               }
-//               $(progress_btn).css('left', locations[part_name].left);
-//               $(progress_bar).width(locations[part_name].left);
-//             $(text).html((locations[part_name].left/(locations[part_name].progress_width)).toFixed(2));
-//           }
-//           });
-//           $(progress_bg).click(function(e) {//鼠标点击
-//             var part_name=progress_bg.replace('#','').replace('-part-progress_bg','');
-//           if (!(locations[part_name].tag)) {
-//               locations[part_name].bgleft = $(progress_bg).offset().left;
-//               locations[part_name].left = e.pageX - locations[part_name].bgleft;
-//               if (locations[part_name].left <= 0) {
-//                 locations[part_name].left = 0;
-//               }else if (locations[part_name].left > (locations[part_name].progress_width)) {
-//                 locations[part_name].left = locations[part_name].progress_width;
-//               }
-//               $(progress_btn).css('left', locations[part_name].left);
-//               $(progress_bar).width(locations[part_name].left);
-//               //$('.progress_bar').animate({width:left},locations[part_name].progress_width);
-//               $(text).html((locations[part_name].left/(locations[part_name].progress_width)).toFixed(2));
-//           }
-//           });
-//     }
-//   DrawALLbar();
-
-
-
-//       <div class="down-contain"  style="width:700px">
-//           <div class="constraints">
-//                     </div>
-//                     <div class="constraints-bar">
-//           <div class="panel three-left-panel" >
-//               <div class="left-panel" style="overflow-x:hidden;overflow-y:auto;" id="first-level-Tag">
-//                   <div class="constraint-title">Spatial Constraints Words</div>
-//                   <div id='school' class="show-hide">
-//                       <div class="zero-level-tag">
-//                           <div onclick="show_more('school_show_more','school_inf')" class="show-btn" value='+' id="school_show_more">+</div>
-//             <div class="zero-level-tag-name" id="zero-Tag">学校</div>
-//                       </div>
-//             <div id="school_inf" class='part-inf' style="display:none;">
-//                 <div class="first-level-tag">
-//                     <span>0.86</span>
-//                    <div style="width:70%" id="F-Tag1">学校</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.60</span>
-//                     <div style="width:60%" id="F-Tag2">院校</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.5</span>
-//                    <div style="width:50%" id="F-Tag3">高校</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.45</span>
-//                     <div style="width:45%" id="F-Tag4">学堂</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.45</span>
-//                     <div style="width:45%" id="F-Tag5">书院</div>
-//                 </div>
-//             </div>
-//         </div>
-//               <div id='hospital' class="show-hide">
-//                   <div class="zero-level-tag">
-//             <div onclick="show_more('hospital_show_more','hospital_inf')" class="show-btn" value='+' id="hospital_show_more">+</div>
-//             <div class="zero-level-tag-name" >医院</div>
-//             </div>
-//             <div id="hospital_inf" class='part-inf' style="display:none;">
-//                 <div class="first-level-tag">
-//                     <span>0.86</span>
-//                    <div style="width:70%">学校</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.60</span>
-//                     <div style="width:60%">院校</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.5</span>
-//                    <div style="width:50%">高校</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.45</span>
-//                     <div style="width:45%">学堂</div>
-//                 </div>
-//                 <div class="first-level-tag">
-//                     <span>0.45</span>
-//                     <div style="width:45%">书院</div>
-//                 </div>
-//             </div>
-//         </div>
-//               </div>
-//               <div class="right-panel" style="text-align: center;overflow-y:auto;" id="second-level-Tag">
-//                   <div class="constraint-title">Location List</div>
-//                       <div class="second-level-tag" id="S-Tag1">
-//                           小学
-//                       </div>
-//                       <div class="second-level-tag" id="S-Tag2">
-//                           学校
-//                       </div>
-//                       <div class="second-level-tag" id="S-Tag3">中学</div>
-//                       <div class="second-level-tag" id="S-Tag4">大学</div>
-//                       <div class="second-level-tag" id="S-Tag5">大学</div>
-//                   <div class="second-level-tag" id="S-Tag6">大学</div>
-//                   <div class="second-level-tag" id="S-Tag7">大学</div>
-//                   <div class="second-level-tag" id="S-Tag8">大学</div>
-//                   <div class="second-level-tag" id="S-Tag9">大学</div>
-//                   <div class="second-level-tag" id="S-Tag10">大学</div>
-//                   <div class="second-level-tag" id="S-Tag11">大学</div>
-//                   <div class="second-level-tag" id="S-Tag12">大学</div>
-//           </div>
-//           </div>
-//           <div class="panel three-right-panel" style="padding-top: 5px;">
-//               <div class="constraint-title">Semantic Parameters</div>
-//               <div id="entertainment-part" class="semantic_part">
-// 				<div class="semantic_name" id="entertainment-part-name">娱乐区</div>
-// 			<div class="semantic_progress">
-// 　				<div class="progress" id="entertainment-part-progress">
-//  					<div class="progress_bg" id="entertainment-part-progress_bg">
-// 						<div class="progress_bar" id="entertainment-part-progress_bar"></div>
-//  					</div>
-//  					<div class="progress_btn" id="entertainment-part-progress_btn"></div>
-// 				</div>
-// 			</div>
-//                   <div class="progress_length" id="entertainment-part-progress_text">0</div>
-// 			</div>
-// 			<div id="business-part" class="semantic_part">
-// 				<div class="semantic_name" id="business-part-name">商业区</div>
-// 			<div class="semantic_progress">
-// 　				<div class="progress" id="business-part-progress">
-//  					<div class="progress_bg" id="business-part-progress_bg">
-// 						<div class="progress_bar" id="business-part-progress_bar"></div>
-//  					</div>
-//  					<div class="progress_btn" id="business-part-progress_btn"></div>
-// 				</div>
-
-// 			</div>
-//                 <div class="progress_length" id="business-part-progress_text">0</div>
-// 			</div>
-// 			<div id="living-part" class="semantic_part">
-// 				<div class="semantic_name" id="living-part-name">住宅区</div>
-// 			<div class="semantic_progress">
-// 　				<div class="progress" id="living-part-progress">
-//  					<div class="progress_bg" id="living-part-progress_bg">
-// 						<div class="progress_bar" id="living-part-progress_bar"></div>
-//  					</div>
-//  					<div class="progress_btn" id="living-part-progress_btn"></div>
-// 				</div>
-// 			</div>
-//                 <div class="progress_length" id="living-part-progress_text">0</div>
-// 			</div>
-// 			<div id="education-part" class="semantic_part">
-// 				<div class="semantic_name" id="education-part-name">教育区</div>
-// 			<div class="semantic_progress" >
-// 　				<div class="progress" id="education-part-progress">
-//  					<div class="progress_bg" id="education-part-progress_bg">
-// 						<div class="progress_bar" id="education-part-progress_bar"></div>
-//  					</div>
-//  					<div class="progress_btn" id="education-part-progress_btn"></div>
-// 				</div>
-
-// 			</div>
-//                 <div class="progress_length" id="education-part-progress_text">0</div>
-// 			</div>
-// 			<div id="industry-part" class="semantic_part">
-// 				<div class="semantic_name" id="industry-part-name">工业区</div>
-// 			<div class="semantic_progress">
-// 　				<div class="progress" id="industry-part-progress">
-//  					<div class="progress_bg" id="industry-part-progress_bg">
-// 						<div class="progress_bar" id="industry-part-progress_bar"></div>
-//  					</div>
-//  					<div class="progress_btn" id="industry-part-progress_btn"></div>
-// 				</div>
-// 			</div>
-//                 <div class="progress_length" id="industry-part-progress_text">0</div>
-// 			</div>
-// 			<div id="traffic-part" class="semantic_part">
-//                 <div class="semantic_name" id="traffic-part-name">交通区</div>
-//                 <div class="semantic_progress">
-// 　				<div class="progress" id="traffic-part-progress">
-//  					<div class="progress_bg" id="traffic-part-progress_bg">
-// 						<div class="progress_bar" id="traffic-part-progress_bar"></div>
-//  					</div>
-//  					<div class="progress_btn" id="traffic-part-progress_btn"></div>
-// 				</div>
-//                 </div>
-//           <div class="progress_length" id="traffic-part-progress_text">0</div>
-// 			</div>
-//           </div>
-//                         </div>
-
-//       </div>
