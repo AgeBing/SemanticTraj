@@ -6,7 +6,7 @@
 	left: 136px;
 }
 .node-nomal{
-	fill: #4DB4CC;
+	/*fill: #4DB4CC;*/
 	opacity: 1;
 	r : 10;
 	cursor: grab;
@@ -16,14 +16,14 @@
     stroke-width: 2px;
 }
 .node-item{
-	fill: purple;
-	opacity: 0.4;
+	fill: #5a5a5a;
+	opacity: 0.1;
 	r : 5;
 }
 .link-nomal{
 	stroke: gray;
 	opacity: 1;
-	width: 4px;
+	stroke-width: 4;
 }
 .title-nomal{
 	font-size: 15px
@@ -46,9 +46,9 @@
 	font-size: 15px;
 }
 .link-item{
-	stroke: gray;
-	opacity: 0.5;
-	width: 4px;
+	stroke: #5a5a5a;
+	opacity: 0.1;
+	stroke-width:0.5;
 }
 .select-group{
 	opacity: 1;

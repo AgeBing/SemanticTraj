@@ -126,6 +126,11 @@ html, body{
     height: calc(39%);
     top: calc(32% + 10px);
     margin: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
 }
 
 #map-view{

@@ -25,6 +25,8 @@ import { draw as drawHexagon } from './semantic/index.js'
 
  
 import { mock as mockNode } from '../mock/setNode.js'
+import { mock as mockList } from '../mock/setData.js'
+
 
 
 
@@ -37,11 +39,11 @@ let topicLists = []
 let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
-// datamanager.init().then(o => SearchBar.init())
+datamanager.init().then(o => SearchBar.init())
 
-// mockList()
 // mockNode()
-drawHexagon()
+// mockList()
+
 
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
