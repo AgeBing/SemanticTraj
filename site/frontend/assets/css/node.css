@@ -1,3 +1,51 @@
+.right_content{
+    float:right;
+    width:120px;
+    height:100%;
+     background: whitesmoke;
+}
+
+.right_content .add_condition_node{
+
+    //height:calc(100% - 100px);
+    width:50px;
+    text-align: center;
+    //padding-top:50px;
+    background:rgb(171,171,171);
+    float:right;
+    display: block;
+}
+.right_content .legend{
+width:150px;
+    display: block;
+    margin-top: 10px;
+}
+.right_content .legend .text{
+    font-size: 10px;
+    float:left;
+    display:inline-block;
+}
+.right_content .legend .content{
+    font-size: 10px;
+    display:inline-block;
+}
+.right_content .legend .content .max{
+    float:left;
+    width:20px;
+    height:10px;
+    display:inline-block;
+}
+.right_content .legend .content .color_bar{
+    width:10px;
+    height:10px;
+    display:inline-block;
+}
+.right_content .legend .content .min{
+    float:right;
+    width:20px;
+    heifht:10px;
+    display:inline-block;
+}
 .condition_node{
 	    height: calc(100% - 20px);
     width: 600px;
