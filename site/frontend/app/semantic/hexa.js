@@ -1,12 +1,21 @@
 
 import { transDatas,coorCenter  } from  './config.js'
 import { Particle } from './particle.js'
+import { ifSample } from './index.js'
+import { highlightSemanticTraj ,unHighlightSemanticTraj } from '../app.js'
 
 
 class Hexa{
 	init(trajData){
 		let { pid , traj } = trajData
 		let points =  traj.map((p)=>{ return transDatas(p) }).filter((e)=>e) //filter null element
+
+		let stopPointsIndex = []
+		traj.filter((p)=> p.topics).forEach((p,i)=>{
+			if(p.stoppoint!=undefined) stopPointsIndex.push(i)
+		})
+		this.stopPointsIndex = stopPointsIndex
+
 
 		this.data = {
 			pid , points
@@ -33,12 +42,23 @@ class Hexa{
 	    this.g = g
 	}
 	generatePaticle(){
-		let { points } = this.data
-		let Ps  =  points.map((d,i)=>{
-			let p = new Particle()
-			p.init(d,i)
-			return p 
-		})
+		let { points  } = this.data
+		let { stopPointsIndex } = this
+		let Ps 
+		if( !ifSample ){
+			Ps  =  points.map((d,i)=>{
+				let p = new Particle()
+				p.init(d,i)
+				return p 
+			})
+		}else{
+			console.log(stopPointsIndex)
+			Ps = stopPointsIndex.map((d,i)=>{
+				let p = new Particle()
+				p.init(points[d],i)
+				return p 
+			})
+		}
 		this.Ps = Ps
 	}
 	start(){
@@ -54,7 +74,7 @@ class Hexa{
 		let { Ps , g ,alive  } = this
 		let { pid }  = this.data
 		if(!alive)  return
-			
+
 		Ps.forEach((p,i)=>{
 			// console.log(pid + ' ticks')
 			p.tick()
@@ -80,11 +100,21 @@ class Hexa{
 		}
 	}
 	enterHandler(){
+		let { pid } = this.data
+		this.highlight()
+		highlightSemanticTraj(pid)
+	}
+	leaveHandler(){
+		let { pid } = this.data
+		this.unHighlight()
+		unHighlightSemanticTraj(pid)
+	}
+	highlight(){
 		let { g } = this
 		g.selectAll('circle').style('opacity',1)
 		g.selectAll('line').style('opacity',1)
 	}
-	leaveHandler(){
+	unHighlight(){
 		let { g } = this
 		g.selectAll('circle').style('opacity',0.1)
 		g.selectAll('line').style('opacity',0.1)

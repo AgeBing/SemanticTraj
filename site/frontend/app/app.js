@@ -13,12 +13,15 @@ import { draw as drawPoi , remove as removePoi} from './map/poi.js'
 import { draw as drawList , filterListGeo  , filterListTime  } from './list/index.js'
 import { draw as drawTopic } from './timeline/index.js'
 import { init as timeInit }  from './timeline/time.js'
+import { draw as drawHexa } from './semantic/index.js'
+
 
 import { highLightTrajInMap ,unHighLightTrajInMap , 
 		 highLightTrajSectionInMap, unHighLightTrajSectionInMap,
 		 draw as drawTraj  } from './map/traj.js'
 import { highLightTopic , unHighLightTopic } from './timeline/index.js'
 import { highLightOneItem , unhighLightOneItem  } from './list/index.js'
+import { highlightHexa , unHighlightHexa } from './semantic/index.js'
 
 import { draw as drawHexagon } from './semantic/index.js'
 
@@ -39,7 +42,9 @@ let topicLists = []
 let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
-datamanager.init().then(o => SearchBar.init())
+// datamanager.init().then(o => SearchBar.init())
+mockList()
+
 
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
@@ -123,6 +128,7 @@ export function topicAdd(topicPids){
 		}
 	})
 	drawTopic(topicLists)
+	drawHexa(topicLists)
 }
 
 
@@ -164,6 +170,7 @@ export function HighLightTrajSectionContorl(i,t,fillColor){
 	let traj = topicLists[i].traj
 	// console.log(traj,t)
 
+	highlightHexa(topicLists[i].pid)
 	highLightOneItem( topicLists[i].pid)
 	highLightTrajContorl( topicLists[i].pid  )
 	for(let j = 0;j < traj.length ; j++){
@@ -188,13 +195,14 @@ export function unHighLightTrajSectionContorl(i){
 	unHighLightTrajSectionInMap()
 	unhighLightOneItem(id)
 	unHighLightTrajInMap()
+	unHighlightHexa(id)
 }
 export function highlightPoisInTrajs(pid){
 	let sites = trajId2Points.get(pid) 
  	let nodelist = require('./Specification/Node.js')
 
- 	console.log(nodelist.data)
-	console.log(sites)
+ 	// console.log(nodelist.data)
+	// console.log(sites)
 
 	let pois = []
 
@@ -214,16 +222,23 @@ export function highlightPoisInTrajs(pid){
 
 	})
 
-	console.log(pois)
+	// console.log(pois)
 	drawPoi(pois)
 }
 
 export function unHighlightPoisInTrajs(){
 	removePoi()
 }
-
-
-
+export function highlightSemanticTraj(pid){
+	highLightTopiContorl(pid)
+	highLightOneItem(pid)
+	highLightTrajContorl(pid)
+}
+export function unHighlightSemanticTraj(pid){
+	unHighLightTrajContorl()
+	unHighLightTopiContorl(pid)
+	unhighLightOneItem(pid)
+}
 
 
 export function calTrajsOrder(){  //计算轨迹的分数 排序

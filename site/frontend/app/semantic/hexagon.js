@@ -1,5 +1,5 @@
 
-import { coorHexagonCopy }  from './config.js'
+import { coorHexagonCopy,SVGlength }  from './config.js'
 import { colorList } from '../timeline/config.js'
 
 let svg
@@ -12,8 +12,8 @@ export function drawHexagon(argument) {
 	svg = d3.select('#semantic-view')
 		.append('svg')
 			.attr('class','hexagon')
-			.attr('width',300)
-			.attr('height',300)
+			.attr('width',SVGlength)
+			.attr('height',SVGlength)
 			
 
 	addLinks()

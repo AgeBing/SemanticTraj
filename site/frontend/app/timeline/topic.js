@@ -23,9 +23,10 @@ function dataAdapter(_line_data){
 		return {
 			date : line.startTime.split(' ')[0],
 			time : line.startTime.split(' ')[1],
-			topics : line.topics
+			topics : line.topics , 
+			topicsHexa : Config.transTopicHexa(line.topics)
 		}
-	})
+	}).filter((p)=>p.topics)
 
 	return {
 			id : _line_data.id,
@@ -190,31 +191,41 @@ export class topicZoomRect {
 				return
 			}
 
-			let topic_top = data.ps[i].topics[0]
-			let topic_top_name = topic_top.topic
+
+			let topic_top = data.ps[i].topicsHexa[0]
+			let topic_top_name = topic_top.name
 			let topic_top_val =  Math.round(+topic_top.val * 100)+ '%'
+			let topic_top_icon = topic_top.icon
+			let topic_top_color = topic_top.color
 
-			let topic_2rd = data.ps[i].topics[1]
-			let topic_2rd_name = topic_2rd.topic.toLowerCase()
+			let topic_2rd = data.ps[i].topicsHexa[1]
+			let topic_2rd_name = topic_2rd.name
 			let topic_2rd_val =  Math.round(+topic_2rd.val * 100)+ '%'
+			let topic_2rd_icon = topic_2rd.icon
 
-			let topic_3rd = data.ps[i].topics[2]
-			let topic_3rd_name = topic_3rd.topic.toLowerCase()
+
+
+			let topic_3rd = data.ps[i].topicsHexa[2]
+			let topic_3rd_name = topic_3rd.name
 			let topic_3rd_val =  Math.round(+topic_3rd.val * 100)+ '%'
+
+
 
 			_rect.style('width',width+'px')
 				.style('height',height+'px')
 				.style('left',x  + 'px')
 				.style('top',y + 'px')
-				.style('background-color',Config.topicThemes[topic_top_name].color)
+				.style('background-color', topic_top_color)
 
 			if(+width  <  Config.topicThemesConfig.min_width){
+
 					_rect.style('background-color','#bfbfbf')
+			
 			}else if(+width  <  Config.topicThemesConfig.max_width){
 				let box = _rect.append('div')
 							.attr('class','mid-box')
 					box.append('img')		
-						.attr('src',Config.iconSrcUrl + Config.topicThemes[topic_top_name].icon)
+						.attr('src',Config.iconSrcUrl + topic_top_icon )
 					box.append('div')
 						.attr('class','precent-text')
 						.html(topic_top_val)	
@@ -225,7 +236,7 @@ export class topicZoomRect {
 							.attr('class','right-box')
 
 					left_box.append('img')		
-						.attr('src',Config.iconSrcUrl + Config.topicThemes[topic_top_name].icon)
+						.attr('src',Config.iconSrcUrl + topic_top_icon)
 					left_box.append('div')
 						.attr('class','precent-text')
 						.html(topic_top_val)
@@ -267,9 +278,8 @@ export class topicZoomRect {
 	high_light_rect(t){    //t 如 Tue Jan 14 2014 05:37:06 GMT+0800 (China Standard Time)
 		let { index,data,dates }  = this 
 		let topicIndex = dates.indexOf(t),
-			mainTopic = data.ps[topicIndex].topics[0]['topic'],
-			fillColor = Config.topicThemes[mainTopic].color
-		console.log(fillColor)
+			fillColor = data.ps[topicIndex].topicsHexa[0].color
+		// console.log(fillColor)
 
 		HighLightTrajSectionContorl(index,t,fillColor)
 	}

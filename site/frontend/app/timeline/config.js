@@ -8,18 +8,6 @@ export let colorList = ['#8dd3c7','#bebada','#fb8072','#28B78D','#fdb462',
 				'#FFD034','#fccde5','#d9d9d9','#bc80bd','#ccebc5',
 				'#80b1d3','#F40076','#b3de69','#fccde5']
 
-export let topicThemes = {}
-
-
-
-
-
-// topicNameList.forEach((topic,i)=>{
-// 	topicThemes[topic] = {
-// 		icon : topic.toLowerCase() + '.png' ,
-// 		color : colorList[i]
-// 	}
-// })
 
 export let iconSrcUrl = './assets/icons_/'
 export let topicThemesConfig = {
@@ -29,47 +17,86 @@ export let topicThemesConfig = {
 
 export let vRectHeight = 35
 
+export const  topicNames = [
+	{
+    	name : '住宅', 
+    	contain : ['Uptown','Life','Scenicspot','Education','Hospital'],
+    	percent : {
+    		'Uptown' : 0.3 ,
+    		'Life'   : 0.3 ,
+    		'Scenicspot' : 0.2,
+    		'Education'  : 0.1,
+    		'Hospital'	 : 0.1
+    	},
+    	icon : 'life.png'
+    },{
+    	name : '娱乐商业', 
+    	contain : ['Beauty','Food','Finance','Shop','Hotel'],
+    	percent : {
+    		'Beauty' : 0.3,
+    		'Food'   : 0.2,
+    		'Finance': 0.2,
+    		'Shop'	 : 0.2,
+    		'Hotel'  : 0.1
+	    	},
+    	icon : 'food.png'
+    },{
+    	name : '办公', 
+    	contain : ['Enterprise','Government','Finance'],
+    	percent : {
+    		'Enterprise' : 0.4,
+    		'Government' : 0.4,
+    		'Finance'	 : 0.2
+    	},
+    	icon : 'finance.png'
+    },{
+    	name : '医疗', 
+    	contain : ['Education' ],
+    	percent : {
+    		'Education'  : 1
+    	},
+    	icon : 'hospital.png'
+    },
+    {
+    	name : '交通', 
+    	contain : ['Traffic' ],
+    	percent : {
+    		'Traffic'   : 1
+    	},
+    	icon : 'traffic.png'
+    },
+    {
+    	name: '教育',
+    	contain : ['Education'],
+    	percent : {
+    		'Education' : 1
+    	},
+    	icon : 'education.png'
+    }
+]
 
 
-// hexa 
-
-export const  topicNames = [{
-			    	name : '娱乐', 
-			    	contain : ['Shop' ],
-			    	icon : 'food.png'
-			    },{
-			    	name : '生活', 
-			    	contain : ['Beauty','Hospital','Food','Life'],
-			    	icon : 'life.png'
-			    },{
-			    	name : '商业', 
-			    	contain : ['Enterprise','Hotel','Uptown','Finance'],
-			    	icon : 'finance.png'
-			    },{
-			    	name : '文化', 
-			    	contain : ['Education','Scenicspot' ],
-			    	icon : 'education.png'
-			    },{
-			    	name : '交通', 
-			    	contain : ['Traffic' ],
-			    	icon : 'traffic.png'
-			    },{
-			    	name : '政府', 
-			    	contain : ['Government' ],
-			    	icon : 'government.png'
-			    }]
-
-
-
-topicNameList.forEach((topic,i)=>{
-	topicNames.forEach((topicType,j)=>{
-		if( topicType.contain.indexOf(topic) != -1 ){
-			topicThemes[topic] = {
-				icon : topicType.icon ,
-				color : colorList[j] ,
-				name  : topicType.name 
-			}
+export function transTopicHexa(topics){
+    if(!topics)  return null
+	let topicsHexa = topicNames.map((t,i)=>{
+		return {
+			name : t.name ,
+			val  : 0 ,
+			icon : t.icon ,
+            color : colorList[i]
 		}
 	})
-})
-console.log(topicThemes)
+	topics.forEach( (t) =>{
+		topicNames.forEach((T,i)=>{
+			if(T.contain.indexOf(t.topic) != -1){
+				topicsHexa[i].val +=  t.val  * T.percent[t.topic] 
+			}
+		})
+	})
+
+	let topicsHexaSort = topicsHexa.sort((t1,t2)=>{
+		let v1 = t1.val , v2 = t2.val 
+		return v2 - v1
+	})
+	return topicsHexaSort
+}

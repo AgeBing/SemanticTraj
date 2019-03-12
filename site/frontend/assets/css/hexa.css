@@ -54,3 +54,78 @@
 	opacity: 1;
 	fill: red;
 }
+
+
+
+.sample-area{
+	position: absolute;
+    right:  10px;
+    bottom:  10px;
+    z-index: 2;
+    height: 30px;
+    width: 	100px;
+   /*border: 2px solid rgba(0,0,0,0.2);*/
+   /*cursor: pointer*/
+}
+.sample-area span{
+    display: inline-block;
+    font-size: 13px;
+    line-height: 27px;
+    float: left;
+    margin-right: 8px;
+}
+
+
+
+
+
+.switch-btn {
+float: right;
+
+  cursor: pointer;
+  width: 45px;
+  height: 28px;
+  position: relative;
+  border: 1px solid #dfdfdf;
+  background-color: #fdfdfd;
+  box-shadow: #dfdfdf 0 0 0 0 inset;
+  border-radius: 15px;
+  background-clip: content-box;
+  display: inline-block;
+  -webkit-appearance: none;
+  user-select: none;
+  outline: none; 
+}
+.switch-btn:before {
+    content: '';
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 20px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .4); 
+}
+.switch-btn:checked {
+    border-color: #595959;
+    box-shadow: #595959 0 0 0 16px inset;
+    background-color: #595959; 
+}
+.switch-btn:checked:before {
+    left: 18px; 
+}
+.switch-btn.switch-btn-animbg {
+    transition: background-color ease .4s; 
+}
+.switch-btn.switch-btn-animbg:before {
+    transition: left .3s; 
+}
+.switch-btn.switch-btn-animbg:checked {
+    box-shadow: #dfdfdf 0 0 0 0 inset;
+    background-color: #595959;
+    transition: border-color .4s, background-color ease .4s; 
+}
+.switch-btn.switch-btn-animbg:checked:before {
+    transition: left .3s; 
+}

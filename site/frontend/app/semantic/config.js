@@ -1,6 +1,10 @@
 import { topicNames } from '../timeline/config.js'
 
-let r = 65    //  半径/2
+
+export let SVGlength = 400
+export let stepLen = 300
+
+let r = 90    //  半径/2
 const sqrt3 = Math.sqrt(3)
 
 //中心点 坐标位置
@@ -66,11 +70,9 @@ export function transDatas(point){
 
       for(let i=0;i< topicNames.length;i++){
         if(topicNames[i].contain.indexOf(topic) != -1){
+            let per = topicNames[i].percent[topic]
             name = topicNames[i].name
-            res[name] = (  !res[name] ?  val : (val+res[name])/2)
-            // res[name] = (  !res[name] ?  val : val+res[name])
-
-            break
+            res[name] = (  !res[name] ?  val * per : val * per + res[name] )
         }
       }
     })

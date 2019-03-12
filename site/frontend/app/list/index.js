@@ -8,6 +8,8 @@ import { highLightTrajContorl ,
 		 highlightPoisInTrajs,
 		 unHighlightPoisInTrajs
 		  }  from '../app.js'
+import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
+
 
 
 let resultlist = {
@@ -240,6 +242,7 @@ function enterEventHandler(){
 	highLightOneItem(pid)
 	highLightTrajContorl(pid)
 	highlightPoisInTrajs(pid)
+	highlightHexa(pid)
 	if( d3.select(this).select('input').property('checked') )
 		highLightTopiContorl(pid)
 }
@@ -250,6 +253,7 @@ function leaveEventHander(){
 	unhighLightOneItem(pid)
 	unHighLightTrajContorl()
 	unHighlightPoisInTrajs()
+	unHighlightHexa(pid)
 	if( d3.select(this).select('input').property('checked') ){
 		unHighLightTopiContorl(pid)
 	}
