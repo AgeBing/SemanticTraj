@@ -119,7 +119,7 @@ export function show_hide() {
 }
 //每次滚动都要调用该方法
 
-export function initial_line(index) {
+export function initial_line(index) {//condition_node1
     let locationlistdiv_id=index.replace('condition_node','locationlistdiv');
     let nodelist = require('../Specification/Node.js')
         let left_nodes = line_data[index].left;
@@ -177,8 +177,8 @@ right_nodes.map((x,y)=>{
             path_colorsdomain.min=(min_val<path_colorsdomain.min||path_colorsdomain.min==0)?min_val:path_colorsdomain.min
             path_colorscale.domain([path_colorsdomain.min, path_colorsdomain.max]);
             d3.select('#'+index).attr('max_relation_val',max_val).attr('min_relation_val',min_val)
-            //d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
-            //d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
+            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
+            d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
             let spatial_lines = d3.select('#' + index).select('.spatial_lines').selectAll('path')
                 .data(current_line_dta)
                 .enter()
@@ -186,14 +186,14 @@ right_nodes.map((x,y)=>{
                 .attr('d', function (d) {
                     let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
                     let right_x = parseInt(d3.select(this.parentNode).style('width'))
-                    let right_y = parseInt(d3.select(d.right).style('top'))-$('#'+locationlistdiv_id).scrollTop() + parseInt(d3.select(d.right).style('height')) / 2
-                    console.log(left_y , right_x,right_y,'x,y-----------')
-                    return 'M -0 ' + ' ' + left_y + ' ' + 'Q ' + (0 + right_x) / 3 + ' ' + (left_y + right_y) / 3 + ' ' + right_x + ' ' + right_y;
+                    let right_y = parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2//-$('#'+locationlistdiv_id).scrollTop()
+                    return 'M -0 ' + left_y + ' ' + 'Q ' + (0 + right_x) / 3 + ' ' + (left_y + right_y) / 3 + ' ' + right_x + ' ' + right_y;
                 })
                 .attr('stroke', function(d){ return path_colorscale(d.relation_val)})
                 .attr('stroke-width', 3)
                 .attr('fill', 'none')
             .attr('relation_val',function(d){return d.relation_val;})
+            .attr('initial_y',function(d){return parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2;})//-$('#'+locationlistdiv_id).scrollTop()
                 spatial_lines.append('circle')
                 .attr('cx','0')
                 .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
@@ -204,6 +204,28 @@ right_nodes.map((x,y)=>{
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
              d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
         }
+    }
+
+    export function refresh_line(order){//locationlistdiv1
+    let top_height=$('#locationlistdiv'+order).scrollTop();
+    $('#locationlistdiv'+order).parent().find('path').each(function(index,e){
+let d=$(e).attr('d').trim().split(' ');//["M", "-0", "56.5", "Q", "30", "199.5", "90", "542"]
+        d[d.length-1]=parseFloat($(e).attr('initial_y'))-top_height;
+        d[d.length-3]=(parseFloat(d[d.length-3])+parseFloat(d[2]))/3
+        $(e).attr('d',d.join(' '))
+            })
+    /*let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
+    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
+    line_data[index].right=[];//当前显示在窗口中的元素
+        d3.select(this).select('.spatial_POIs').selectAll('.POIrect').each(function(){
+            let current_element_top=parseInt(d3.select(this).style('top'));
+            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
+                d3.select(this).attr('current_top',current_element_top-top_height);
+                line_data[index].right.push(this);
+            }
+        })
+     //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
+    create_line(index);*/
     }
 
  export function refresh_path_color(){
@@ -263,6 +285,7 @@ let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.lengt
                 current_data=nodelist.data[i]
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max-1);
        initial_line('condition_node'+current_conditionnode_order);
+       refresh_line(current_conditionnode_order);
 }
     }
 export function increase_locationlist(){
@@ -279,6 +302,7 @@ let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.lengt
                 current_data=nodelist.data[i]
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max+1);
         initial_line('condition_node'+current_conditionnode_order);
+         refresh_line(current_conditionnode_order);
 }
 }
 
