@@ -6,8 +6,8 @@ import { appendParamWidges } from './param.js'
 import { bindTimeChangeEvent } from './time.js'
 //import { textData } from '../search/searchbar.js'
 import { calTrajsOrder } from '../app.js'
-import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,get_left_nodes,initial_line,refresh_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
-import {path_colorscale, path_colorsdomain} from "./node_interaction";
+import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,refresh_POI_color,get_left_nodes,initial_line,refresh_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
+import {path_colorsdomain} from "./node_interaction";
 let nodelist={
   container:d3.select("#condition_node_list"),
   data : [],
@@ -17,8 +17,16 @@ let nodelist={
 }
 export let line_data=[];
 let is_initial_right_content=false;
+export let POI_colorscale = d3.scaleLinear()
+                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
+export let poi_colordomain={max:0,min:0}
 nodelist.rendering = function(){
     fresh_list_width();
+    if(!is_initial_right_content)
+    {
+        initial_right_content();
+        is_initial_right_content=true;
+    }
   for(let i =0;i<nodelist.data.length;i++){
     nodelist.data[i].order = i +1
   }
@@ -49,9 +57,7 @@ nodelist.rendering = function(){
   title.append("div").classed("constraints_order",true)
   title.append("div").classed("text",true).style('display','inline-block')
     title.append('div').classed('delete',true).text('X').style('margin','5px').on('click',function(d) {
-        console.log(d.order,'d.order--------------')
-        nodelist.delete_node(d.order);
-        console.log(nodelist.data,'nodelist.data------------------------------')
+      nodelist.delete_node(d.order);
     })
 
 
@@ -247,7 +253,7 @@ $('#'+current_id).scroll(function(){
   })
 
 
-    initial_right_content();
+
 
 }
 
@@ -331,9 +337,7 @@ for(let i=0;i<nodelist.data.length;i++)
 export function renderingPOIlist(mergenode,max_num=20){
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
            .data(function(d){
-                  let colorscale = d3.scaleLinear()
-                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
-                  let textcolorscale = 0
+               let textcolorscale = 0
 
                   // data
                   let pois = []
@@ -354,13 +358,17 @@ export function renderingPOIlist(mergenode,max_num=20){
                    //sort by val
                      pois.sort(function(a, b) {
                         return b.poi.val - a.poi.val})
-                     colorscale.domain([0, pois[0].poi.val])
+               d3.select('#condition_node'+d.order).attr('max_val',pois[0].poi.val).attr('min_val',pois[pois.length-1].poi.val)
+               poi_colordomain.max=poi_colordomain.max>pois[0].poi.val?poi_colordomain.max:pois[0].poi.val
+               poi_colordomain.min=(poi_colordomain.min>pois[0].poi.val||poi_colordomain.min==0)?pois[pois.length-1].poi.val:poi_colordomain.min
+                     POI_colorscale.domain([poi_colordomain.min,poi_colordomain.max])
+               refresh_POI_color()
                      textcolorscale = pois[0].poi.val
                    //update data index and color
                    for(let i=0;i<pois.length;i++){
                        pois[i].order = i
                     pois[i].color = pois[i].poi.val >textcolorscale/2 ? "white":"rgb(28,28,28)"
-                    pois[i].background = colorscale(pois[i].poi.val)
+                    pois[i].background = POI_colorscale(pois[i].poi.val)
                    }
                     pois=pois.slice(0,max_num)
                    //reorder
@@ -381,7 +389,8 @@ export function renderingPOIlist(mergenode,max_num=20){
     .style("top",d=>`${d.order*28}px`)
     .style("background",d=>d.background)
     .style("color",d=>d.color)
-      .each(function(){
+      .attr('val',d=>d.poi.val)
+      /*.each(function(){
           let grandparent_id=d3.select(this.parentNode.parentNode).attr('id');
          if(parseInt(d3.select(this).style('top'))<$('#'+grandparent_id)[0].getBoundingClientRect().height){
              d3.select(this).attr('current_top',parseInt(d3.select(this).style('top')))
@@ -391,7 +400,7 @@ export function renderingPOIlist(mergenode,max_num=20){
              //let c_id=grandparent_id.replace('-spatial_POIs-','condition_node');
              //              let index=c_id.substr(0,c_id.length-1);
          }
-      })
+      })*/
 }
 
 nodelist.reOrder = function refresh_list(a,current_node_id){
@@ -492,19 +501,19 @@ module.exports = nodelist;
 
 export function initial_right_content(){
     nodelist.container.select('.right_content').remove()
-    let legend_list=[{name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},{name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
+    let legend_list=[{id:'Relevance_Score',name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},{id:'Relevance_Information',name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
     let height=parseInt($('#Specification_view').css('height'))
     let right_content=nodelist.container.append('div').classed('right_content',true)//.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
         right_content.append('div').classed('add_condition_node',true).text('+')//./style('height',height-100+'px');
     legend_list.map((x,y)=>{
-    let legend=right_content.append('div').classed('legend',true)
+    let legend=right_content.append('div').classed('legend',true).attr('id',x.id)
     legend.append('div').classed('text',true).text(x.name)
     let content=legend.append('div').classed('content',true)
-    content.append('div').classed('max',true).text(parseFloat(path_colorsdomain.max).toFixed(1))
+    content.append('div').classed('max',true).text(0)
     x.color.map((color,i)=>{
         content.append('div').classed('color_bar',true).style('background',color)
     })
-    content.append('div').classed('min',true).text(parseFloat(path_colorsdomain.min).toFixed(1))
+    content.append('div').classed('min',true).text(0)
     })
 }
 
@@ -517,7 +526,6 @@ nodelist.delete_node=function (index){//例如删除condition_node1则index为1
 
             nodelist.data.splice(i, 1);
             for (let j = i; j < nodelist.data.length; j++) {
-                console.log('#condition_node'+nodelist.data[j].order,'\'#condition_node\'+nodelist.data[j].order')
                 d3.select('#condition_node'+nodelist.data[j].order).attr('id','condition_node'+(nodelist.data[j].order-1))
                 let target_index=nodelist.order.indexOf("condition_node" + nodelist.data[j].order)
                  nodelist.order[target_index]='condition_node'+(nodelist.data[j].order-1)
@@ -537,10 +545,11 @@ nodelist.delete_node=function (index){//例如删除condition_node1则index为1
 fresh_list_width();
 
         refresh_path_color()
+    refresh_POI_color();
         //nodelist.rendering();
 }
 
-export function fresh_list_width(){
+export function fresh_list_width(){//condition_node_list的宽度
    let current_width=nodelist.data.length*622+120;
     let spe_width=parseInt(document.getElementById('Specification_view').offsetWidth)
     let width=current_width>spe_width?current_width:spe_width
