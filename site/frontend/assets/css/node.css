@@ -7,10 +7,10 @@
 
 .right_content .add_condition_node{
 
-    //height:calc(100% - 100px);
+    height:calc(100% - 100px);
     width:50px;
     text-align: center;
-    //padding-top:50px;
+   line-height:100px;
     background:rgb(171,171,171);
     float:right;
     display: block;
