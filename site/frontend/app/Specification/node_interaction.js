@@ -1,4 +1,4 @@
-import { line_data ,renderingPOIlist} from '../Specification/Node.js'
+import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
 
 export let path_colorscale=d3.scaleLinear()
                     .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(132,60,12)")]);
@@ -237,13 +237,45 @@ let d=$(e).attr('d').trim().split(' ');//["M", "-0", "56.5", "Q", "30", "199.5",
     d3.selectAll('.condition_node').each(function(){
         min_ralation_vals.push(d3.select(this).attr('min_relation_val'));
     })
+     if(min_ralation_vals.length>0){
      path_colorsdomain.min=d3.min(min_ralation_vals)
      path_colorsdomain.max=d3.max(max_ralation_vals)
     path_colorscale.domain([path_colorsdomain.min,path_colorsdomain.max])
+     d3.select('#Relevance_Information').select('.content').select('.max').text(parseFloat(path_colorsdomain.max).toFixed(1))
+     d3.select('#Relevance_Information').select('.content').select('.min').text(parseFloat(path_colorsdomain.min).toFixed(1))
         d3.selectAll('.spatial_lines').selectAll('path').attr('stroke', function(d){
 return path_colorscale(d3.select(this).attr('relation_val'));
     })
     }
+    else{
+        d3.select('#Relevance_Information').select('.content').select('.max').text(0)
+     d3.select('#Relevance_Information').select('.content').select('.min').text(0)
+     }
+}
+
+export function refresh_POI_color(){
+    let max_vals=[];
+    d3.selectAll('.condition_node').each(function(){
+        max_vals.push(d3.select(this).attr('max_val'));
+    })
+        let min_vals=[];
+    d3.selectAll('.condition_node').each(function(){
+        min_vals.push(d3.select(this).attr('min_val'));
+    })
+     if(min_vals.length>0) {
+         poi_colordomain.min = d3.min(min_vals)
+         poi_colordomain.max = d3.max(max_vals)
+         d3.selectAll('.POIrect').style('background', function () {
+             return POI_colorscale(parseFloat(d3.select(this).attr('val')))
+         })
+         d3.select('#Relevance_Score').select('.content').select('.max').text(parseFloat(poi_colordomain.max).toFixed(1))
+         d3.select('#Relevance_Score').select('.content').select('.min').text(parseFloat(poi_colordomain.min).toFixed(1))
+     }
+     else{
+d3.select('#Relevance_Score').select('.content').select('.max').text(0)
+         d3.select('#Relevance_Score').select('.content').select('.min').text(0)
+     }
+}
 export function get_left_nodes(index) {//index:1,2,3...
         line_data['condition_node'+index].left = [];
         let top_height = $('#spatial_left' + index).scrollTop();
@@ -305,102 +337,3 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
          refresh_line(current_conditionnode_order);
 }
 }
-
-
-
-/*export function get_right_nodes(order){
-    let current_id = 'locationlistdiv'+order;
-let index='condition_node'+order//
-        let top_height=$('#'+current_id).scrollTop();
-    let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
-    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    line_data[index].right=[];//当前显示在窗口中的元素
-        d3.select('#'+current_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){
-            let current_element_top=parseInt(d3.select(this).style('top'));
-            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
-                d3.select(this).attr('current_top',current_element_top-top_height);
-                line_data[index].right.push(this);
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].right,'after---------------------')
-
-    create_line(index);
-    }*/
-
-/*
-export function create_line111(index) {
-    let nodelist = require('../Specification/Node.js')
-        let left_nodes = line_data[index].left;
-        let right_nodes = line_data[index].right;
-        if (left_nodes.length > 0 && right_nodes.length > 0) {
-            let current_line_dta = [];
-            let data_num=index.substr(index.length-1,1);
-            let second_third_index={};
-
-            let max_val=0;
-            for (let i = 0; i < left_nodes.length; i++) {
-let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
-second_title=second_title.substr(0,second_title.length-1)
-let third_title=d3.select(left_nodes[i]).text();
-if(!(second_third_index.hasOwnProperty(second_title)))
-{
-for(let i=0;i<nodelist.data[data_num-1].data.length;i++)
-{
-    if(second_title==nodelist.data[data_num-1].data[i].name)
-    {
-        second_third_index[second_title]=nodelist.data[data_num-1].data[i].data;
-        break;
-    }
-}
-}
-let third_forth_data=second_third_index[second_title];
-let forth_data=[];//location list
-for(let j=0;j<third_forth_data.length;j++)
-{
-    if(third_title==third_forth_data[j].name)
-    {
-forth_data=third_forth_data[j].data;
-break;
-    }
-}
-
-for(let m=0;m<right_nodes.length;m++)
-{
-    let rifght_nodename=d3.select(right_nodes[m]).text();
-    for(let n=0;n<forth_data.length;n++)
-    {
-        if(rifght_nodename==forth_data[n].name)
-        {
-            if(max_val<forth_data[n].relation_val)
-                max_val=forth_data[n].relation_val
-            current_line_dta.push({left:left_nodes[i],right:right_nodes[m],val:forth_data[n].relation_val});
-        }
-    }
-}            }
-            path_colorscale.domain([0, max_val]);
-            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
-             d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
-            let spatial_lines = d3.select('#' + index).select('.spatial_lines').selectAll('path')
-                .data(current_line_dta)
-                .enter()
-                spatial_lines.append('path')
-                .attr('d', function (d) {
-                    let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
-                    //let left_x=parseInt(d3.select(d.left).style('left'))
-                    let right_x = parseInt(d3.select(this.parentNode).style('width'))
-                    let right_y = parseInt(d3.select(d.right).attr('current_top')) + parseInt(d3.select(d.right).style('height')) / 2
-                    return 'M -0 ' + ' ' + left_y + ' ' + 'Q ' + (0 + right_x) / 3 + ' ' + (left_y + right_y) / 3 + ' ' + right_x + ' ' + right_y;
-                })
-                .attr('stroke', function(d){ return path_colorscale(d.val)})
-                .attr('stroke-width', 3)
-                .attr('fill', 'none')
-                spatial_lines.append('circle')
-                .attr('cx','0')
-                .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
-                .attr('r','3')
-                .attr('fill','#b9b9b9');
-        } else {
-            d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
-             d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
-        }
-    }*/
