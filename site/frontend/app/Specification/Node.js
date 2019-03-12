@@ -6,7 +6,7 @@ import { appendParamWidges } from './param.js'
 import { bindTimeChangeEvent } from './time.js'
 //import { textData } from '../search/searchbar.js'
 import { calTrajsOrder } from '../app.js'
-import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,get_left_nodes,initial_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
+import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,get_left_nodes,initial_line,refresh_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
 import {path_colorscale, path_colorsdomain} from "./node_interaction";
 let nodelist={
   container:d3.select("#condition_node_list"),
@@ -49,7 +49,9 @@ nodelist.rendering = function(){
   title.append("div").classed("constraints_order",true)
   title.append("div").classed("text",true).style('display','inline-block')
     title.append('div').classed('delete',true).text('X').style('margin','5px').on('click',function(d) {
+        console.log(d.order,'d.order--------------')
         nodelist.delete_node(d.order);
+        console.log(nodelist.data,'nodelist.data------------------------------')
     })
 
 
@@ -115,6 +117,10 @@ d.data.map((x,i)=> {
 return parseInt(sum_location);
 
     }).on('change',function(){
+        if(d3.select(this).property('value')>d3.select(this).attr('max'))
+                d3.select(this).property('value',d3.select(this).attr('max'))
+            if(d3.select(this).property('value')<d3.select(this).attr('min'))
+                d3.select(this).property('value',d3.select(this).attr('min'))
         if(d3.select(this).property('value')<=parseInt(d3.select(this).attr('max'))&&(d3.select(this).property('value')>=parseInt(d3.select(this).attr('min')))){
 
         let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
@@ -125,14 +131,8 @@ let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.lengt
                 current_data=nodelist.data[i]
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),d3.select(this).property('value'));
        initial_line('condition_node'+current_conditionnode_order);
+       refresh_line(current_conditionnode_order);
         }
-        else{
-            if(d3.select(this).property('value')>d3.select(this).attr('max'))
-                d3.select(this).property('value',d3.select(this).attr('max'))
-            else
-                d3.select(this).property('value',d3.select(this).attr('min'))
-        }
-
     })
     node_subtitle.select('.max_node_num').append('div').classed('increase',true).text('+').style("width","14px").on('click',increase_locationlist)
 
@@ -149,6 +149,7 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
       .each(function(d){
 let current_id = d3.select(this).attr('id');
 let index='condition_node' + d.order;
+let order=d.order;
 $('#'+current_id).scroll(function(){
     line_data[index].left=[];
      let top_height=$('#'+current_id).scrollTop();
@@ -171,6 +172,7 @@ $('#'+current_id).scroll(function(){
         })
      //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
      initial_line(index);
+    refresh_line(order);
 })
       })
               .append("div").classed("spatial_words",true)
@@ -225,9 +227,10 @@ $('#'+current_id).scroll(function(){
   locationlistdiv.each(function(d){
       //d3.select(this.parentNode)
 let current_id = d3.select(this.parentNode).attr('id');
-let index='condition_node'+d.order
+let order=d.order
 $('#'+current_id).scroll(function(){
-        let top_height=$('#'+current_id).scrollTop();
+    refresh_line(order);
+        /*let top_height=$('#'+current_id).scrollTop();
     let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
     let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
     line_data[index].right=[];//当前显示在窗口中的元素
@@ -239,7 +242,7 @@ $('#'+current_id).scroll(function(){
             }
         })
      //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
-    create_line(index);
+    create_line(index);*/
 })
   })
 
@@ -420,6 +423,7 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
         }
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),parseInt($('#'+current_node_id).find('.node_num').prop('value')));
         initial_line('condition_node'+current_conditionnode_order)
+    refresh_line(current_conditionnode_order)
     
     
     calTrajsOrder() //重新调整轨迹的order
@@ -488,11 +492,8 @@ module.exports = nodelist;
 
 export function initial_right_content(){
     nodelist.container.select('.right_content').remove()
-    console.log(document.getElementById('condition_node_list').offsetWidth,'document.getElementById(\'Specification_view\').offsetWidth')
     let legend_list=[{name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},{name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
     let height=parseInt($('#Specification_view').css('height'))
-    let left=document.getElementById('condition_node_list').offsetWidth
-    console.log(height,'height---------')
     let right_content=nodelist.container.append('div').classed('right_content',true)//.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
         right_content.append('div').classed('add_condition_node',true).text('+')//./style('height',height-100+'px');
     legend_list.map((x,y)=>{
@@ -510,30 +511,29 @@ export function initial_right_content(){
 nodelist.delete_node=function (index){//例如删除condition_node1则index为1
 
         d3.select('#condition_node' + index).remove();
+
         for (let i = 0; i < nodelist.data.length; i++) {
         if (nodelist.data[i].order == index) {
 
             nodelist.data.splice(i, 1);
-            for (let j = i + 1; j < nodelist.data.length; j++) {
-                nodelist.data[j].order = nodelist.data[j] - 1;
+            for (let j = i; j < nodelist.data.length; j++) {
+                console.log('#condition_node'+nodelist.data[j].order,'\'#condition_node\'+nodelist.data[j].order')
+                d3.select('#condition_node'+nodelist.data[j].order).attr('id','condition_node'+(nodelist.data[j].order-1))
+                let target_index=nodelist.order.indexOf("condition_node" + nodelist.data[j].order)
+                 nodelist.order[target_index]='condition_node'+(nodelist.data[j].order-1)
+                nodelist.data[j].order = nodelist.data[j].order - 1;
             }
             break;
         }
     }
-        let current_order=0;
-        for(let j=0;j<nodelist.order.length;j++)
-        {
-            if(nodelist.order[j]=="condition_node" + index)
-            {
-                current_order=j;
-
-            }
-        }
-        for(let m=current_order;m<nodelist.order.length-1;m++)
+        //把当前卡片所对应的order里面的元素删掉
+     let current_order=nodelist.order.indexOf("condition_node" + index)
+ for(let m=current_order;m<nodelist.order.length-1;m++)
         {
             nodelist.order[m]=nodelist.order[m+1];
             d3.select('#'+nodelist.order[m]).style('left',622*m+'px').select('.title').select('.constraints_order').text(m+1);
         }
+        nodelist.order.pop();//最后一个没用，删掉
 fresh_list_width();
 
         refresh_path_color()
