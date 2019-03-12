@@ -1,4 +1,4 @@
-import { coorCenter,coorHexagon,namesHexagon } from './config.js'
+import { coorCenter,coorHexagon,namesHexagon,stepLen } from './config.js'
 
 
 class Particle{
@@ -52,15 +52,15 @@ class Particle{
 	moveItem(){
 		let { forcesComp } = this
 		let x,y,
-			s = 1,
-			m = 15
+			s = 1
+			
 	  	// 自适应 k 值
 	  	// 使单词位移长度限定在 s 内
 	  	let k = Math.floor( s / Math.sqrt( forcesComp.fx * forcesComp.fx + forcesComp.fy * forcesComp.fy) ) 
 
 	  	// x,y 为 单词位移长度 
-		x = forcesComp.fx * m
-		y = forcesComp.fy * m
+		x = forcesComp.fx * stepLen
+		y = forcesComp.fy * stepLen
 
 
 

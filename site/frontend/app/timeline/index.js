@@ -1,40 +1,24 @@
 import * as d3 from 'd3';
 import { topicZoomRect as Topic } from './topic.js'
-// import { init as  timeInit }  from './time.js'
-import { Hexa } from '../semantic/hexa.js'
+
 
 
 
 let objsT = []
-let objsH = []
 
-export function draw(data){
-	console.log("topic",data)
-	// timeInit(getTimeRange(data))
-
-	// Hexa.init()
-	
+export function draw(data){	
 	d3.select('.rect-group-container')
 		.selectAll('.rect-container')
 		.remove() 
 
-	objsH.forEach((h)=>{
-		h.destroy()
-	})
-
 	objsT = []  
-	objsH = []
 	data.forEach((traj,i)=>{
 		addTopic(traj,i)
-		addHexa(traj,i)
 	})
-
-	// addHexa(data[1])
 }
 
 
 export function addTopic(traj,i) {
-	// console.log(traj,i)
 	let t = new Topic()
 	t._init(traj,i)
 	t._render()
@@ -49,13 +33,6 @@ export function unHighLightTopic(i){
 	t.unhigh_light_whole()
 }
 
-
-function addHexa(traj,i) {
-	let h = new  Hexa()
-	h.init(traj)
-	h.start()
-	objsH.push(h)
-}
 
 
 function getTimeRange(data){
