@@ -2,67 +2,89 @@ import * as d3 from 'd3';
 import * as QueryUtil from './queryutil'
 import $ from 'jquery';
 import * as DataManager from './datamanager.js';
-// import { draw_trajs } from 'mappanel'
 
-import { draw as drawPoi } from '../map/poi'
+
 
 
 import { setGlobalTrajData } from '../app.js'
 
+import  { appendPOI, removePOI  }  from  '../Specification/Node.js'
 
-export let textData = []
-let preClickedIndex = null
+
+
+let textData = []
+
+let name2POIMap = new Map()
+
+
+
+
+
+export  function getMergePOI( _name ){
+  console.log(_name)
+   let _textData = textData.slice()
+   _textData.push([ _name,'cc'])
+   console.log(_textData)
+   return QueryUtil.get_poi_layer( _textData )
+      .then(results => {
+        console.log(results)
+        results.forEach((poi)=>{
+            let { name,data } = poi
+            name2POIMap.set( name , { name,data })
+        })
+      })
+      .then(()=>{
+          return name2POIMap.get(_name)
+      })
+
+}
+
+export function getPOI(name){
+  return  name2POIMap.get(name)
+}
+
+
+
+
+
+
+
+
 
 export function init() {
-
   const searchInput = d3.select('#input-wrapper')
   const button = d3.select('#search-button')
   addInputListener(searchInput);
   addSearchListener(button);
-
-  // // //test 
-  // $('#inputbox').val('pass trainstation during [2014-1-14]');
-  // updateTag(searchInput, {keyCode: '32'})
-
-
-  
-  // updateConditionQueue();
-  // updateData();
-
 }
+
 
 function addInputListener(o) {
   o.on('compositionstart', function() {
     // 拼音开始，暂不处理
   })
+  
   o.on('compositionend', function() {
     // 拼音结束
-    get_participle($('#search-input-text').val())
-    $('#search-input-text').val('')
+      addParticle()
   })
+
   o.on("keyup", function(e) {
     if (!e) {
       e = window.event;
     }
     // 13：回车，32：空格，8：删除
-    if (e.keyCode == "13" || e.keyCode == "32") {//检查是否已经输入了该词
-      get_participle($('#search-input-text').val())
-      $('#search-input-text').val('')
+    if (e.keyCode == "13" || e.keyCode == "32") {       //检查是否已经输入了该词
+        
+        addParticle()
+
     } else if (e.keyCode == '8') {
       const nowText = $('#search-input-text').val().trim()
 
       if (nowText.length == 0) {
         //只有删除这个词才会更新
-        let delete_word = textData.pop();
-        let nodelist = require('../Specification/Node.js')
-          for(let i=0;i<nodelist.data.length;i++)
-          {
-              if(delete_word[0]==nodelist.data[i].name)
-              {
-                  nodelist.delete_node(nodelist.data[i].order);
-              }
-          }
-        get_participle('',false)
+        // get_participle('',false)
+          removeParticle()
       } else {
         // get_participle(nowText)
       }
@@ -70,51 +92,62 @@ function addInputListener(o) {
   })
 }
 
-function get_participle(data,is_add=true) {
-  const rawText = textData.map(d => d[0]).join('') + data;
-  QueryUtil.get_participle(rawText)
+
+
+function addParticle(){
+  console.log('add')
+  let name = $('#search-input-text').val()
+  const rawText = textData.map(d => d[0]).join('') + name;
+  QueryUtil.get_participle(rawText)    
+    .then(o => {
+      o = o.filter(d => d[0].trim().length > 0)
+      textData = o;      // 获取词性
+      createTabs(o)
+    })
+    .then(()=>{
+      $('#search-input-text').val('')
+    })
+    .then(o => {
+        addPOI(name);
+    })
+}
+
+function removeParticle(){
+  console.log('rm')
+  let name = textData.pop()[0]
+  const rawText = textData.map(d => d[0]).join('');
+   QueryUtil.get_participle(rawText)     // 获取词性
     .then(o => {
       o = o.filter(d => d[0].trim().length > 0)
       textData = o;
-      createNewTab(o)
+      createTabs(o)
     })
     .then(o => {
-        if(is_add)
-        {
-            updatePOILayer();
-        }
+        removePOI(name);
     })
 }
 
-function updatePOILayer() {
-  QueryUtil.get_poi_layer(textData)
+
+
+function addPOI(_name){
+  QueryUtil.get_poi_layer( textData )
     .then(results => {
-      // 获取POI的层次信息
-      let nodelist = require('../Specification/Node.js')
-        results[results.length-1].order=nodelist.data.length
-        nodelist.data.push(results[results.length-1]);
+        console.log(results)
+        results.forEach((poi)=>{
+            let { name,data } = poi
+            if(_name == name)  appendPOI({ name,data })
 
-       /* let current_index=0;
-for(let i=0;i<results.length;i++)
-{
-    let exist=false;
-    for(current_index;current_index <nodelist.data.length;current_index++)
-        if(nodelist.data[current_index].name==results[i].name)
-        {
-            results[i]=nodelist.data[current_index];
-            exist=true;
-            break;
-        }
-    /!*if(!exist)
-    {
-        results[i]=current_index;
-        current_index++;
-    }*!/
-}*/
-//nodelist.data=results;
-      nodelist.rendering()
+            name2POIMap.set( name , { name,data })
+        })
     })
 }
+
+
+
+
+
+
+
 
 // 查询按钮监听click事件，首先查询符合条件的轨迹，然后查询POI的层次信息
 function addSearchListener(o) {
@@ -170,23 +203,13 @@ function dataTrans_YKJ() {
 
 }
 
-// function tabDrag() {
-//   return d3.drag()
-//   .on('start', function() {
-//     console.log(d3.event.subject, d3.event.x, d3.event.y, '######')
-//   })
-//   .on('drag', function(d) {
-//     console.log('____####______', d)
-//     d3.select(this)
-//         // .style('position', 'absolute')
-//         .style('left', d3.event.x + 'px')
-//   })
-// }
 
-function createNewTab(data) {
+
+
+let preClickedIndex = null
+
+function createTabs(data) {
   const container = d3.select('.search-container')
-  // container.selectAll('.word-tab')
-  //     .remove()
   const divData = container.selectAll('.word-tab')
       .data(data, (d, i) => d[0] + '_' + d[i])
   divData.classed('word-tab-clicked', (d, i) => i == preClickedIndex)
@@ -214,49 +237,56 @@ function createNewTab(data) {
       .append('div')
       .attr('class', 'tab-text')
       .text(d => d[0].split('_').join(''))
-  
   divData.exit().remove();
 
 
-  div.on('click', function(clickedData) {
-    let flag = d3.select(this).classed('word-tab-clicked');
-    flag = !flag;
-    d3.select(this).classed('word-tab-clicked', flag);
-    // 此处需要重新获取下标，这是由于原始数据导致原始下标可能会发生变化
-    const nowIdx = textData.indexOf(clickedData);
-    if (flag) {
-      if (preClickedIndex && Math.abs(preClickedIndex - nowIdx) == 1) {
-        const minIdx = Math.min(preClickedIndex, nowIdx),
-            maxIdx = Math.max(preClickedIndex, nowIdx);
-        textData[minIdx][0] += '_' + textData[maxIdx][0];
-        textData[minIdx][1] = 'cc'
-        textData.splice(maxIdx, 1);
-        preClickedIndex = minIdx;
-      } else {
-        preClickedIndex = nowIdx;
-      }
-      createNewTab(textData)
-      updatePOILayer();
-    } else {
-      preClickedIndex = null;
-    }
-  })
+
+  // div.on('click', function(clickedData) {
+  //   let flag = d3.select(this).classed('word-tab-clicked');
+  //   flag = !flag;
+  //   d3.select(this).classed('word-tab-clicked', flag);
+  //   // 此处需要重新获取下标，这是由于原始数据导致原始下标可能会发生变化
+  //   const nowIdx = textData.indexOf(clickedData);
+  //   if (flag) {
+  //     if (preClickedIndex && Math.abs(preClickedIndex - nowIdx) == 1) {
+  //       const minIdx = Math.min(preClickedIndex, nowIdx),
+  //           maxIdx = Math.max(preClickedIndex, nowIdx);
+  //       textData[minIdx][0] += '_' + textData[maxIdx][0];
+  //       textData[minIdx][1] = 'cc'
+  //       textData.splice(maxIdx, 1);
+  //       preClickedIndex = minIdx;
+  //     } else {
+  //       preClickedIndex = nowIdx;
+  //     }
+  //     createNewTab(textData)
+  //     updatePOILayer();
+  //   } else {
+  //     preClickedIndex = null;
+  //   }
+  // })
 
 
-syncInputWrapperLength()
+   syncInputWrapperLength()
   // d3.select('.input-wrapper').style('width')
 }
 
-function syncInputWrapperLength(){
 
-  let allWidth = +d3.select('.search-container').style('width').toString().split('px')[0] - 16
-  let wordlengthSum = 0
+
+
+
+
+
+function syncInputWrapperLength(){
+  let allWidth = +d3.select('.search-container').style('width').slice(0,-2)
+  let sum = 0
   d3.selectAll('.word-tab').each(function(){
-    wordlengthSum += (+d3.select(this).style('width').toString().split('px')[0]) 
-    wordlengthSum += 10
+    sum += (+d3.select(this).style('width').slice(0,-2))
+    sum += 25
   })
-  d3.select('#input-wrapper').style('width' , allWidth - wordlengthSum + 'px')
+  d3.select('#input-wrapper').style('width' , allWidth - sum + 'px')
 }
+
+
 
 function render_MDS(data, name, x, y) {
   const x_extent = d3.extent(data, d => d[2][0])
