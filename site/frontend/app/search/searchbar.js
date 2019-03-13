@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+//import * as d3 from 'd3';
 import * as QueryUtil from './queryutil'
 import $ from 'jquery';
 import * as DataManager from './datamanager.js';
@@ -8,6 +8,7 @@ import { draw as drawPoi } from '../map/poi'
 
 
 import { setGlobalTrajData } from '../app.js'
+import {word_tab_start,word_tab_move, word_tab_end} from "../Specification/node_operate";
 
 
 export let textData = []
@@ -195,6 +196,12 @@ function createNewTab(data) {
   const div = divData.enter()
       .insert('div', '#input-wrapper')
       .attr('class', 'word-tab')
+      .call(d3.drag()
+          .on('start',word_tab_start)
+        .on('drag',word_tab_move)
+    .on('end',word_tab_end))
+
+
   div.append('div')
       .attr('class', 'tab-image-container')
       .append('img')
@@ -241,6 +248,7 @@ function createNewTab(data) {
       preClickedIndex = null;
     }
   })
+
 
 
 syncInputWrapperLength()
