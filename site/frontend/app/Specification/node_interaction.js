@@ -87,7 +87,7 @@ export function show_hide() {
     let current_val = d3.select(this).text();
     let nei_words= d3.select(this.parentNode.parentNode).select('.nei_words')
     let wordsubtitle=d3.select(this.parentNode.parentNode).select('.wordsubtitle')
-    let index = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'condition_node');
+    let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');
     if (current_val == '+')//show
     {
         nei_words.style('visibility', 'visible');
