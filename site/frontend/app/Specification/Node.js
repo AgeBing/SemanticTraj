@@ -282,7 +282,6 @@ nodelist.delete_node_byOrder(node_order)
                 getMerge_data(words.join('_')).then(function(merge_data){
         merge_data.order=node_order
             nodelist.data[node_order-1]=merge_data
-            console.log(nodelist.data,'list---------------')
         nodelist.node_rendering(merge_data,node_order)
         })
                 //nodelist.node_rendering(),node_order)
@@ -468,7 +467,8 @@ module.exports = nodelist;
 
 export function initial_right_content(){
     nodelist.container.select('.right_content').remove()
-    let legend_list=[{id:'Relevance_Score',name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},{id:'Relevance_Information',name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
+    let legend_list=[{id:'Relevance_Score',name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},
+        {id:'Relevance_Information',name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
     let height=parseInt($('#Specification_view').css('height'))
     let right_content=nodelist.container.append('div').classed('right_content',true)//.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
         right_content.append('div').classed('add_condition_node',true).text('+').on('click',add_condition_node)//./style('height',height-100+'px');
@@ -517,7 +517,6 @@ fresh_list_width();
 }
 
 export function fresh_list_width(){//condition_node_list的宽度
-    console.log(nodelist.data.length,'date.elngth-------------')
    let current_width=nodelist.data.length*622+120;
     let spe_width=parseInt(document.getElementById('Specification_view').offsetWidth)
     let width=current_width>spe_width?current_width:spe_width
@@ -525,7 +524,6 @@ export function fresh_list_width(){//condition_node_list的宽度
 }
 
  nodelist.node_rendering=function(initial_node_data,index){
-    console.log(nodelist.data,'nodelist rendering')
     initial_node_data.order=index;
 let node_data=[]
      node_data.push(initial_node_data)
@@ -652,7 +650,6 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
                 .style("width","100%")
   spatial_cc.append("div")
       .attr('id',function(d){
-          console.log(d,'d-----------------spatial_left')
           return 'spatial_left'+d.order}).style("width","205px")
                   .style("float","left")
                   .style("overflow-y","auto")
