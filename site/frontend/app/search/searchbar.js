@@ -151,11 +151,30 @@ function addPOI(_name){
 
 // 查询按钮监听click事件，首先查询符合条件的轨迹，然后查询POI的层次信息
 function addSearchListener(o) {
+
   o.on('click', function(d, i) {
 
-    let t1 = new Date().getTime()
-    console.log('Start Getting Data ...')
-    QueryUtil.get_trajs_new(textData)
+      let searchData = []
+
+      let t1 = new Date().getTime()
+      console.log('Start Getting Data ...')
+      let nodelist= require('../Specification/Node.js')
+    
+      // console.log(nodelist)
+      // console.log(textData)
+
+      nodelist.data.forEach((d)=>{
+          let name = d.name
+          for(let i = 0;i < textData.length;i++){
+            if( textData[i][0] == name){
+              searchData.push(textData[i])
+              break
+            }
+          }
+      })
+
+
+    QueryUtil.get_trajs_new(searchData)
       .then(results => {
         DataManager.drawTraj = results;
         console.log('_____',results.length)
@@ -164,9 +183,8 @@ function addSearchListener(o) {
         return results;
       })
       .then(results => dataTrans_YKJ())
+  
   });
-
-
 }
 
 // modified by ykj

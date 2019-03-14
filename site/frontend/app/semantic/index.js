@@ -24,7 +24,6 @@ export function draw(data) {
 			destroyPids.push(pid)
 	}
 
-	console.log(destroyPids)
 	destroyPids.forEach((pid)=>{
 		let h = objsH.get(pid)
 		h.obj.destroy()
@@ -61,9 +60,11 @@ function btnHandler(){
 
 
 export function highlightHexa(pid){
-	objsH.get(pid).obj.highlight()
+	let obj = objsH.get(pid)
+	if(obj) obj.obj.highlight()
 }
 
 export function unHighlightHexa(pid){
-	objsH.get(pid).obj.unHighlight()
+	let obj = objsH.get(pid)
+	if(obj) obj.obj.unHighlight()
 }
