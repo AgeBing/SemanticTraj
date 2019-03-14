@@ -88,17 +88,19 @@ export function show_hide() {
     let nei_words= d3.select(this.parentNode.parentNode).select('.nei_words')
     let wordsubtitle=d3.select(this.parentNode.parentNode).select('.wordsubtitle')
     let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');
+    index=index.substr(index.length-1,1)
     if (current_val == '+')//show
     {
-        nei_words.style('visibility', 'visible');
-        wordsubtitle.style('visibility', 'visible');
+        /*nei_words.style('visibility', 'visible');
+        wordsubtitle.style('visibility', 'visible');*/
+        nei_words.style('display', 'block');
+        wordsubtitle.style('display', 'block');
         d3.select(this).text('-');
 
-        index=index.substr(index.length-1,1)
         get_left_nodes(index);//create line
     }
     else {//hide
-        let hide_nodes = d3.select(this.parentNode.parentNode).select('.nei_words').selectAll('.neiwordsdiv');
+        /*let hide_nodes = d3.select(this.parentNode.parentNode).select('.nei_words').selectAll('.neiwordsdiv');
         let current_show_nodes = [];
         for (let i = 0; i < line_data[index].left.length; i++) {
             let is_delete = false;
@@ -110,11 +112,15 @@ export function show_hide() {
             if (!is_delete)
                 current_show_nodes.push(line_data[index].left[i])
         }
-        line_data[index].left = current_show_nodes;
-        nei_words.style('visibility', 'hidden');
-        wordsubtitle.style('visibility', 'hidden');
+        line_data[index].left = current_show_nodes;*/
+        /*nei_words.style('visibility', 'hidden');
+        wordsubtitle.style('visibility', 'hidden');*/
+
+        nei_words.style('display', 'none');
+        wordsubtitle.style('display', 'none');
         d3.select(this).text('+');
-        initial_line(index);
+        get_left_nodes(index);
+        //initial_line(index);
     }
 }
 //每次滚动都要调用该方法
@@ -256,11 +262,15 @@ return path_colorscale(d3.select(this).attr('relation_val'));
 export function refresh_POI_color(){
     let max_vals=[];
     d3.selectAll('.condition_node').each(function(){
-        max_vals.push(d3.select(this).attr('max_val'));
+        let max=d3.select(this).attr('max_val')
+        if(max!=null)
+        max_vals.push(max);
     })
         let min_vals=[];
     d3.selectAll('.condition_node').each(function(){
-        min_vals.push(d3.select(this).attr('min_val'));
+        let min=d3.select(this).attr('min_val')
+        if(min!=null)
+        min_vals.push(min);
     })
      if(min_vals.length>0) {
          poi_colordomain.min = d3.min(min_vals)
@@ -274,20 +284,22 @@ export function refresh_POI_color(){
      else{
 d3.select('#Relevance_Score').select('.content').select('.max').text(0)
          d3.select('#Relevance_Score').select('.content').select('.min').text(0)
+         poi_colordomain.min = 0
+         poi_colordomain.max = 0
      }
 }
 export function get_left_nodes(index) {//index:1,2,3...
         line_data['condition_node'+index].left = [];
         let top_height = $('#spatial_left' + index).scrollTop();
         let bottom_height = top_height + parseInt($('#spatial_left' + index)[0].getBoundingClientRect().height);
-        d3.select('#spatial_left' + index).selectAll('.spatial_words')//主题词div集合
+        d3.select('#spatial_left' + index).select('.spatial_words').selectAll('.Worddiv')//主题词div集合
             .each(function () {
-                if($(this).find('.Worddiv').length>0)
+                if($(this).length>0)
                 {
-                    let top_length = parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
-                let show_hide = $('#spatial_left' + index).find('.hide_nei_words').text()//.innerHTML;
+                    let top_length = parseInt($(this)[0].getBoundingClientRect().height) - parseInt($(this).find('.nei_words')[0].getBoundingClientRect().height);
+                let show_hide = $(this).find('.hide_nei_words').text()//.innerHTML;
                 if (show_hide == '-') {
-                    $('#spatial_left' + index).find('.Worddiv').find('.neiwordsdiv').each(function () {
+                    $(this).find('.neiwordsdiv').each(function () {
                         let current_element_top = parseInt(d3.select(this).style('top')) + top_length;
                         let element_height = $(this)[0].getBoundingClientRect().height;
                         if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
@@ -300,6 +312,7 @@ export function get_left_nodes(index) {//index:1,2,3...
             })
         //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
         initial_line('condition_node'+index);
+        refresh_line(index);
     }
 
 
