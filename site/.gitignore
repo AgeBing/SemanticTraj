@@ -1,3 +1,4 @@
 *.sw*
 *.un*
+.vs
 .DS_Store

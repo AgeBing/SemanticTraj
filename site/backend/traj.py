@@ -36,8 +36,8 @@ class returnType(Structure):
 
 class Traj(object):
   def __init__(self, stop_num, sites, site_cover, 
-      start_time_str = '2014-01-14 08:00:00.00', 
-      end_time_str = '2014-01-14 08:02:00.00'):
+      start_time_str = '2014-01-14 12:03:00.00', 
+      end_time_str = '2014-01-14 12:13:00.00'):
     self.__stop_num = stop_num
     self.__sites = sites
     self.__site_cover = site_cover
@@ -84,8 +84,9 @@ class Traj(object):
         pid_site[pid] = state | site_state
     return valid_pids
 
-  def __use_c_handle_traj(self, traj_results, ):
+  def __use_c_handle_traj(self, traj_results):
     preTime = datetime.now()
+    print(len(traj_results), ' @#@#@#')
     ca_list = [CA(d['peopleid'], d['count'], d['traj']) for d in traj_results]
     ca_array = (CA * len(ca_list))(*ca_list)
     k_list = []
@@ -95,7 +96,7 @@ class Traj(object):
       v_list.append(v)
     k_array = (c_char_p * len(k_list))(*k_list)
     v_array = (c_int * len(v_list))(*v_list)
-    f = open('c_traj_handle.dll', 'r')
+    # f = open('c_traj_handle.dll', 'r')
     lib = cdll.LoadLibrary("c_traj_handle.dll") 
     lib.c_handle_traj.argtypes = POINTER(CA), c_int, c_int, POINTER(c_char_p), POINTER(c_int), c_int, c_int
     lib.c_handle_traj.restype = returnType
@@ -104,6 +105,7 @@ class Traj(object):
     time2 = datetime.now()
     print('C++ 计算时间：', (time2 - preTime).seconds)
     traj_list = [None] * ans.cnt
+    print(ans.cnt, ' ________')
     for i in range(0, ans.cnt):
       tmp_trajs = [None] * ans.traj[i].trajLen
       for j in range(0, ans.traj[i].trajLen):
