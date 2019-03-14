@@ -1,7 +1,7 @@
 import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
 
 export let path_colorscale=d3.scaleLinear()
-                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(132,60,12)")]);
+                    .range(['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
     d3.select(this).style("z-index",10000)
@@ -140,7 +140,7 @@ export function initial_line(index) {//condition_node1
             let min_val=0;
             for (let i = 0; i < left_nodes.length; i++) {
 let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
-second_title=second_title.substr(0,second_title.length-1)
+second_title=second_title.substr(0,second_title.length-1)//title后面会有个X，把它删掉
 let third_title=d3.select(left_nodes[i]).text();
 if(!(second_third_index.hasOwnProperty(second_title)))
 {
@@ -179,7 +179,7 @@ right_nodes.map((x,y)=>{
 
 })
             }
-            path_colorsdomain.max=max_val>path_colorsdomain.max?max_val:path_colorsdomain.max
+           path_colorsdomain.max=max_val>path_colorsdomain.max?max_val:path_colorsdomain.max
             path_colorsdomain.min=(min_val<path_colorsdomain.min||path_colorsdomain.min==0)?min_val:path_colorsdomain.min
             path_colorscale.domain([path_colorsdomain.min, path_colorsdomain.max]);
             d3.select('#'+index).attr('max_relation_val',max_val).attr('min_relation_val',min_val)
@@ -293,14 +293,21 @@ export function get_left_nodes(index) {//index:1,2,3...
         let top_height = $('#spatial_left' + index).scrollTop();
         let bottom_height = top_height + parseInt($('#spatial_left' + index)[0].getBoundingClientRect().height);
         d3.select('#spatial_left' + index).select('.spatial_words').selectAll('.Worddiv')//主题词div集合
-            .each(function () {
-                if($(this).length>0)
+            .each(function (d,i) {
+                /*if($(this).length>0)
+                {*/
+                let order=$(this).attr('id')
+                order=parseInt(order.substr(order.length-1,1))
+                let top_length=0;
+                for(let i=1;i<=order;i++)
                 {
-                    let top_length = parseInt($(this)[0].getBoundingClientRect().height) - parseInt($(this).find('.nei_words')[0].getBoundingClientRect().height);
+top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height///.outerHeight(true)//包括margin
+                }
+                   top_length =top_length-parseInt($(this).find('.nei_words')[0].getBoundingClientRect().height)//+$(this).attr('top');
                 let show_hide = $(this).find('.hide_nei_words').text()//.innerHTML;
                 if (show_hide == '-') {
                     $(this).find('.neiwordsdiv').each(function () {
-                        let current_element_top = parseInt(d3.select(this).style('top')) + top_length;
+                        let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
                         let element_height = $(this)[0].getBoundingClientRect().height;
                         if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
                             d3.select(this).attr('current_top', current_element_top - top_height);
@@ -308,7 +315,7 @@ export function get_left_nodes(index) {//index:1,2,3...
                         }
                     })
                 }
-                }
+              /*  }*/
             })
         //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
         initial_line('condition_node'+index);
