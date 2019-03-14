@@ -9,6 +9,7 @@ import { calTrajsOrder } from '../app.js'
 import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,refresh_POI_color,get_left_nodes,initial_line,refresh_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
 import {path_colorsdomain} from "./node_interaction";
 import {add_condition_node} from './node_operate.js'
+import {getMerge_data,get_data} from "../search/searchbar";
 let nodelist={
   container:d3.select("#condition_node_list"),
   data : [],
@@ -21,7 +22,7 @@ export let is_initial_right_content=false;
 export let POI_colorscale = d3.scaleLinear()
                     .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
 export let poi_colordomain={max:0,min:0}
-nodelist.rendering = function(){
+nodelist.rendering11111 = function(){
     fresh_list_width();
     if(!is_initial_right_content)
     {
@@ -158,6 +159,8 @@ let current_id = d3.select(this).attr('id');
 let index='condition_node' + d.order;
 let order=d.order;
 $('#'+current_id).scroll(function(){
+    get_left_nodes(order);
+    /*
     line_data[index].left=[];
      let top_height=$('#'+current_id).scrollTop();
      let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
@@ -179,7 +182,7 @@ $('#'+current_id).scroll(function(){
         })
      //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
      initial_line(index);
-    refresh_line(order);
+    refresh_line(order);*/
 })
       })
               .append("div").classed("spatial_words",true)
@@ -208,8 +211,11 @@ $('#'+current_id).scroll(function(){
 
 
     show_hide_div.each(function(){
-        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
+        /*d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');*/
+
+        d3.select(this.parentNode.parentNode).select('.nei_words').style('display', 'block');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('display', 'block');
         d3.select(this).text('-');
         //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
         let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');//修改不知道对不对------------------------------------------------------------
@@ -257,19 +263,29 @@ export function renderingwordslist(mergenode){
         .append('div').classed('delete',true).text('X').style('margin-right','5px').on('click',function(d,i){
         let subtitle=d.name;
         let node_order=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
-
-        let words=d3.select('#condition_node'+node_order.substr(node_order.length-1,1)).select('.title').select('.text').text().split('_')
+node_order=parseInt(node_order.substr(node_order.length-1,1))
+        let words=d3.select('#condition_node'+node_order).select('.title').select('.text').text().split('_')
         words.splice(words.indexOf(subtitle),1)
         if(words.length==0){
 nodelist.delete_node_byOrder(node_order)
         }
         if(words.length==1)
         {
-nodelist.node_rendering(get(words[0]),node_order)
+            let data =get_data(words[0])
+        data.order=node_order
+            nodelist.data[node_order-1]=data
+    nodelist.node_rendering(data,node_order);
+
+//nodelist.node_rendering(get_data(words[0]),node_order)
         }
             if(words.length>1){
-                 words.join('_')
-                nodelist.node_rendering(merge(words.join('_')),node_order)
+                getMerge_data(words.join('_')).then(function(merge_data){
+        merge_data.order=node_order
+            nodelist.data[node_order-1]=merge_data
+            console.log(nodelist.data,'list---------------')
+        nodelist.node_rendering(merge_data,node_order)
+        })
+                //nodelist.node_rendering(),node_order)
             }
         });
   mergewords.select(".wordsubtitle").text("Neighbors")
@@ -508,7 +524,11 @@ export function fresh_list_width(){//condition_node_list的宽度
     nodelist.container.style('width',width+'px');
 }
 
- nodelist.node_rendering=function(node_data,index){
+ nodelist.node_rendering=function(initial_node_data,index){
+    console.log(nodelist.data,'nodelist rendering')
+    initial_node_data.order=index;
+let node_data=[]
+     node_data.push(initial_node_data)
 
     fresh_list_width();
     if(!is_initial_right_content)
@@ -631,7 +651,9 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
                 .style("position","absolute")
                 .style("width","100%")
   spatial_cc.append("div")
-      .attr('id',function(d){return 'spatial_left'+d.order}).style("width","205px")
+      .attr('id',function(d){
+          console.log(d,'d-----------------spatial_left')
+          return 'spatial_left'+d.order}).style("width","205px")
                   .style("float","left")
                   .style("overflow-y","auto")
                   .attr("dir","rtl")
@@ -641,6 +663,8 @@ let current_id = d3.select(this).attr('id');
 let current_index='condition_node' + d.order;
 let order=d.order;
 $('#'+current_id).scroll(function(){
+    get_left_nodes(order)
+    /*
     line_data[current_index].left=[];
      let top_height=$('#'+current_id).scrollTop();
      let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
@@ -662,7 +686,7 @@ $('#'+current_id).scroll(function(){
         })
      //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
      initial_line(current_index);
-    refresh_line(order);
+    refresh_line(order);*/
 })
       })
               .append("div").classed("spatial_words",true)
@@ -691,8 +715,10 @@ $('#'+current_id).scroll(function(){
 
 
     show_hide_div.each(function(){
-        d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');
+        /*d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');*/
+        d3.select(this.parentNode.parentNode).select('.nei_words').style('display', 'block');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('display', 'block');
         d3.select(this).text('-');
         //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
         let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');//修改不知道对不对------------------------------------------------------------
@@ -711,12 +737,12 @@ $('#'+current_id).scroll(function(){
 
 
 
-nodelist.append_node=function(data){
+nodelist.append_node=function (data){
+    data.order=nodelist.data.length+1
     nodelist.data.push(data);
     nodelist.node_rendering(data,nodelist.data.length)
 }
-
-nodelist.delete_node_byName=function(name){
+nodelist.delete_node_byName=function (name){
     for(let i=0;i<nodelist.data.length;i++)
     {
         if(nodelist.data[i].name==name)
