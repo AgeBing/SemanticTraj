@@ -10,6 +10,11 @@ import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,refresh_POI_col
 import {path_colorsdomain} from "./node_interaction";
 import {add_condition_node} from './node_operate.js'
 import {getMerge_data,get_data} from "../search/searchbar";
+
+import { draw as drawPoiInMap , remove as removePoiInMap} from '../map/poi.js'
+
+
+
 let nodelist={
   container:d3.select("#condition_node_list"),
   data : [],
@@ -356,6 +361,13 @@ export function renderingPOIlist(mergenode,max_num=20){
     .style("background",d=>d.background)
     .style("color",d=>d.color)
       .attr('val',d=>d.poi.val)
+      .on('mouseenter',(d)=>{
+          drawPoiInMap([d.poi])
+      })
+      .on('mouseleave',(d)=>{
+          removePoiInMap()
+      })
+
       /*.each(function(){
           let grandparent_id=d3.select(this.parentNode.parentNode).attr('id');
          if(parseInt(d3.select(this).style('top'))<$('#'+grandparent_id)[0].getBoundingClientRect().height){

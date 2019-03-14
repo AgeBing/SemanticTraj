@@ -24,6 +24,8 @@ class Hexa{
 		this.generateNodes()
 		this.generatePaticle()
 		this.alive = true
+
+		console.log(pid , points , traj , stopPointsIndex)
 	}
 	generateNodes(){
 		let { pid,points } = this.data
@@ -55,6 +57,7 @@ class Hexa{
 			console.log(stopPointsIndex)
 			Ps = stopPointsIndex.map((d,i)=>{
 				let p = new Particle()
+				console.log(points[d])
 				p.init(points[d],i)
 				return p 
 			})

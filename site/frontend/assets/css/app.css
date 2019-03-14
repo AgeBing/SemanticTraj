@@ -63,6 +63,10 @@ html, body{
     padding: 0 10px;
     width: calc(100% - 20px);
 }
+#input-wrapper input:focus {
+    outline: none;
+}
+
 .top-bar button{
        background-color: #3690c0;
     color: #fff;

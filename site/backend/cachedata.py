@@ -40,3 +40,9 @@ def write_file(data,file):
 	f = open(os.path.join(BASE_DIR_DATA,file),'w')
 	json.dump(data,f)
 	f.close()
+
+def read_file(file):
+	f = open(os.path.join(BASE_DIR_DATA,file),'r')
+	a = f.read()
+	data = json.loads(a)
+	return data

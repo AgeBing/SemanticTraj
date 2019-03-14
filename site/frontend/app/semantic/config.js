@@ -2,6 +2,7 @@ import { topicNames } from '../timeline/config.js'
 
 
 export let SVGlength = 400
+
 export let stepLen = 300
 
 let r = 90    //  半径/2

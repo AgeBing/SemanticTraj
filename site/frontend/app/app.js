@@ -38,6 +38,7 @@ let trajs  // 全量数据
 let orderedTrajs = []
 let trajsPis = []
 let topicLists = [] 
+let availableTrajsinLimitTime = []
 
 let trajId2Points = new Map() // id => stoppoints
 
@@ -53,9 +54,12 @@ export function setGlobalTrajData(data){
 	trajs.forEach((traj)=>{   
 		let stopPoints = []
 
-		traj.traj.forEach((p)=>{
+		traj.traj.forEach((p,i)=>{
 			if( p.stoppoint !== undefined){
-				stopPoints.push(p.site)
+				stopPoints.push( { 
+					siteId : p.site,
+					index : i
+				})
 			}
 		})
 
@@ -96,33 +100,91 @@ export function filterGlobalData(filteredPids){
 
 //timeLine的选择框过滤轨迹
 export function filterDataInTime(_startTime,_endTime){
+
 	let _filteredPids = [] , availableTrajs = []
+
+	// 先筛选一遍  找出 满足 经过 POI点在对应时间的轨迹 
+
+    console.log(' Start filterDataInTime') 
+	let t1 = new Date().getTime()
+
 
 	for(let i = 0;i < trajs.length;i++){
 		let traj = trajs[i].traj,
+			pid  = trajs[i].pid , 
 			startPoint = traj[0],
 			endPoint   = traj[traj.length - 1],
 			startTime  = new Date(startPoint.startTime),
 			endTime	   = new Date(endPoint.startTime)	
 
-		if( startTime.getTime() >= _endTime 
-			|| endTime.getTime() <=  _startTime){
-			_filteredPids.push(trajs[i].pid)
-			continue
+		let pois = trajId2Points.get( pid )  // 改轨迹经过POI点	
+		let havePOIinLimitTime = false
+
+		pois.forEach((poi)=>{
+			let index = poi.index
+			let poiStartTime = new Date(traj[index].startTime)
+			let poiEndTime = new Date(traj[index].endTime)
+			if( poiEndTime.getTime() <= _endTime 
+				&& poiStartTime.getTime() >=  _startTime){
+				havePOIinLimitTime = true
+			}
+		})
+		
+		if(!havePOIinLimitTime){   
+			_filteredPids.push( pid )
 		}else{
 			availableTrajs.push(trajs[i])
-		}		
+		}
+
 	}
+
+	availableTrajsinLimitTime = []
+	// 对 availableTrajs 进行裁剪
+	availableTrajs.forEach((traj) =>{
+		let cutTraj = []
+		let fullTraj = traj.traj
+		for(let i = 0 ;i < fullTraj.length ;i++){
+			let startTime = new Date(fullTraj[i].startTime)
+			let endTime = new Date(fullTraj[i].endTime)
+			if( startTime.getTime() >= _startTime 
+				&& endTime.getTime() <= _endTime ){
+				cutTraj.push(fullTraj[i])
+			}
+			if( startTime.getTime() >= _endTime){
+				break
+			}
+		}
+
+		if(cutTraj.length > 0){
+			availableTrajsinLimitTime.push({
+				pid : traj.pid , 
+				score : traj.score,
+				per : traj.per,
+				matching : traj.matching,
+				traj : cutTraj
+			})
+		}else{
+			_filteredPids.push( traj.pid )
+		}
+	})
+
+
+    let t2 = new Date().getTime()
+    console.log('filterDataInTime: ' + (t2-t1) + 'ms')
+
 	// list
 	drawList(orderedTrajs)
 	filterListTime(_filteredPids)
+
+
+	console.log(availableTrajs)
 	// map view
-	drawPic(availableTrajs) 
+	drawPic(availableTrajsinLimitTime) 
 }
 // 绘制 Topic
 export function topicAdd(topicPids){
 	topicLists = []
-	trajs.forEach((traj)=>{
+	availableTrajsinLimitTime.forEach((traj)=>{
 		if(topicPids.indexOf(traj.pid) != -1){
 			topicLists.push(traj)
 		}
@@ -211,7 +273,7 @@ export function highlightPoisInTrajs(pid){
 			a.data.forEach((b)=>{
 				b.data.forEach((c)=>{
 					c.data.forEach((_site)=>{
-						if(_site.site_id == site){
+						if(_site.site_id == site.siteId){
 							pois.push(_site)
 						}
 					})
@@ -271,7 +333,7 @@ export function calTrajsOrder(){  //计算轨迹的分数 排序
 		traj.per = scale(traj.score).toFixed(2)
 	})
 
-	console.log(orderedTrajs)
+	// console.log(orderedTrajs)
 	drawList(orderedTrajs)
 }
 
@@ -288,7 +350,7 @@ function getTrajScore(pid){
 	let sum = 0 , sitescores 
 	sites.forEach((site)=>{
 		// sitescores 为该site周围的poi 的score ，大多为一个 
-		sitescores =  nodelist.siteScore.get(+site)
+		sitescores =  nodelist.siteScore.get(+site.siteId)
 
 		if(!sitescores)  return 0
 

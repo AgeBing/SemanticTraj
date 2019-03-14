@@ -62,11 +62,11 @@ def get_similiar_sites(words):
     if len(poi_complex['simple']) == 0:
       print(words, 'has no vector')
     for node in poi_complex['simple']:
-      
       sites.add(node['site_id'])
       state = _site_cover.get(node['site_id'], 0)
       _site_cover[node['site_id']] = state | (1 << i)
-  print('sites:', sites)
+  # print('sites:', sites)
+  print(_site_cover.items())
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)
 

@@ -2062,7 +2062,7 @@ export  function draw(pois) {
       iconLayers.push(iconLayer)
   })
 
-  console.log(iconLayers)
+  // console.log(iconLayers)
 }
 
 export function remove(){
