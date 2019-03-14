@@ -10,6 +10,7 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 
 struct CA {
@@ -22,7 +23,7 @@ struct Node {
 	bool isStop;
 	string startTime;
 	string endTime;
-	int stopTime;
+	double stopTime;
 	string site;
 	time_t startTimeT;
 	time_t endTimeT;
@@ -94,6 +95,12 @@ struct returnType {
 };
 
 void getTrajMap(CA* ca, int num, unordered_map<string, vector<Node>> &traj_map) {
+	sort(ca, ca + num, [](CA& lh, CA& rh) {
+		if (strcmp(lh.peopleid, rh.peopleid) != 0) {
+			return strcmp(lh.peopleid, rh.peopleid) < 0;
+		}
+		return lh.count < rh.count;
+	});
 	for (int i = 0; i < num; ++i) {
 		string trajs(ca[i].traj), nodeStr;
 		istringstream trajsStream(trajs);
@@ -118,13 +125,14 @@ void trajNodeMerge(unordered_map<string, vector<Node>> &traj_map, const int STOP
 		for (int i = 0; i < it->second.size(); ++i) {
 			auto &now = it->second[i];
 			if (i == 0) {
+				now.isStop = true;
 				tmp.push_back(now);
 			}
 			else {
 				auto &pre = tmp.back();
 				if (pre.site == now.site) {
-					pre.endTime = now.startTime;
-					pre.endTimeT = now.startTimeT;
+					pre.endTime = now.endTime;
+					pre.endTimeT = now.endTimeT;
 					pre.stopTime = difftime(pre.endTimeT, pre.startTimeT);
 					if (pre.stopTime >= STOPTIME) {
 						pre.isStop = true;
@@ -158,15 +166,15 @@ void filterTrajs(unordered_map<string, vector<Node>>& trajMap,
 			state = 0,
 			beginIndex = -1,
 			endIndex = -1;
-		for (int idx = 0; idx < it->second.size(); ++idx) {
+		for (int idx = 0; idx < it->second.size(); ++ idx) {
 			auto &nowNode = it->second[idx];
 			if (nowNode.isStop && siteCover.find(nowNode.site) != siteCover.end()) {
 				int nowState = siteCover[nowNode.site];
-				if ((1 << num) & (state | nowState) != 0) {
+				if (((1 << num) & (state | nowState)) != 0) {
 					if (num == 0) beginIndex = idx;
 					nowNode.stoppoint = num;
-					++num;
-					state |= nowState;
+					++ num;
+					state |= (1 << num);
 				}
 				if (num == STOPNUM) {
 					endIndex = idx + 1;
@@ -174,7 +182,7 @@ void filterTrajs(unordered_map<string, vector<Node>>& trajMap,
 				}
 			}
 		}
-		if (num == STOPNUM && it->second.size() > 5) {
+		if (num == STOPNUM && it ->second.size() > 5) {
 			matchTrajId.push_back(it->first);
 		}
 	}
