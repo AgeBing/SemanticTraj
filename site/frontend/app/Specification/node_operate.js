@@ -1,20 +1,10 @@
-import {node_rendering} from "./Node.js";
-import {
-    decrease_locationlist,
-    drag_end,
-    drag_start, get_left_nodes,
-    increase_locationlist,
-    initial_line,
-    newdrag,
-    refresh_line
-} from "./node_interaction";
-import {appendParamWidges} from "./param";
-import {bindTimeChangeEvent} from "./time";
+import {getMerge_data,get_data} from "../search/searchbar";
+
 
 
 export function add_condition_node(){
    let nodelist= require('../Specification/Node.js')
-    nodelist.append_node({name:'',order:(nodelist.data.length+1),data:''})
+    nodelist.append_node({name:'',data:''})
     //nodelist.node_rendering(nodelist.data.length)
 }
 
@@ -74,12 +64,20 @@ if(nodelist.data[i].order==node_index)
 {
     if(nodelist.data[i].name=='')
     {
-    nodelist.node_rendering(get(word),node_index);
+        let data =get_data(word)
+        data.order=node_index
+            nodelist.data[node_index-1]=data
+    nodelist.node_rendering(data,node_index);
     }
     else{
-        let merge_data = merge(nodelist.data[i].name+"_"+word)
+        //let merge_data = merge(nodelist.data[i].name+"_"+word)
+        getMerge_data(nodelist.data[i].name+"_"+word).then(function(merge_data){
         merge_data.order=node_index
+            nodelist.data[node_index-1]=merge_data
+            console.log(nodelist.data,'list---------------')
         nodelist.node_rendering(merge_data,node_index);
+        })
+
     }
     break;
 }
