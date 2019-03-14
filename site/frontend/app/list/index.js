@@ -11,10 +11,9 @@ import { highLightTrajContorl ,
 import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
 
 
-
 let resultlist = {
 	container	:d3.select("#list-contain"),
-	showNum 	: 50 ,
+	showNum 	: 100 ,
 	renderTrajs : [] ,
 	orderTrasjs : [] ,
 	filterPids  : [] ,
@@ -135,21 +134,28 @@ resultlist.reflow = function(){
 	})
 }
 resultlist.filter = function(){
+	let isFiltered =  d3.select('#filter-btn').attr('filtered')
 
 	let { showNum,hide,filterPids,orderTrasjs } = resultlist
 	let i = 0 , count = showNum
+	let _renderTrajs = []
 
-	for(i = 0;i < orderTrasjs.length;i++ ){
-		let  pid = orderTrasjs[i].pid
-		if(filterPids.indexOf(pid) == -1){
-			count--
+	if( isFiltered ){   // 仅展示 符合条件的 
+		for(i = 0;i < orderTrasjs.length;i++ ){
+			let  pid = orderTrasjs[i].pid
+			if(filterPids.indexOf(pid) == -1){
+				_renderTrajs.push( orderTrasjs[i] )
+				count--
+			}
+			if(count <= 0) break
 		}
-		if(count <= 0) break
+	}else{
+		_renderTrajs = resultlist.orderTrasjs.slice(0,showNum)
 	}
 
-	resultlist.renderTrajs = resultlist.orderTrasjs.slice(0,i)
+	resultlist.renderTrajs = _renderTrajs
 
-	// console.log(resultlist.renderTrajs)
+
 	this.draw()
 
 }
@@ -230,7 +236,7 @@ function btnEventHandler(){
 		d3.select(this).attr('filtered',true)
 		resultlist.hide = true
 	}
-	resultlist.filterDisplay()
+	resultlist.filter()
 }
 
 function enterEventHandler(){
