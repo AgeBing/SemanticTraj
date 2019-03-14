@@ -9,10 +9,6 @@ import * as DataManager from './datamanager.js';
 import { setGlobalTrajData } from '../app.js'
 import {word_tab_start,word_tab_move, word_tab_end} from "../Specification/node_operate";
 
-import  { appendPOI, removePOI  }  from  '../Specification/Node.js'
-
-
-
 let textData = []
 
 let name2POIMap = new Map()
@@ -21,14 +17,13 @@ let name2POIMap = new Map()
 
 
 
-export  function getMergePOI( _name ){
+export  function getMerge_data( _name ){
   console.log(_name)
    let _textData = textData.slice()
    _textData.push([ _name,'cc'])
    console.log(_textData)
    return QueryUtil.get_poi_layer( _textData )
       .then(results => {
-        console.log(results)
         results.forEach((poi)=>{
             let { name,data } = poi
             name2POIMap.set( name , { name,data })
@@ -40,7 +35,7 @@ export  function getMergePOI( _name ){
 
 }
 
-export function getPOI(name){
+export function get_data(name){
   return  name2POIMap.get(name)
 }
 
@@ -124,7 +119,8 @@ function removeParticle(){
       createTabs(o)
     })
     .then(o => {
-        removePOI(name);
+        let nodelist= require('../Specification/Node.js')
+        nodelist.delete_node_byName(name);
     })
 }
 
@@ -136,7 +132,10 @@ function addPOI(_name){
         console.log(results)
         results.forEach((poi)=>{
             let { name,data } = poi
-            if(_name == name)  appendPOI({ name,data })
+            if(_name == name) {
+                let nodelist= require('../Specification/Node.js')
+                 nodelist.append_node({ name,data })
+            }
 
             name2POIMap.set( name , { name,data })
         })
