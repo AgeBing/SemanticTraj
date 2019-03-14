@@ -26,8 +26,7 @@ export function word_tab_end(){
     d3.selectAll('.condition_node').each(function(){
         let current_left=parseInt(d3.select(this).style('left'))-left_length
         let current_right=current_left+parseInt(d3.select(this).style('width'));
-        let current_top=parseInt(d3.select(this).style('top'))-left_length
-            console.log(current_left,current_right,x,'left_length-----------------------------')
+        //let current_top=parseInt(d3.select(this).style('top'))-left_length
         if(x>=current_left &&(x<=current_right))
         {
             Add_word(d3.select(this).attr('id'),word)
@@ -41,13 +40,15 @@ function Add_word(node_id,word){
     let nodelist= require('../Specification/Node.js')
     let data_order=0
     let node_index=parseInt(node_id.substr(node_id.length-1,1))
-    console.log(word,'word---------------')
     //如果有的话 把该搜索词的标签删掉
     for(let i=0;i<nodelist.data.length;i++)
     {
-        if(nodelist.data[i].name==word)
+        let titles=nodelist.data[i].name.split('_')
+        if(titles.indexOf(word)!=-1)
         {
-            data_order=i;
+            titles.splice(titles.indexOf(word),1)
+            if(titles.length==0){
+                data_order=i;
             let delete_node_id=nodelist.data[i].order//搜索词原来的标签id的order部分
             if(node_index==delete_node_id)
             {return;}
@@ -56,6 +57,22 @@ function Add_word(node_id,word){
                  node_index--;
              }
                  nodelist.delete_node_byOrder(delete_node_id);
+            }
+            else{
+                if(titles.length!=1){
+                    getMerge_data(titles.join('_')).then(function(merge_data){
+        merge_data.order=nodelist.data[i].order
+            nodelist.data[i]=merge_data
+        nodelist.node_rendering(merge_data,nodelist.data[i].order)
+        })
+                }
+                else{
+                    let data =get_data(titles[0])
+        data.order=nodelist.data[i].order
+            nodelist.data[i]=data
+    nodelist.node_rendering(data,nodelist.data[i].order);
+                }
+            }
         }
     }
     //得到该搜索词的data覆盖原卡片数据
@@ -74,7 +91,6 @@ if(nodelist.data[i].order==node_index)
         getMerge_data(nodelist.data[i].name+"_"+word).then(function(merge_data){
         merge_data.order=node_index
             nodelist.data[node_index-1]=merge_data
-            console.log(nodelist.data,'list---------------')
         nodelist.node_rendering(merge_data,node_index);
         })
 
@@ -82,21 +98,6 @@ if(nodelist.data[i].order==node_index)
     break;
 }
      }
-    /*nodelist.data.map((x,y)=>{
-        console.log(x.name,'x-----------------')
-        if(x.name==word)
-        {data_order=y;}
-        /!*if(x.order==node_id.substr(node_id.length-1,1))
-        {
-            //x=search(x.name+"_"+word);
-            console.log(x.order,'x.order-----------')
-data_order=x.order;
-        }*!/
-    })*/
-
-     //nodelist.node_rendering(node_index);
-
-    console.log(node_index,data_order,d3.select('#'+node_id),'d3.select(this)------------------------')
 }
 
 
