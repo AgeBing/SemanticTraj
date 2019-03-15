@@ -112,9 +112,11 @@ function getTrajScore(pid){
 		// sitescores 为该site周围的poi 的score ，大多为一个 
 		sitescores =  nodelist.siteScore.get(+site.siteId)
 		if(!sitescores)  return 0
-		sitescores.forEach((s)=>{
-			sum+= s
-		})
+
+		for (let s of sitescores.values()) {
+		  sum += s
+		}
+
 	})
 
 	return sum
