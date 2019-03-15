@@ -4,10 +4,8 @@
 
 import { appendParamWidges } from './param.js'
 import { bindTimeChangeEvent } from './time.js'
-//import { textData } from '../search/searchbar.js'
 import { calTrajsOrder } from '../app.js'
 import {drag_start,newdrag,drag_end,show_hide,refresh_path_color,refresh_POI_color,get_left_nodes,initial_line,refresh_line,decrease_locationlist,increase_locationlist} from './node_interaction.js'
-import {path_colorsdomain} from "./node_interaction";
 import {add_condition_node} from './node_operate.js'
 import {getMerge_data,get_data} from "../search/searchbar";
 
@@ -24,8 +22,10 @@ let nodelist={
 }
 export let line_data=[];
 export let is_initial_right_content=false;
-export let POI_colorscale = d3.scaleLinear()
-                    .range([d3.rgb("rgb(255, 255, 255)"), d3.rgb("rgb(46,117,182)")])
+export let POI_colorscale = d3.scaleQuantize()
+                    .range(['#f1eef6','#d0d1e6',
+                        '#a6bddb','#74a9cf',
+                        '#2b8cbe',"#045a8d"])
 export let poi_colordomain={max:0,min:0}
 nodelist.rendering11111 = function(){
     fresh_list_width();
@@ -165,29 +165,6 @@ let index='condition_node' + d.order;
 let order=d.order;
 $('#'+current_id).scroll(function(){
     get_left_nodes(order);
-    /*
-    line_data[index].left=[];
-     let top_height=$('#'+current_id).scrollTop();
-     let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    d3.select('#'+current_id).selectAll('.spatial_words')//主题词div集合
-        .each(function(){
-            let top_length=parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
-            let show_hide=$('#'+current_id).find('.hide_nei_words').text()//.innerHTML;
-            if(show_hide=='-'){
-                $('#'+current_id).find('.Worddiv').find('.neiwordsdiv').each(function(){
-                    let current_element_top=parseInt(d3.select(this).style('top'))+top_length;
-                    let element_height=$(this)[0].getBoundingClientRect().height;
-                    if((current_element_top >=top_height &&(current_element_top+element_height/2)<=bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2)))
-                    {
-                        d3.select(this).attr('current_top',current_element_top-top_height);
-                        line_data[index].left.push(this);
-                    }
-                })
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
-     initial_line(index);
-    refresh_line(order);*/
 })
       })
               .append("div").classed("spatial_words",true)
@@ -312,16 +289,27 @@ export function renderingPOIlist(mergenode,max_num=20){
 
                   // data
                   let pois = []
+               let poi_map={}
                    for(let i =0;i<d.data.length;i++){
                     for(let j =0;j<d.data[i].data.length;j++){
+
                       for(let m =0;m<d.data[i].data[j].data.length;m++){
-                        pois.push({
+                          let poi_name=d.data[i].data[j].data[m].name
+                          if(poi_map.hasOwnProperty(poi_name))
+                          {
+                              let index = poi_map[poi_name]
+                              pois[index].val+=d.data[i].data[j].data[m].val
+                          }
+                      else{
+                            poi_map[poi_name]=pois.length
+                              pois.push({
                           index:pois.length,
                           poi:d.data[i].data[j].data[m],
                           words:{
                             F:(i,d.data[i].name),
-                            S:(j,d.data[i].data[j].name)}
+                            S:(j,d.data[i].data[j].name)},
                         })
+                          }
                       }
                     }
                    }
@@ -391,7 +379,8 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
             break;
         }
     }
- for(let i=0;i<current_data.data.length;i++)
+    initial_siteScore(current_data,alpha);
+/* for(let i=0;i<current_data.data.length;i++)
         for(let j=0;j<current_data.data[i].data.length;j++)
         for(let m=0;m<current_data.data[i].data[j].data.length;m++)
         {
@@ -407,7 +396,7 @@ nodelist.reOrder = function refresh_list(a,current_node_id){
               this.siteScore.set(site_id,scores)
             }
             else  scores.push(score)
-        }
+        }*/
 renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),parseInt($('#'+current_node_id).find('.node_num').prop('value')));
         initial_line('condition_node'+current_conditionnode_order)
     refresh_line(current_conditionnode_order)
@@ -479,7 +468,7 @@ module.exports = nodelist;
 
 export function initial_right_content(){
     nodelist.container.select('.right_content').remove()
-    let legend_list=[{id:'Relevance_Score',name:'Relevance Score:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]},
+    let legend_list=[{id:'Relevance_Score',name:'Relevance Score:',color:["#045a8d",'#2b8cbe','#74a9cf','#a6bddb','#d0d1e6','#f1eef6']},
         {id:'Relevance_Information',name:'Relevance Information:',color:['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]}]
     let height=parseInt($('#Specification_view').css('height'))
     let right_content=nodelist.container.append('div').classed('right_content',true)//.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
@@ -522,10 +511,9 @@ nodelist.delete_node_byOrder=function (index){//例如删除condition_node1则in
         }
         nodelist.order.pop();//最后一个没用，删掉
 fresh_list_width();
-
         refresh_path_color()
     refresh_POI_color();
-        //nodelist.rendering();
+        initial_siteScore(nodelist)//更新sitescore
 }
 
 export function fresh_list_width(){//condition_node_list的宽度
@@ -536,6 +524,9 @@ export function fresh_list_width(){//condition_node_list的宽度
 }
 
  nodelist.node_rendering=function(initial_node_data,index){
+    if(initial_node_data.data.length!=0)
+        normalization(initial_node_data)
+     initial_siteScore(nodelist);//用于轨迹list的相似度计算
     initial_node_data.order=index;
 let node_data=[]
      node_data.push(initial_node_data)
@@ -673,29 +664,6 @@ let current_index='condition_node' + d.order;
 let order=d.order;
 $('#'+current_id).scroll(function(){
     get_left_nodes(order)
-    /*
-    line_data[current_index].left=[];
-     let top_height=$('#'+current_id).scrollTop();
-     let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    d3.select('#'+current_id).selectAll('.spatial_words')//主题词div集合
-        .each(function(){
-            let top_length=parseInt($(this).find('.Worddiv')[0].getBoundingClientRect().height) - parseInt($(this).find('.Worddiv').find('.nei_words')[0].getBoundingClientRect().height);
-            let show_hide=$('#'+current_id).find('.hide_nei_words').text()//.innerHTML;
-            if(show_hide=='-'){
-                $('#'+current_id).find('.Worddiv').find('.neiwordsdiv').each(function(){
-                    let current_element_top=parseInt(d3.select(this).style('top'))+top_length;
-                    let element_height=$(this)[0].getBoundingClientRect().height;
-                    if((current_element_top >=top_height &&(current_element_top+element_height/2)<=bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2)))
-                    {
-                        d3.select(this).attr('current_top',current_element_top-top_height);
-                        line_data[current_index].left.push(this);
-                    }
-                })
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
-     initial_line(current_index);
-    refresh_line(order);*/
 })
       })
               .append("div").classed("spatial_words",true)
@@ -760,4 +728,59 @@ nodelist.delete_node_byName=function (name){
             break;
         }
     }
+}
+
+function normalization(initial_data){
+initial_data.data.forEach((second_word)=>{
+    let max_val=0;
+    let min_val=0;
+second_word.data.forEach((third_word)=>{
+    third_word.data.forEach((poi)=>{
+        max_val=poi.val>max_val?poi.val:max_val
+        min_val=(poi.val<min_val||min_val==0)?poi.val:min_val
+    })
+})
+    let dis=max_val-min_val
+    if(dis!=0)
+    {   second_word.data.forEach((third_word)=>{
+    third_word.data.forEach((poi)=>{
+       poi.val=(poi.val-min_val)/(dis)
+    })
+})
+    }
+})
+}
+
+function initial_siteScore(initial_data,alpha=1){//若alpha=1则说明基于nodelist更新sitescore，反之则是仅对当前标签的数据进行poi中val的更新(simT和alpha)，然后更新sitescore
+let unify_data={}
+    if(alpha!=1)
+        unify_data={data:[initial_data]}//使各个部分的结构层数都一样
+    else
+    unify_data=initial_data
+
+    unify_data.data.forEach(first_word=>{
+first_word.data.forEach(second_word=>{
+    second_word.data.forEach(third_word=>{
+        third_word.data.forEach(poi=>{
+            if(alpha!=1)
+                poi.val=poi.relation_val*alpha+poi.simT
+          let scores = nodelist.siteScore.get(poi.site_id)
+            if(!scores){
+              scores = new Map()
+              scores.set(poi.id,poi.val)
+              nodelist.siteScore.set(poi.site_id,scores)
+            }
+            else  {
+                let bef_poi_val=scores.get(poi.id)
+                if(!bef_poi_val){
+                    scores.set(poi.id,poi.val)
+                }
+            else{
+                    scores.set(poi.id,poi.val>bef_poi_val?poi.val:bef_poi_val)
+                }
+            }
+        })
+    })
+})
+    })
 }
