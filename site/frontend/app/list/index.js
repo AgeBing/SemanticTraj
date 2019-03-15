@@ -139,22 +139,37 @@ resultlist.filter = function(){
 	let { showNum,hide,filterPids,orderTrasjs } = resultlist
 	let i = 0 , count = showNum
 	let _renderTrajs = []
+	let _renderPids = []
 
 	if( isFiltered ){   // 仅展示 符合条件的 
 		for(i = 0;i < orderTrasjs.length;i++ ){
 			let  pid = orderTrasjs[i].pid
 			if(filterPids.indexOf(pid) == -1){
 				_renderTrajs.push( orderTrasjs[i] )
+				_renderPids.push(pid)
 				count--
 			}
 			if(count <= 0) break
 		}
 	}else{
 		_renderTrajs = resultlist.orderTrasjs.slice(0,showNum)
+		_renderTrajs.forEach((traj)=>{
+			if(filterPids.indexOf(traj.pid) ==-1){
+				_renderPids.push(traj.pid)
+			}
+		})
 	}
 
 	resultlist.renderTrajs = _renderTrajs
 
+	let checkPids = []
+	this.checkPids.forEach((pid)=>{
+		if(_renderPids.indexOf(pid)!=-1){
+			checkPids.push(pid)
+		}
+	})
+	this.checkPids = checkPids
+	drawTopic( checkPids )
 
 	this.draw()
 

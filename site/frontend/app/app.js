@@ -7,6 +7,7 @@ import * as d3 from 'd3';
 import * as datamanager from './search/datamanager'
 import * as SearchBar from './search/searchbar'
 
+
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
 import { draw as drawPoi , remove as removePoi} from './map/poi.js'
@@ -14,23 +15,15 @@ import { draw as drawList , filterListGeo  , filterListTime  } from './list/inde
 import { draw as drawTopic } from './timeline/index.js'
 import { init as timeInit }  from './timeline/time.js'
 import { draw as drawHexa } from './semantic/index.js'
-
-
 import { highLightTrajInMap ,unHighLightTrajInMap , 
 		 highLightTrajSectionInMap, unHighLightTrajSectionInMap,
 		 draw as drawTraj  } from './map/traj.js'
 import { highLightTopic , unHighLightTopic } from './timeline/index.js'
 import { highLightOneItem , unhighLightOneItem  } from './list/index.js'
 import { highlightHexa , unHighlightHexa } from './semantic/index.js'
-
-import { draw as drawHexagon } from './semantic/index.js'
-
-
- 
+import { draw as drawHexagon } from './semantic/index.js' 
 import { mock as mockNode } from '../mock/setNode.js'
 import { mock as mockList } from '../mock/setData.js'
-
-
 
 
 
@@ -50,27 +43,83 @@ datamanager.init().then(o => SearchBar.init())
 // 在 searchbar 中将 trajs 进行设置
 export function setGlobalTrajData(data){
 	trajs = data
-	let t1 = new Date().getTime()
+
+	// 设置 pid 到 stoppoints 的映射
 	trajs.forEach((traj)=>{   
 		let stopPoints = []
-
 		traj.traj.forEach((p,i)=>{
 			if( p.stoppoint !== undefined){
 				stopPoints.push( { 
 					siteId : p.site,
-					index : i
+					index : i      // index 为 该 stoppoint 为 原轨迹中的第 i 个轨迹点
 				})
 			}
 		})
-
-		trajId2Points.set(traj.pid , stopPoints )
+		trajId2Points.set( traj.pid , stopPoints )
 		trajsPis.push(traj.pid)
 	})
 
 	calTrajsOrder()
-	drawPic(data)
-	timeLineInit()
+	// drawPic(data)
+	timeLineInit()     //会调用  filterDataInTime => drawPic => drawList
 }
+
+export function calTrajsOrder(){  //计算轨迹的分数 并进行排序
+	if(!trajs)  return
+
+	let scale = d3.scaleLinear().range([0,100])
+	let maxScore,minScore
+
+	trajs.forEach((traj)=>{
+		let score = getTrajScore(traj.pid)
+		traj.score = score
+
+		if(!maxScore){
+			maxScore = score,
+			minScore = score 
+		}
+
+		maxScore =  ( score > maxScore ? score : maxScore)
+		minScore =  ( score < minScore ? score : minScore ) 
+	})
+
+	scale.domain([minScore ,maxScore])
+
+	orderedTrajs = trajs.sort((t1,t2)=>{
+		let s1 = t1.score , s2 = t2.score
+		return s2 - s1  // 逆序 
+	})
+
+	orderedTrajs.forEach((traj)=>{
+		traj.per = scale(traj.score).toFixed(2)
+	})
+
+	drawList(orderedTrajs)
+}
+
+// 获取 pid 轨迹 的 score
+function getTrajScore(pid){
+  	let nodelist = require('./Specification/Node.js')
+
+	let sites = trajId2Points.get(pid) 
+
+	// sites 基本上为一个   有些轨迹经过的site 差不多  因此得到的分数也差不多
+	// sites 数据有bug  stoppoint 表示经过点的次数 ！！！！！！！！
+
+	if(!sites || sites.length == 0)  return 0 
+	let sum = 0 , sitescores 
+	sites.forEach((site)=>{
+		// sitescores 为该site周围的poi 的score ，大多为一个 
+		sitescores =  nodelist.siteScore.get(+site.siteId)
+		if(!sitescores)  return 0
+		sitescores.forEach((s)=>{
+			sum+= s
+		})
+	})
+
+	return sum
+}
+
 
 
 // 初始化 TimeLine 的时间范围
@@ -109,6 +158,7 @@ export function filterDataInTime(_startTime,_endTime){
 	let t1 = new Date().getTime()
 
 
+	// 先按照 stoppoint 是否在 时间范围内 筛选一遍
 	for(let i = 0;i < trajs.length;i++){
 		let traj = trajs[i].traj,
 			pid  = trajs[i].pid , 
@@ -177,7 +227,7 @@ export function filterDataInTime(_startTime,_endTime){
 	filterListTime(_filteredPids)
 
 
-	console.log(availableTrajs)
+	// console.log(availableTrajs)
 	// map view
 	drawPic(availableTrajsinLimitTime) 
 }
@@ -264,10 +314,9 @@ export function highlightPoisInTrajs(pid){
  	let nodelist = require('./Specification/Node.js')
 
  	// console.log(nodelist.data)
-	// console.log(sites)
-
+ 	console.log(pid)
+	console.log(sites)
 	let pois = []
-
 	sites.forEach((site)=>{
 		nodelist.data.forEach((a)=>{
 			a.data.forEach((b)=>{
@@ -284,7 +333,8 @@ export function highlightPoisInTrajs(pid){
 
 	})
 
-	// console.log(pois)
+	// 有可能 site 有 stoppoint 但是 无 poi 
+	console.log(pois)
 	drawPoi(pois)
 }
 
@@ -303,67 +353,3 @@ export function unHighlightSemanticTraj(pid){
 }
 
 
-export function calTrajsOrder(){  //计算轨迹的分数 排序
-	if(!trajs)  return
-
-	let scale = d3.scaleLinear().range([0,100])
-	let maxScore,minScore
-
-	trajs.forEach((traj)=>{
-		let score = getTrajScore(traj.pid)
-		traj.score = score
-
-		if(!maxScore){
-			maxScore = score,
-			minScore = score 
-		}
-
-		maxScore =  ( score > maxScore ? score : maxScore)
-		minScore =  ( score < minScore ? score : minScore ) 
-	})
-
-	scale.domain([minScore ,maxScore])
-
-	orderedTrajs = trajs.sort((t1,t2)=>{
-		let s1 = t1.score , s2 = t2.score
-		return s2 - s1  // 逆序 
-	})
-
-	orderedTrajs.forEach((traj)=>{
-		traj.per = scale(traj.score).toFixed(2)
-	})
-
-	// console.log(orderedTrajs)
-	drawList(orderedTrajs)
-}
-
-function getTrajScore(pid){
-  	let nodelist = require('./Specification/Node.js')
-
-	let sites = trajId2Points.get(pid) 
-
-	// sites 基本上为一个   有些轨迹经过的site 差不多  因此得到的分数也差不多  
-
-	// sites 数据有bug  stoppoint 表示经过点的次数 ！！！！！！！！
-
-	if(!sites || sites.length == 0)  return 0 
-	let sum = 0 , sitescores 
-	sites.forEach((site)=>{
-		// sitescores 为该site周围的poi 的score ，大多为一个 
-		sitescores =  nodelist.siteScore.get(+site.siteId)
-
-		if(!sitescores)  return 0
-
-		sitescores.forEach((s)=>{
-			sum+= s
-		})
-
-		// if(sitescores.length >= 2){
-		// 	console.log(site ," : ",sitescores.length )
-		// }
-		// 加起来
-		// sum += sitescore
-	})
-
-	return sum
-}
