@@ -163,8 +163,8 @@ function addSearchListener(o) {
       // console.log(nodelist)
       // console.log(textData)
 
-      nodelist.data.forEach((d)=>{
-          let name = d.name
+      nodelist.order.forEach((d)=>{
+          let name = d3.select('#'+d).select('.title').select('.text').text()
           for(let i = 0;i < textData.length;i++){
             if( textData[i][0] == name){
               searchData.push(textData[i])
