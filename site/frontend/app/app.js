@@ -7,6 +7,7 @@ import * as d3 from 'd3';
 import * as datamanager from './search/datamanager'
 import * as SearchBar from './search/searchbar'
 
+import * as mapConfig from './map/config.js';
 
 import * as map from './map/index.js'
 import { draw as drawPic} from './map/pic.js'
@@ -36,8 +37,8 @@ let availableTrajsinLimitTime = []
 let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
-datamanager.init().then(o => SearchBar.init())
-//mockList()
+// datamanager.init().then(o => SearchBar.init())
+mockList()
 
 
 // 在 searchbar 中将 trajs 进行设置
@@ -145,8 +146,9 @@ function timeLineInit() {
 
 
 // 框选操作后的轨迹被筛选了， 因此 列表现实的轨迹是筛选后的
-export function filterGlobalData(filteredPids){
-	filterListGeo(filteredPids) //传递被过滤掉的
+export function filterGlobalData(_filteredPids){
+	let filteredPids = _filteredPids || []
+	filterListGeo(filteredPids)  //传递被过滤掉的
 }
 
 //timeLine的选择框过滤轨迹
@@ -231,6 +233,7 @@ export function filterDataInTime(_startTime,_endTime){
 
 	// console.log(availableTrajs)
 	// map view
+	mapConfig.PicUpdateFlag = true
 	drawPic(availableTrajsinLimitTime) 
 }
 // 绘制 Topic

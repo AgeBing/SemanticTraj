@@ -8,7 +8,7 @@ export let oneSectionTrajColor = 'black'
 
 
 // 轨迹动效时间  画整条的时间
-export let duration = 1000
+export let duration = 3000
 
 
 

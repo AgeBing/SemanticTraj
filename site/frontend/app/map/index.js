@@ -75,9 +75,7 @@ function resize(){
 	}
 	// console.log(boundry)
 
-	// 在地图上绘制轨迹
-	drawPic()
-	drawSelect()  //添加选择事件
+	debounceResize(1500)()
 }
 
 
@@ -86,6 +84,7 @@ function resize(){
 
 function drawPic() {
 
+	// console.log('draw')
 
 	let left = -(map.getPixelOrigin().x -map.getPixelBounds().min.x ) + 'px',
 		top  =  -(map.getPixelOrigin().y -map.getPixelBounds().min.y) + 'px'
@@ -106,6 +105,25 @@ function drawPic() {
 
  	draw()  //绘制轨迹
 	drawTraj() //绘制勾选的轨迹
+}
+
+
+
+let debounceTimer
+function debounceResize( delay ){
+
+	let delaySecond = delay || 3000
+	return function(){
+		// console.log('debounce')
+		let context = this
+		clearTimeout( debounceTimer )
+		debounceTimer = setTimeout( function(){
+					
+			drawPic()   // 在地图上绘制轨迹
+			drawSelect()  //添加选择事件
+
+		} , delaySecond )
+	}
 }
 
 export { map,boundry,zoom,width,height }
