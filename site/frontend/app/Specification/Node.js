@@ -554,10 +554,10 @@ else{
       .each(function(){
                           line_data[d3.select(this).attr('id')]={left:[],right:[]};
       })
-    .call(d3.drag()
+    /*.call(d3.drag()
          .on("start", drag_start)
           .on("drag", newdrag)
-          .on('end',drag_end));
+          .on('end',drag_end));*/
   current_node.style("left",d=>`${622*(index-1)}px`)
     }
 
@@ -572,7 +572,10 @@ else{
 
   current_node.select(".title").select(".constraints_order").text(d=>d.order)
   current_node.select(".title").select(".text").text(d=>d.name)
-
+current_node.selectAll(".title").call(d3.drag()
+         .on("start", drag_start)
+          .on("drag", newdrag)
+          .on('end',drag_end));
 
   //time constraints
   let timeconstraings = current_node.append("div").classed("timeconstraints",true)

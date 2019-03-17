@@ -4,20 +4,21 @@ export let path_colorscale=d3.scaleQuantize()
                     .range(['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
-    d3.select(this).style("z-index",10000)
+    d3.select(this.parentNode).style("z-index",10000)
     .style('-webkit-transition-duration','0s');
 }
 export function newdrag() {
     let nodelist = require('../Specification/Node.js')
+    let condition_node=this.parentNode
      let dx = d3.event.dx//, dy = d3.event.dy;
-    let prex = parseInt(d3.select(this).style('left'));
+    let prex = parseInt(d3.select(condition_node).style('left'));
     if(((dx + prex)<=0))
     {
-        d3.select(this).style('left', prex);
+        d3.select(condition_node).style('left', prex);
     }
     else{
-        d3.select(this).style('left', (dx + prex) + 'px');
-        let current_id=d3.select(this).attr('id'),
+        d3.select(condition_node).style('left', (dx + prex) + 'px');
+        let current_id=d3.select(condition_node).attr('id'),
             current_location= nodelist.order.indexOf(current_id)
 
         let next_node=null;
@@ -28,14 +29,14 @@ export function newdrag() {
         if(current_location-1>=0){
             prev_node=d3.select('#'+nodelist.order[current_location-1]);
         }
-        if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
+        if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(condition_node).style('left')))<parseInt(d3.select(condition_node).style('width'))/2))
         {
            let next_left=parseInt(next_node.style('left'))
-           let now_left=next_left - parseInt(d3.select(this).style('width'))-22;
+           let now_left=next_left - parseInt(d3.select(condition_node).style('width'))-22;
                     next_node.style('left',now_left+'px');
-                    let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+                    let current_num=d3.select(this).select('.constraints_order').text();
                     let next_num = next_node.select('.title').select('.constraints_order').text();
-                    d3.select(this).select('.title').select('.constraints_order').text(next_num);
+                    d3.select(this).select('.constraints_order').text(next_num);
                     next_node.select('.title').select('.constraints_order').text(current_num);
                     //d3.select(this).attr('start_x',target_node.style('left'));
                     let temp=nodelist.order[current_location];
@@ -43,14 +44,14 @@ export function newdrag() {
                     nodelist.order[current_location+1]=temp;
         }
         else{
-            if(prev_node!=null&&((parseInt(d3.select(this).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(this).style('width'))/2))
+            if(prev_node!=null&&((parseInt(d3.select(condition_node).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(condition_node).style('width'))/2))
             {
                let prev_left=parseInt(prev_node.style('left'))
-               let now_left=parseInt(d3.select(this).style('width'))+22+prev_left;
+               let now_left=parseInt(d3.select(condition_node).style('width'))+22+prev_left;
                         prev_node.style('left',now_left+'px');
-                        let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+                        let current_num=d3.select(this).select('.constraints_order').text();
                         let prev_num = prev_node.select('.title').select('.constraints_order').text();
-                        d3.select(this).select('.title').select('.constraints_order').text(prev_num);
+                        d3.select(this).select('.constraints_order').text(prev_num);
                         prev_node.select('.title').select('.constraints_order').text(current_num);
 
                         //d3.select(this).attr('start_x',target_node.style('left'));
@@ -66,8 +67,9 @@ export function newdrag() {
 }
 export  function drag_end(){
     let nodelist = require('../Specification/Node.js')
-    d3.select(this).style('-webkit-transition-duration','0.5s').style("z-index",0);
-    let current_id=d3.select(this).attr('id');
+    let condition_node=this.parentNode
+    d3.select(condition_node).style('-webkit-transition-duration','0.5s').style("z-index",0);
+    let current_id=d3.select(condition_node).attr('id');
         let current_location=0;
         for( let i=0;i<nodelist.order.length;i++)
         {
@@ -77,8 +79,8 @@ export  function drag_end(){
                 break;
             }
         }
-d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(this).style('width'))+22)+"px");
-        d3.select(this).style('z-index',0);
+d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(condition_node).style('width'))+22)+"px");
+        d3.select(condition_node).style('z-index',0);
 }
 
 
