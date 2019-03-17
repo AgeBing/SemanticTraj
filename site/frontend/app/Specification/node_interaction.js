@@ -52,7 +52,7 @@ export function newdrag() {
                         let current_num=d3.select(this).select('.constraints_order').text();
                         let prev_num = prev_node.select('.title').select('.constraints_order').text();
                         d3.select(this).select('.constraints_order').text(prev_num);
-                        prev_node.select('.title').select('.constraints_order').text(current_num);
+                        prev_node.select('.title').select('.conpastraints_order').text(current_num);
 
                         //d3.select(this).attr('start_x',target_node.style('left'));
                         let temp=nodelist.order[current_location];
@@ -195,7 +195,10 @@ right_nodes.map((x,y)=>{
                     let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
                     let right_x = parseInt(d3.select(this.parentNode).style('width'))
                     let right_y = parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2//-$('#'+locationlistdiv_id).scrollTop()
-                    return 'M 0 ' + left_y + ' ' + 'C ' + (0 + right_x) / 3 + ' ' +right_y+' '+ (0 + right_x)*2/3+' '+left_y + ' ' + right_x + ' ' + right_y;
+                    let path_way='M 0 ' + left_y + ' ' + 'C ' + (0 + right_x) / 3 + ' ' +(left_y+right_y)*2/3+' '+ (0 + right_x)*2/3+' '+(left_y+right_y)/3 + ' ' + right_x + ' ' + right_y;
+                    // let path_way='M 0 ' + left_y + ' ' + 'C ' + (0 + right_x) / 3 + ' ' +(left_y+right_y)/3+' '+ (0 + right_x)*2/3+' '+(left_y+right_y)*2/3 + ' ' + right_x + ' ' + right_y;
+                    // let path_way='M 0 ' + left_y + ' ' + 'C ' + (0 + right_x) / 3 + ' ' +right_y+' '+ (0 + right_x)*2/3+' '+left_y+ ' ' + right_x + ' ' + right_y;
+                     return path_way
                 })
                 .attr('stroke', function(d){ return path_colorscale(d.relation_val)})
                 .attr('stroke-width', 3)
