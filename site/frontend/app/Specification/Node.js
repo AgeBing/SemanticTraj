@@ -315,10 +315,10 @@ nodelist.delete_node_byOrder=function (index){//例如删除condition_node1则in
                 let target_index=nodelist.order.indexOf("condition_node" + nodelist.data[j].order)
                  nodelist.order[target_index]='condition_node'+(nodelist.data[j].order-1)
                 nodelist.data[j].order = nodelist.data[j].order - 1;
-                line_data['condition_node'+nodelist.data[j].order]=line_data['condition_node'+(nodelist.data[j].order+1)]
-                if(nodelist.data[j].order==nodelist.data.length){
+                //line_data['condition_node'+nodelist.data[j].order]=line_data['condition_node'+(nodelist.data[j].order+1)]
+                /*if(nodelist.data[j].order==nodelist.data.length){
                     line_data.splice(line_data.indexOf('condition_node'+nodelist.data[j].order))
-                }
+                }*/
             }
             break;
         }
@@ -441,7 +441,7 @@ current_node.selectAll(".title").call(d3.drag()
     node_subtitle.append('div').classed('max_node_num',true).style("width","100px")
     node_subtitle.select('.max_node_num').append('div').classed('text',true).text('Top').style("width","14px").style("height","14px")
     node_subtitle.select('.max_node_num').append('div').classed('decrease',true).text('-').style("width","14px").style("height","14px").on('click',decrease_locationlist)
-    node_subtitle.select('.max_node_num').append('input').classed('node_num',true).attr('type','number').property('value',20).attr('min',0).style("width","30px").style("height","14px").attr('max',function(d){
+    node_subtitle.select('.max_node_num').append('input').classed('node_num',true).attr('type','number').attr('min',0).style("width","30px").style("height","14px").attr('max',function(d){
         let sum_location=0;
 d.data.forEach((x,i)=> {
     x.data.forEach((y, j) =>{
@@ -449,6 +449,11 @@ d.data.forEach((x,i)=> {
         }
     )
 })
+        if(sum_location<20){
+            d3.select(this).property('value',sum_location)
+        }
+else
+    d3.select(this).property('value',20)
 return parseInt(sum_location);
 
     }).on('change',function(){
@@ -482,11 +487,8 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
                   .style("overflow-y","auto")
                   .attr("dir","rtl")
                   .style("height","100%")
-      .each(function(d){
-let current_id = d3.select(this).attr('id');
-let current_index='condition_node' + d.order;
-let order=d.order;
-$('#'+current_id).scroll(function(d){
+      .each(function(){
+$(this).scroll(function(){
     let id=d3.select(this).attr('id')
     id=parseInt(id.substr(id.length-1,1))
     get_left_nodes(id)
@@ -531,9 +533,10 @@ $('#'+current_id).scroll(function(d){
   locationlistdiv.each(function(d){
       //d3.select(this.parentNode)
 let current_id = d3.select(this.parentNode).attr('id');
-let order=d.order
-$('#'+current_id).scroll(function(){
-    refresh_line(order);
+$(this.parentNode).scroll(function(){
+    let id=d3.select(this).attr('id')
+    id=parseInt(id.substr(id.length-1,1))
+    refresh_line(id);
 })
   })
 }
