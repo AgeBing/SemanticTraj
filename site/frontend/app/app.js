@@ -37,8 +37,8 @@ let availableTrajsinLimitTime = []
 let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
-// datamanager.init().then(o => SearchBar.init())
-mockList()
+datamanager.init().then(o => SearchBar.init())
+// mockList()
 
 
 // 在 searchbar 中将 trajs 进行设置

@@ -53,6 +53,9 @@ class Traj(object):
     start_time = math.floor(start_time / 10) * 10
     end_time = math.floor(end_time / 10) * 10 + 10
     times = [str(x) for x in range(start_time, end_time + 10, 10)]
+    if len(self.__sites) == 0:
+      print('没有符合条件的基站')
+      return []
     mysql = querymysqlutil.Mysql()
     sql_str = """select site, plist
               from phonetrajectory_index_bysite 
@@ -138,6 +141,9 @@ class Traj(object):
     # '460000000000000' 为异常ID
     if '460000000000000' in pids:
       pids.remove('460000000000000')
+    if len(pids) == 0:
+      print('没有符合条件的轨迹')
+      return []
     start_time = int(self.__start_time.strftime('%m%d'))
     end_time = int(self.__end_time.strftime('%m%d'))
     dates = [str(x) for x in range(start_time, end_time + 1)]
@@ -149,7 +155,7 @@ class Traj(object):
         where date in ({0}) and peopleid in ({1})
         order by peopleid
         """.format(','.join(dates), ','.join(pids))
-    # print(sql_str)
+    print(sql_str)
     traj_results = mysql.get_all_new_con(sql_str)
     print('query sql finish')
     return traj_results
