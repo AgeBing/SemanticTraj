@@ -13,6 +13,7 @@ let textData = []
 
 let name2POIMap = new Map()
 
+let tag_diff_data={}
 
 
 
@@ -21,6 +22,8 @@ export  function getMerge_data( _name ){
   console.log(_name)
    let _textData = textData.slice()
    _textData.push([ _name,'cc'])
+    if(!tag_diff_data.hasOwnProperty(_name))
+        tag_diff_data[_name]='cc'
    console.log(_textData)
    return QueryUtil.get_poi_layer( _textData )
       .then(results => {
@@ -168,6 +171,10 @@ function addSearchListener(o) {
           for(let i = 0;i < textData.length;i++){
             if( textData[i][0] == name){
               searchData.push(textData[i])
+              break
+            }
+            if( tag_diff_data.hasOwnProperty(name)){
+              searchData.push([name,tag_diff_data[name]])
               break
             }
           }
