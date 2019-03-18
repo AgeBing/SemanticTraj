@@ -21,8 +21,8 @@ let  width = visBox.offsetWidth; //宽度
 //1. 创建地图 、 创建绘制层
 // let tilemapservice = 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
 // let tilemapservice = 'http://b.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
-let tilemapservice = 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}'
-// let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
+// let tilemapservice = 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}'
+let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
 let zoomRate = 12;
 let map = L.map('map-container').setView([28.0152686, 120.6558736], zoomRate);
 let osmLayer = L.tileLayer(tilemapservice).addTo(map);
@@ -75,9 +75,7 @@ function resize(){
 	}
 	// console.log(boundry)
 
-	// 在地图上绘制轨迹
-	drawPic()
-	drawSelect()  //添加选择事件
+	debounceResize(900)()
 }
 
 
@@ -86,6 +84,7 @@ function resize(){
 
 function drawPic() {
 
+	// console.log('draw')
 
 	let left = -(map.getPixelOrigin().x -map.getPixelBounds().min.x ) + 'px',
 		top  =  -(map.getPixelOrigin().y -map.getPixelBounds().min.y) + 'px'
@@ -106,6 +105,25 @@ function drawPic() {
 
  	draw()  //绘制轨迹
 	drawTraj() //绘制勾选的轨迹
+}
+
+
+
+let debounceTimer
+function debounceResize( delay ){
+
+	let delaySecond = delay || 3000
+	return function(){
+		// console.log('debounce')
+		let context = this
+		clearTimeout( debounceTimer )
+		debounceTimer = setTimeout( function(){
+					
+			drawPic()   // 在地图上绘制轨迹
+			drawSelect()  //添加选择事件
+
+		} , delaySecond )
+	}
 }
 
 export { map,boundry,zoom,width,height }

@@ -1,23 +1,24 @@
 import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
 
-export let path_colorscale=d3.scaleLinear()
+export let path_colorscale=d3.scaleQuantize()
                     .range(['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
-    d3.select(this).style("z-index",10000)
+    d3.select(this.parentNode).style("z-index",10000)
     .style('-webkit-transition-duration','0s');
 }
 export function newdrag() {
     let nodelist = require('../Specification/Node.js')
+    let condition_node=this.parentNode
      let dx = d3.event.dx//, dy = d3.event.dy;
-    let prex = parseInt(d3.select(this).style('left'));
+    let prex = parseInt(d3.select(condition_node).style('left'));
     if(((dx + prex)<=0))
     {
-        d3.select(this).style('left', prex);
+        d3.select(condition_node).style('left', prex);
     }
     else{
-        d3.select(this).style('left', (dx + prex) + 'px');
-        let current_id=d3.select(this).attr('id'),
+        d3.select(condition_node).style('left', (dx + prex) + 'px');
+        let current_id=d3.select(condition_node).attr('id'),
             current_location= nodelist.order.indexOf(current_id)
 
         let next_node=null;
@@ -28,14 +29,14 @@ export function newdrag() {
         if(current_location-1>=0){
             prev_node=d3.select('#'+nodelist.order[current_location-1]);
         }
-        if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(this).style('left')))<parseInt(d3.select(this).style('width'))/2))
+        if(next_node!=null&&((parseInt(next_node.style('left'))-parseInt(d3.select(condition_node).style('left')))<parseInt(d3.select(condition_node).style('width'))/2))
         {
            let next_left=parseInt(next_node.style('left'))
-           let now_left=next_left - parseInt(d3.select(this).style('width'))-22;
+           let now_left=next_left - parseInt(d3.select(condition_node).style('width'))-22;
                     next_node.style('left',now_left+'px');
-                    let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+                    let current_num=d3.select(this).select('.constraints_order').text();
                     let next_num = next_node.select('.title').select('.constraints_order').text();
-                    d3.select(this).select('.title').select('.constraints_order').text(next_num);
+                    d3.select(this).select('.constraints_order').text(next_num);
                     next_node.select('.title').select('.constraints_order').text(current_num);
                     //d3.select(this).attr('start_x',target_node.style('left'));
                     let temp=nodelist.order[current_location];
@@ -43,15 +44,15 @@ export function newdrag() {
                     nodelist.order[current_location+1]=temp;
         }
         else{
-            if(prev_node!=null&&((parseInt(d3.select(this).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(this).style('width'))/2))
+            if(prev_node!=null&&((parseInt(d3.select(condition_node).style('left')) - parseInt(prev_node.style('left')))<parseInt(d3.select(condition_node).style('width'))/2))
             {
                let prev_left=parseInt(prev_node.style('left'))
-               let now_left=parseInt(d3.select(this).style('width'))+22+prev_left;
+               let now_left=parseInt(d3.select(condition_node).style('width'))+22+prev_left;
                         prev_node.style('left',now_left+'px');
-                        let current_num=d3.select(this).select('.title').select('.constraints_order').text();
+                        let current_num=d3.select(this).select('.constraints_order').text();
                         let prev_num = prev_node.select('.title').select('.constraints_order').text();
-                        d3.select(this).select('.title').select('.constraints_order').text(prev_num);
-                        prev_node.select('.title').select('.constraints_order').text(current_num);
+                        d3.select(this).select('.constraints_order').text(prev_num);
+                        prev_node.select('.title').select('.conpastraints_order').text(current_num);
 
                         //d3.select(this).attr('start_x',target_node.style('left'));
                         let temp=nodelist.order[current_location];
@@ -66,8 +67,9 @@ export function newdrag() {
 }
 export  function drag_end(){
     let nodelist = require('../Specification/Node.js')
-    d3.select(this).style('-webkit-transition-duration','0.5s').style("z-index",0);
-    let current_id=d3.select(this).attr('id');
+    let condition_node=this.parentNode
+    d3.select(condition_node).style('-webkit-transition-duration','0.5s').style("z-index",0);
+    let current_id=d3.select(condition_node).attr('id');
         let current_location=0;
         for( let i=0;i<nodelist.order.length;i++)
         {
@@ -77,8 +79,8 @@ export  function drag_end(){
                 break;
             }
         }
-d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(this).style('width'))+22)+"px");
-        d3.select(this).style('z-index',0);
+d3.select('#'+nodelist.order[current_location]).style('left', current_location*(parseInt(d3.select(condition_node).style('width'))+22)+"px");
+        d3.select(condition_node).style('z-index',0);
 }
 
 
@@ -193,13 +195,15 @@ right_nodes.map((x,y)=>{
                     let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
                     let right_x = parseInt(d3.select(this.parentNode).style('width'))
                     let right_y = parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2//-$('#'+locationlistdiv_id).scrollTop()
-                    return 'M -0 ' + left_y + ' ' + 'Q ' + (0 + right_x) / 3 + ' ' + (left_y + right_y) / 3 + ' ' + right_x + ' ' + right_y;
+                    let path_way='M 0 ' + left_y + ' ' + 'C ' +(0 +(right_x)/3)+ ' ' +(left_y)+' '+ (0 + right_x*2/3)+' '+right_y + ' ' + right_x + ' ' + right_y;
+                     return path_way
                 })
                 .attr('stroke', function(d){ return path_colorscale(d.relation_val)})
-                .attr('stroke-width', 3)
+                .attr('stroke-width', 2)
                 .attr('fill', 'none')
             .attr('relation_val',function(d){return d.relation_val;})
             .attr('initial_y',function(d){return parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2;})//-$('#'+locationlistdiv_id).scrollTop()
+             .attr('start_y',function(d){parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2;})
                 spatial_lines.append('circle')
                 .attr('cx','0')
                 .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
@@ -215,23 +219,12 @@ right_nodes.map((x,y)=>{
     export function refresh_line(order){//locationlistdiv1
     let top_height=$('#locationlistdiv'+order).scrollTop();
     $('#locationlistdiv'+order).parent().find('path').each(function(index,e){
-let d=$(e).attr('d').trim().split(' ');//["M", "-0", "56.5", "Q", "30", "199.5", "90", "542"]
-        d[d.length-1]=parseFloat($(e).attr('initial_y'))-top_height;
-        d[d.length-3]=(parseFloat(d[d.length-3])+parseFloat(d[2]))/3
-        $(e).attr('d',d.join(' '))
+let d=$(e).attr('d').trim().split(' ');//["M", "-0", "56.5", "C", "30", "199.5","30", "199.5", "90", "542"]
+        d[d.length-1]=parseFloat($(e).attr('initial_y'))-top_height;//right_y,d[2]:left_y
+        d[d.length-3]=d[d.length-1]
+       $(e).attr('d',d.join(' '))
             })
-    /*let element_height=24;//parseInt(d3.select(this).select('.spatial_POIs').select('.POIrect').style('height'))+4;
-    let bottom_height=top_height+parseInt($('#'+current_id)[0].getBoundingClientRect().height);
-    line_data[index].right=[];//当前显示在窗口中的元素
-        d3.select(this).select('.spatial_POIs').selectAll('.POIrect').each(function(){
-            let current_element_top=parseInt(d3.select(this).style('top'));
-            if((current_element_top >=top_height &&(current_element_top+element_height/2)<bottom_height) ||(current_element_top < top_height&&((top_height-current_element_top)<element_height/2))){
-                d3.select(this).attr('current_top',current_element_top-top_height);
-                line_data[index].right.push(this);
-            }
-        })
-     //console.log(top_height,bottom_height,line_data[index].right,'scroll move_height---------------------')
-    create_line(index);*/
+
     }
 
  export function refresh_path_color(){

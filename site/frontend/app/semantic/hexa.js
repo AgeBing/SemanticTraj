@@ -25,15 +25,19 @@ class Hexa{
 		this.generatePaticle()
 		this.alive = true
 
-		console.log(pid , points , traj , stopPointsIndex)
+		// console.log(pid , points , traj , stopPointsIndex)
 	}
 	generateNodes(){
 		let { pid,points } = this.data
+		let { stopPointsIndex } = this
+
 		let svg = d3.select("#semantic-view").select('svg')
 		let g = svg.append("g")
 			.attr('class','nodes'+pid)
 		let self = this
-	    for(let i = 0;i < points.length;i++){
+		let generateNodeNum = ((ifSample == true)? stopPointsIndex.length: points.length)
+
+	    for(let i = 0;i < generateNodeNum ; i++){
 	        g.append('circle')
 	        	.attr("class", "node-item")
 	          	.attr("cx", coorCenter.x)
@@ -41,6 +45,7 @@ class Hexa{
 	          	.on('mouseenter',()=>{self.enterHandler()})
 	          	.on('mouseleave',()=>{self.leaveHandler()})
 	    }
+		
 	    this.g = g
 	}
 	generatePaticle(){
@@ -54,10 +59,10 @@ class Hexa{
 				return p 
 			})
 		}else{
-			console.log(stopPointsIndex)
+			// console.log("Hexa stopPointsIndex : ",stopPointsIndex)
 			Ps = stopPointsIndex.map((d,i)=>{
 				let p = new Particle()
-				console.log(points[d])
+				// console.log(points[d])
 				p.init(points[d],i)
 				return p 
 			})
@@ -77,7 +82,7 @@ class Hexa{
 		let { Ps , g ,alive  } = this
 		let { pid }  = this.data
 		if(!alive)  return
-
+			// console.log(Ps)
 		Ps.forEach((p,i)=>{
 			// console.log(pid + ' ticks')
 			p.tick()

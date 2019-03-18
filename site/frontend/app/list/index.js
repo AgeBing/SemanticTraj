@@ -13,7 +13,7 @@ import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
 
 let resultlist = {
 	container	:d3.select("#list-contain"),
-	showNum 	: 100 ,
+	showNum 	: 50 ,
 	renderTrajs : [] ,
 	orderTrasjs : [] ,
 	filterPids  : [] ,
@@ -139,22 +139,37 @@ resultlist.filter = function(){
 	let { showNum,hide,filterPids,orderTrasjs } = resultlist
 	let i = 0 , count = showNum
 	let _renderTrajs = []
+	let _renderPids = []
 
 	if( isFiltered ){   // 仅展示 符合条件的 
 		for(i = 0;i < orderTrasjs.length;i++ ){
 			let  pid = orderTrasjs[i].pid
 			if(filterPids.indexOf(pid) == -1){
 				_renderTrajs.push( orderTrasjs[i] )
+				_renderPids.push(pid)
 				count--
 			}
 			if(count <= 0) break
 		}
 	}else{
 		_renderTrajs = resultlist.orderTrasjs.slice(0,showNum)
+		_renderTrajs.forEach((traj)=>{
+			if(filterPids.indexOf(traj.pid) ==-1){
+				_renderPids.push(traj.pid)
+			}
+		})
 	}
 
 	resultlist.renderTrajs = _renderTrajs
 
+	let checkPids = []
+	this.checkPids.forEach((pid)=>{
+		if(_renderPids.indexOf(pid)!=-1){
+			checkPids.push(pid)
+		}
+	})
+	this.checkPids = checkPids
+	drawTopic( checkPids )
 
 	this.draw()
 
@@ -196,7 +211,7 @@ resultlist.handleInput = function(){
 				self.removeCheckPid(pid)
 			}
 			drawTopic( self.checkPids )
-
+			updateCheckNum()
 		})
 
 
@@ -268,10 +283,62 @@ function leaveEventHander(){
 function updatePerNum(){
 	let { orderTrasjs ,filterPids } = resultlist
 
-	let avaNum = orderTrasjs.length - filterPids.length
-	let text =  avaNum + '/' + orderTrasjs.length
-	d3.select("#list-contain").select('.per-num')
-		.html(text)
+	let allNum = orderTrasjs.length
+	let selectNum = allNum - filterPids.length
+	// let text =  avaNum + '/' + orderTrasjs.length
+	let numContan = d3.select("#list-contain").select('.per-num')
+		numContan.select('.select-num').text(selectNum)
+		numContan.select('.all-num').text(allNum)		
+
+	updateCheckNum()
+}
+
+bindCheckAllBtn()
+function bindCheckAllBtn(){
+	resultlist.container.select('.btn-container').select('.check-contain').select('input')
+		.on('change',function(){
+				let add = d3.select(this).property('checked') 
+
+				if(add){  
+					checkAll()
+				}else{	   
+					unCheckAll()
+				}
+			updateCheckNum()
+			drawTopic( resultlist.checkPids )
+		})
+}
+function checkAll(){
+	let items = resultlist.container.selectAll('.list-item')
+	let checkedPids = []
+
+	items.each(function(item){
+		let curItem = d3.select(this),
+			curId = curItem.attr('id')
+
+		if( curItem.attr('class').indexOf('filtered') == -1 ){
+			curItem.select('input').property('checked',true)
+			checkedPids.push(curId)
+		}
+	}) 
+	resultlist.checkPids = checkedPids
+}
+function unCheckAll(){
+	let inputs = resultlist.container.selectAll('.list-item').selectAll('input')
+	inputs.property('checked',false)
+
+	resultlist.checkPids = []
+}
+function updateCheckNum(){
+	let checkNumItem = resultlist.container.select('.btn-container').select('.display-num')
+
+	let checkNum = resultlist.checkPids.length
+	checkNumItem.text(checkNum)
+	if(checkNum == 0 ){
+		checkNumItem.style('color','#e8e8e8')
+	}else{
+		checkNumItem.style('color','#595959')
+	}
 }
 
 

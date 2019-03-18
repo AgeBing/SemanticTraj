@@ -41,18 +41,23 @@ export function draw(data) {
 	clearCanvas()
 
 
-	if(data){ 					//data 来自全局 ，表示数据更新
-		trajsData = data 
-		stack = []      //数据重置
-		processTrajsData(trajsData)
-		originPiexelPoints = stack[0].pixel
-		selectPiexelPoints = null
-		stack[0].url =  GetTrajsPicUrl(originPiexelPoints , 0)
+	if(data!=undefined){ 					//data 来自全局 ，表示数据更新
+		
+		trajsData = data
+
+		if( !Config.PicUpdateFlag ){	//timeSelect 时需要将stack rect 寸下来
+			stack = []      //数据重置
+			processTrajsData(trajsData)
+			originPiexelPoints = stack[0].pixel
+			selectPiexelPoints = null
+			stack[0].url =  GetTrajsPicUrl(originPiexelPoints , 0)
+		}
+		 
 	}else {
 		if(!trajsData) return   //没有数据 且 无data 
 	}
 
-	if( (!data  && isChanged)  || (!data && Config.PicUpdateFlag)){  		//数据未改变 ，视图边界变化了 需要重新绘制 
+	if( (data == undefined  && isChanged)  || ( Config.PicUpdateFlag ) ){  		//数据未改变 ，视图边界变化了 需要重新绘制 
 		
 		// 将 stack 原 rect 数据记录下来
 		let newStack = []

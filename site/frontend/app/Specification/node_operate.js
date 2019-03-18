@@ -4,7 +4,7 @@ import {getMerge_data,get_data} from "../search/searchbar";
 
 export function add_condition_node(){
    let nodelist= require('../Specification/Node.js')
-    nodelist.append_node({name:'',data:''})
+    nodelist.append_node({name:'',data:[]})
     //nodelist.node_rendering(nodelist.data.length)
 }
 

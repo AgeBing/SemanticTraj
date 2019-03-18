@@ -51,9 +51,9 @@ export const  topicNames = [
     	icon : 'finance.png'
     },{
     	name : '医疗', 
-    	contain : ['Education' ],
+    	contain : ['Hospital' ],
     	percent : {
-    		'Education'  : 1
+    		'Hospital'  : 1
     	},
     	icon : 'hospital.png'
     },
