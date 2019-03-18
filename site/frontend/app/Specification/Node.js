@@ -27,192 +27,7 @@ export let POI_colorscale = d3.scaleQuantize()
                         '#a6bddb','#74a9cf',
                         '#2b8cbe',"#045a8d"])
 export let poi_colordomain={max:0,min:0}
-nodelist.rendering11111 = function(){
-    fresh_list_width();
-    if(!is_initial_right_content)
-    {
-        initial_right_content();
-        is_initial_right_content=true;
-    }
-  for(let i =0;i<nodelist.data.length;i++){
-    nodelist.data[i].order = i +1
-  }
 
-  let allnode = this.container.selectAll(".condition_node")
-    .data(nodelist.data, (d,i)=>d.name);
-
-
-  allnode.exit().remove();
-
-  let addnode = allnode.enter().append("div")
-                      .classed("condition_node",true)
-      .style('-webkit-transition-duration','0.5s')
-      .attr('id',function(d){return 'condition_node'+d.order})
-      .each(function(){
-                          line_data[d3.select(this).attr('id')]={left:[],right:[]};
-      })
-    .call(d3.drag()
-         .on("start", drag_start)
-          .on("drag", newdrag)
-          .on('end',drag_end));
-  let mergenode = addnode//.merge(allnode)
-
-  mergenode.style("left",d=>`${622*(d.order-1)}px`)
-
-  //title
-  let title = addnode.append("div").classed("title",true)
-  title.append("div").classed("constraints_order",true)
-  title.append("div").classed("text",true).style('display','inline-block')
-    title.append('div').classed('delete',true).text('X').style('margin','5px').on('click',function(d) {
-      nodelist.delete_node_byOrder(d.order);
-    })
-
-
-  mergenode.select(".title").select(".constraints_order").text(d=>d.order)
-  mergenode.select(".title").select(".text").text(d=>d.name)
-
-    nodelist.order=[];
-    this.container.selectAll(".condition_node").each(function(){
-      nodelist.order.push(d3.select(this).attr('id'));
-  });
-
-  //time constraints
-  let timeconstraings = addnode.append("div").classed("timeconstraints",true)
-
-  timeconstraings.append("div").classed("node_subtitle",true)
-  let timecontainer = timeconstraings.append("div")
-  let temp = timecontainer.append("div").classed("text",true).classed("textcon",true)
-          .style("margin"," 0 20px")
-          .style("width","170px")
-          .style("background","#ababab")
-          .style("color","white")
-          .style("text-align","center")
-      .style('display','inline-block')
-  timecontainer.append("input").classed("starttime",true).classed("textinput",true)
-  timecontainer.append("div").classed("conj",true).classed("textcon",true)
-  timecontainer.append("input").classed("endtime",true).classed("textinput",true)
-
-  mergenode.select(".timeconstraints").select(".node_subtitle").text("Temporal Constraints")
-  mergenode.select(".timeconstraints").select(".text").text("周日上午")
-      .append('div').classed('delete',true).style('margin-top','0px').style('margin-right','10px').style('font-size','15px').text('X')
-      .on('click',function(){
-//删除这部分干啥？？？？？？？？？？？？？？？？？？？？///////////////////////??????????????????????????????????????????????????????????????????????????????????
-    })
-  mergenode.select(".timeconstraints").select(".starttime").property('value',"2018.01.10 9:00")
-  mergenode.select(".timeconstraints").select(".conj").text("~")
-  mergenode.select(".timeconstraints").select(".endtime").property('value',"2018.01.10 11:00")
-
-
-
-
-  //spatial constraints
-  let spatial_constraints = addnode.append("div").classed("spatial_constraints",true)
-  let subtitlecontainer = spatial_constraints.append("div").style("height","27px")
-  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
-  .text("Spatial Constraints Words").style("float","left").style("width","185px")
-  //subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
-  //.style("float","left").style("width","65px")
-  let node_subtitle = subtitlecontainer.append("div").classed("node_subtitle",true).style("height","27px").style('overflow','hidden')
-      //.style("font-size","15px").text("Location List").style("float","left").style("width","95px")
-
-    node_subtitle.append('div').classed('real_node_subtitle',true).text("Location List").style("width","65px")
-    node_subtitle.append('div').classed('max_node_num',true).style("width","100px")
-    node_subtitle.select('.max_node_num').append('div').classed('text',true).text('Top').style("width","14px").style("height","14px")
-    node_subtitle.select('.max_node_num').append('div').classed('decrease',true).text('-').style("width","14px").style("height","14px").on('click',decrease_locationlist)
-    node_subtitle.select('.max_node_num').append('input').classed('node_num',true).attr('type','number').property('value',20).attr('min',0).style("width","30px").style("height","14px").attr('max',function(d){
-        let sum_location=0;
-d.data.map((x,i)=> {
-    x.data.map((y, j) =>{
-        y.data.map((z,m)=>sum_location++)
-        }
-    )
-})
-return parseInt(sum_location);
-
-    }).on('change',function(){
-        if(d3.select(this).property('value')>d3.select(this).attr('max'))
-                d3.select(this).property('value',d3.select(this).attr('max'))
-            if(d3.select(this).property('value')<d3.select(this).attr('min'))
-                d3.select(this).property('value',d3.select(this).attr('min'))
-        if(d3.select(this).property('value')<=parseInt(d3.select(this).attr('max'))&&(d3.select(this).property('value')>=parseInt(d3.select(this).attr('min')))){
-
-        let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
-let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
-        let current_data=[]
-        for(let i=0;i<nodelist.data.length;i++)
-            if(nodelist.data[i].order==current_conditionnode_order)
-                current_data=nodelist.data[i]
-renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),d3.select(this).property('value'));
-       initial_line('condition_node'+current_conditionnode_order);
-       refresh_line(current_conditionnode_order);
-        }
-    })
-    node_subtitle.select('.max_node_num').append('div').classed('increase',true).text('+').style("width","14px").on('click',increase_locationlist)
-
-
-  let spatial_cc = spatial_constraints.append("div").style("height","calc(100% - 27px)")
-                .style("position","absolute")
-                .style("width","100%")
-  spatial_cc.append("div")
-      .attr('id',function(d){return 'spatial_left'+d.order}).style("width","205px")
-                  .style("float","left")
-                  .style("overflow-y","auto")
-                  .attr("dir","rtl")
-                  .style("height","100%")
-      .each(function(d){
-let current_id = d3.select(this).attr('id');
-let index='condition_node' + d.order;
-let order=d.order;
-$('#'+current_id).scroll(function(){
-    get_left_nodes(order);
-})
-      })
-              .append("div").classed("spatial_words",true)
-                  .style("width","100%")
-  spatial_cc.append("svg").style("width","90px")
-                  .style("float","left")
-                  .style("height","100%").classed("spatial_lines",true)
-  let locationlistdiv = spatial_cc.append("div").classed("locationlistdiv",true)
-      .attr('id',function(d,i){return 'locationlistdiv'+d.order})
-
-                  .append("div")
-                  .classed("spatial_POIs",true)
-                  .style("width","100%")
-
-  let show_hide_div = renderingwordslist(mergenode)
-  renderingPOIlist(mergenode)
-
-
-  //semantic constraints
-  let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
-  semantic_constraints.append("div").classed("node_subtitle",true)
-          .style("font-size","15px").text("Configuration Panel")
-  
-  appendParamWidges(semantic_constraints)
-  bindTimeChangeEvent() 
-
-
-    show_hide_div.each(function(){
-        /*d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');*/
-
-        d3.select(this.parentNode.parentNode).select('.nei_words').style('display', 'block');
-        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('display', 'block');
-        d3.select(this).text('-');
-        //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
-        let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');//修改不知道对不对------------------------------------------------------------
-        index=index.substr(index.length-1,1);
-        get_left_nodes(index);
-    });
-  locationlistdiv.each(function(d){
-      //d3.select(this.parentNode)
-let current_id = d3.select(this.parentNode).attr('id');
-let order=d.order
-$('#'+current_id).scroll(function(){
-    refresh_line(order);
-})
-  })
-}
 export function renderingwordslist(mergenode){
     let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
            .data(function(d){
@@ -495,9 +310,15 @@ nodelist.delete_node_byOrder=function (index){//例如删除condition_node1则in
             nodelist.data.splice(i, 1);
             for (let j = i; j < nodelist.data.length; j++) {
                 d3.select('#condition_node'+nodelist.data[j].order).attr('id','condition_node'+(nodelist.data[j].order-1))
+                d3.select('#spatial_left'+nodelist.data[j].order).attr('id','spatial_left'+(nodelist.data[j].order-1))
+                d3.select('#locationlistdiv'+nodelist.data[j].order).attr('id','locationlistdiv'+(nodelist.data[j].order-1))
                 let target_index=nodelist.order.indexOf("condition_node" + nodelist.data[j].order)
                  nodelist.order[target_index]='condition_node'+(nodelist.data[j].order-1)
                 nodelist.data[j].order = nodelist.data[j].order - 1;
+                line_data['condition_node'+nodelist.data[j].order]=line_data['condition_node'+(nodelist.data[j].order+1)]
+                if(nodelist.data[j].order==nodelist.data.length){
+                    line_data.splice(line_data.indexOf('condition_node'+nodelist.data[j].order))
+                }
             }
             break;
         }
@@ -554,7 +375,7 @@ else{
       .each(function(){
                           line_data[d3.select(this).attr('id')]={left:[],right:[]};
       })
-    /*.call(d3.drag()
+    /*.call(d3.get_left_nodes()
          .on("start", drag_start)
           .on("drag", newdrag)
           .on('end',drag_end));*/
@@ -665,8 +486,10 @@ renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data(
 let current_id = d3.select(this).attr('id');
 let current_index='condition_node' + d.order;
 let order=d.order;
-$('#'+current_id).scroll(function(){
-    get_left_nodes(order)
+$('#'+current_id).scroll(function(d){
+    let id=d3.select(this).attr('id')
+    id=parseInt(id.substr(id.length-1,1))
+    get_left_nodes(id)
 })
       })
               .append("div").classed("spatial_words",true)
@@ -787,3 +610,193 @@ first_word.data.forEach(second_word=>{
 })
     })
 }
+
+
+/*
+/!*
+* nodelist.rendering11111 = function(){
+    fresh_list_width();
+    if(!is_initial_right_content)
+    {
+        initial_right_content();
+        is_initial_right_content=true;
+    }
+  for(let i =0;i<nodelist.data.length;i++){
+    nodelist.data[i].order = i +1
+  }
+
+  let allnode = this.container.selectAll(".condition_node")
+    .data(nodelist.data, (d,i)=>d.name);
+
+
+  allnode.exit().remove();
+
+  let addnode = allnode.enter().append("div")
+                      .classed("condition_node",true)
+      .style('-webkit-transition-duration','0.5s')
+      .attr('id',function(d){return 'condition_node'+d.order})
+      .each(function(){
+                          line_data[d3.select(this).attr('id')]={left:[],right:[]};
+      })
+    .call(d3.drag()
+         .on("start", drag_start)
+          .on("drag", newdrag)
+          .on('end',drag_end));
+  let mergenode = addnode//.merge(allnode)
+
+  mergenode.style("left",d=>`${622*(d.order-1)}px`)
+
+  //title
+  let title = addnode.append("div").classed("title",true)
+  title.append("div").classed("constraints_order",true)
+  title.append("div").classed("text",true).style('display','inline-block')
+    title.append('div').classed('delete',true).text('X').style('margin','5px').on('click',function(d) {
+      nodelist.delete_node_byOrder(d.order);
+    })
+
+
+  mergenode.select(".title").select(".constraints_order").text(d=>d.order)
+  mergenode.select(".title").select(".text").text(d=>d.name)
+
+    nodelist.order=[];
+    this.container.selectAll(".condition_node").each(function(){
+      nodelist.order.push(d3.select(this).attr('id'));
+  });
+
+  //time constraints
+  let timeconstraings = addnode.append("div").classed("timeconstraints",true)
+
+  timeconstraings.append("div").classed("node_subtitle",true)
+  let timecontainer = timeconstraings.append("div")
+  let temp = timecontainer.append("div").classed("text",true).classed("textcon",true)
+          .style("margin"," 0 20px")
+          .style("width","170px")
+          .style("background","#ababab")
+          .style("color","white")
+          .style("text-align","center")
+      .style('display','inline-block')
+  timecontainer.append("input").classed("starttime",true).classed("textinput",true)
+  timecontainer.append("div").classed("conj",true).classed("textcon",true)
+  timecontainer.append("input").classed("endtime",true).classed("textinput",true)
+
+  mergenode.select(".timeconstraints").select(".node_subtitle").text("Temporal Constraints")
+  mergenode.select(".timeconstraints").select(".text").text("周日上午")
+      .append('div').classed('delete',true).style('margin-top','0px').style('margin-right','10px').style('font-size','15px').text('X')
+      .on('click',function(){
+//删除这部分干啥？？？？？？？？？？？？？？？？？？？？///////////////////////??????????????????????????????????????????????????????????????????????????????????
+    })
+  mergenode.select(".timeconstraints").select(".starttime").property('value',"2018.01.10 9:00")
+  mergenode.select(".timeconstraints").select(".conj").text("~")
+  mergenode.select(".timeconstraints").select(".endtime").property('value',"2018.01.10 11:00")
+
+
+
+
+  //spatial constraints
+  let spatial_constraints = addnode.append("div").classed("spatial_constraints",true)
+  let subtitlecontainer = spatial_constraints.append("div").style("height","27px")
+  subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
+  .text("Spatial Constraints Words").style("float","left").style("width","185px")
+  //subtitlecontainer.append("div").classed("node_subtitle",true).style("font-size","15px")
+  //.style("float","left").style("width","65px")
+  let node_subtitle = subtitlecontainer.append("div").classed("node_subtitle",true).style("height","27px").style('overflow','hidden')
+      //.style("font-size","15px").text("Location List").style("float","left").style("width","95px")
+
+    node_subtitle.append('div').classed('real_node_subtitle',true).text("Location List").style("width","65px")
+    node_subtitle.append('div').classed('max_node_num',true).style("width","100px")
+    node_subtitle.select('.max_node_num').append('div').classed('text',true).text('Top').style("width","14px").style("height","14px")
+    node_subtitle.select('.max_node_num').append('div').classed('decrease',true).text('-').style("width","14px").style("height","14px").on('click',decrease_locationlist)
+    node_subtitle.select('.max_node_num').append('input').classed('node_num',true).attr('type','number').property('value',20).attr('min',0).style("width","30px").style("height","14px").attr('max',function(d){
+        let sum_location=0;
+d.data.map((x,i)=> {
+    x.data.map((y, j) =>{
+        y.data.map((z,m)=>sum_location++)
+        }
+    )
+})
+return parseInt(sum_location);
+
+    }).on('change',function(){
+        if(d3.select(this).property('value')>d3.select(this).attr('max'))
+                d3.select(this).property('value',d3.select(this).attr('max'))
+            if(d3.select(this).property('value')<d3.select(this).attr('min'))
+                d3.select(this).property('value',d3.select(this).attr('min'))
+        if(d3.select(this).property('value')<=parseInt(d3.select(this).attr('max'))&&(d3.select(this).property('value')>=parseInt(d3.select(this).attr('min')))){
+
+        let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
+        let current_data=[]
+        for(let i=0;i<nodelist.data.length;i++)
+            if(nodelist.data[i].order==current_conditionnode_order)
+                current_data=nodelist.data[i]
+renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),d3.select(this).property('value'));
+       initial_line('condition_node'+current_conditionnode_order);
+       refresh_line(current_conditionnode_order);
+        }
+    })
+    node_subtitle.select('.max_node_num').append('div').classed('increase',true).text('+').style("width","14px").on('click',increase_locationlist)
+
+
+  let spatial_cc = spatial_constraints.append("div").style("height","calc(100% - 27px)")
+                .style("position","absolute")
+                .style("width","100%")
+  spatial_cc.append("div")
+      .attr('id',function(d){return 'spatial_left'+d.order}).style("width","205px")
+                  .style("float","left")
+                  .style("overflow-y","auto")
+                  .attr("dir","rtl")
+                  .style("height","100%")
+      .each(function(d){
+let current_id = d3.select(this).attr('id');
+let index='condition_node' + d.order;
+let order=d.order;
+$(this).scroll(function(d){
+    get_left_nodes(d.order);
+})
+      })
+              .append("div").classed("spatial_words",true)
+                  .style("width","100%")
+  spatial_cc.append("svg").style("width","90px")
+                  .style("float","left")
+                  .style("height","100%").classed("spatial_lines",true)
+  let locationlistdiv = spatial_cc.append("div").classed("locationlistdiv",true)
+      .attr('id',function(d,i){return 'locationlistdiv'+d.order})
+
+                  .append("div")
+                  .classed("spatial_POIs",true)
+                  .style("width","100%")
+
+  let show_hide_div = renderingwordslist(mergenode)
+  renderingPOIlist(mergenode)
+
+
+  //semantic constraints
+  let semantic_constraints = addnode.append("div").classed("semantic_constraints",true)
+  semantic_constraints.append("div").classed("node_subtitle",true)
+          .style("font-size","15px").text("Configuration Panel")
+
+  appendParamWidges(semantic_constraints)
+  bindTimeChangeEvent()
+
+
+    show_hide_div.each(function(){
+        /!*d3.select(this.parentNode.parentNode).select('.nei_words').style('visibility', 'visible');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('visibility', 'visible');*!/
+
+        d3.select(this.parentNode.parentNode).select('.nei_words').style('display', 'block');
+        d3.select(this.parentNode.parentNode).select('.wordsubtitle').style('display', 'block');
+        d3.select(this).text('-');
+        //let current_id = d3.select(this.parentNode.parentNode).attr('id').replace('Worddiv', 'spatial_left');
+        let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');//修改不知道对不对------------------------------------------------------------
+        index=index.substr(index.length-1,1);
+        get_left_nodes(index);
+    });
+  locationlistdiv.each(function(d){
+      //d3.select(this.parentNode)
+let current_id = d3.select(this.parentNode).attr('id');
+let order=d.order
+$('#'+current_id).scroll(function(){
+    refresh_line(order);
+})
+  })
+}*!/*/
