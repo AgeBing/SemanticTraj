@@ -93,10 +93,7 @@ function setZoom(){
 			// console.log('zoom')
 			func_zoomed()
 		})
-		.on('end',()=>{
-			// console.log('zoom end')
-			timeSelect()
-		})
+		.on('end', debounceSelect() )
 	// 底部的 zoom 监听svg
 	let listenerRect = 
 		d3.select('#topic-container').append('svg')
@@ -161,15 +158,12 @@ function setBrush(){
 	var brushFunc = d3.brushX()
 	    .extent([[0, 0], [w * 0.9, Config.vRectHeight]])
 	    .on("start", ()=>{
-	    	console.log('start')
+	    	// console.log('start')
 	    })
 	    .on("brush",()=>{
-	    	console.log('brush')
+	    	// console.log('brush')
 	    })
-	    .on("end",()=>{
-	    	console.log('end')
-	    	brushed()
-	    });
+	    .on("end", debounceSelect() );
 
 	d3.select('.top-axis-container').select('svg')
 		.append('g')
@@ -191,6 +185,7 @@ function setBrush(){
 
 }
 function brushed(){
+	console.log('start select')
 	timeSelect()
 }
 function addLegend(){
@@ -214,6 +209,7 @@ function addLegend(){
 
 }
 function timeSelect(){
+	console.log('start select')
 	
 	let brushG = d3.select('.brush'),
 		brushRectWidth = 3,
@@ -242,5 +238,24 @@ function getTimeInterval(){
 		let time2 = new Date( time1.getTime() + addTime )
 		let gap = timeScale(time2) - timeScale(time1)		
 		console.log(i + ' => '+ gap)
+	}
+}
+
+
+
+
+
+// 防止短时内 频繁调用 耗时函数
+let debounceTimer
+function debounceSelect( delay ){
+
+	let delaySecond = delay || 2000
+	return function(){
+		// console.log('debounce')
+		let context = this
+		clearTimeout( debounceTimer )
+		debounceTimer = setTimeout( function(){
+			timeSelect()
+		} , delaySecond )
 	}
 }
