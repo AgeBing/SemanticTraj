@@ -76,6 +76,7 @@ def get_similiar_sites_simple(words):
   将已经计算的缓存一下
   """
   pois = []
+  sitesSet = set()
   for i in range(0, len(words)):
     nlp_socket = nlpqueryutil.NlpSocket()
     if words[i][0] in word_cache:
@@ -86,6 +87,7 @@ def get_similiar_sites_simple(words):
       print(words, 'has no vector')
     for node in poi_complex['simple']:
       pois.append("'" + str(node['id']) + "'")
+      sitesSet.add(node['site_id'])
     word_cache[words[i][0]] = {
       'name': words[i][0],
       'data': poi_complex['complex']

@@ -15,7 +15,6 @@ using namespace std;
 
 struct CA {
 	char* peopleid;
-	int count;
 	char* traj;
 };
 
@@ -28,7 +27,7 @@ struct Node {
 	time_t startTimeT;
 	time_t endTimeT;
 	int stoppoint;
-	Node(string time, string site) {
+	Node(const string &time, const string &site) {
 		this->isStop = false;
 		this->startTime = time;
 		this->endTime = time;
@@ -95,26 +94,32 @@ struct returnType {
 };
 
 void getTrajMap(CA* ca, int num, unordered_map<string, vector<Node>> &traj_map) {
-	sort(ca, ca + num, [](CA& lh, CA& rh) {
-		if (strcmp(lh.peopleid, rh.peopleid) != 0) {
-			return strcmp(lh.peopleid, rh.peopleid) < 0;
-		}
-		return lh.count < rh.count;
-	});
 	for (int i = 0; i < num; ++i) {
 		string trajs(ca[i].traj), nodeStr;
 		istringstream trajsStream(trajs);
 		if (traj_map.find(ca[i].peopleid) == traj_map.end()) {
 			traj_map[ca[i].peopleid] = {};
 		}
+		string prePeopleId = ca[i].peopleid,
+			nowPeopleId = prePeopleId;
+		int peopleCnt = 0;
 		while (getline(trajsStream, nodeStr, ';')) {
 			istringstream nodeStream(nodeStr);
-			vector<string> node;
+			string node[2];
 			string tmp;
+			int nodeCnt = 0;
 			while (getline(nodeStream, tmp, ',')) {
-				node.push_back(tmp);
+				node[nodeCnt ++] = tmp;
 			}
-			traj_map[ca[i].peopleid].emplace_back(node[0], node[1]);
+			// 若上一个点的时间大于下一个点的时间，将轨迹分割成两条
+			auto &traj = traj_map[nowPeopleId];
+			if (traj.empty() || traj.back().endTime < node[0]) {
+				traj.emplace_back(node[0], node[1]);
+			} else {
+				nowPeopleId = prePeopleId + "#" + to_string(peopleCnt++);
+				traj_map[nowPeopleId] = {};
+				traj_map[nowPeopleId].emplace_back(node[0], node[1]);
+			}
 		}
 	}
 }
@@ -145,6 +150,9 @@ void trajNodeMerge(unordered_map<string, vector<Node>> &traj_map, const int STOP
 					if (now.stopTime >= STOPTIME) {
 						now.isStop = true;
 					}
+					else if (now.stopTime < 0) {
+						cout << "______" << pre.startTime << "_____" << pre.endTime << "____" << now.startTime << "  " << now.endTime << endl;
+					}
 					tmp.push_back(now);
 				}
 			}
@@ -173,8 +181,8 @@ void filterTrajs(unordered_map<string, vector<Node>>& trajMap,
 				if (((1 << num) & (state | nowState)) != 0) {
 					if (num == 0) beginIndex = idx;
 					nowNode.stoppoint = num;
-					++ num;
 					state |= (1 << num);
+					++ num;
 				}
 				if (num == STOPNUM) {
 					endIndex = idx + 1;

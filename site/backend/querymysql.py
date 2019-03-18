@@ -21,7 +21,8 @@ class QueryMysql(WebsocketConsumer):
         if (data['reqType'] == 'queryDb' and data['operate'] == 'select'):
             mysql = querymysqlutil.Mysql()
             results_dict = mysql.query(data)
-            self.send(text_data = json.dumps(results_dict))
+            results = [x for x in results_dict]
+            self.send(text_data = json.dumps(results))
         elif (data['reqType'] == 'readText'):
             self.readText(data)
 

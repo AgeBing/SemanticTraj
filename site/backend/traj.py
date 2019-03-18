@@ -9,11 +9,9 @@ STOPTIME_THRESHOLD = 20 * 60
 
 class CA(Structure):
     _fields_ = [('peopleid',c_char_p),
-                ('count', c_int),
                 ('traj', c_char_p)]
-    def __init__(self, peopleid, count, traj):
+    def __init__(self, peopleid, traj):
       self.peopleid = peopleid.encode('utf8')
-      self.count = count
       self.traj = traj.encode('utf8')
 
 class CNode(Structure):
@@ -37,7 +35,7 @@ class returnType(Structure):
 class Traj(object):
   def __init__(self, stop_num, sites, site_cover, 
       start_time_str = '2014-01-14 12:03:00.00', 
-      end_time_str = '2014-01-14 12:13:00.00'):
+      end_time_str = '2014-01-14 16:04:00.00'):
     self.__stop_num = stop_num
     self.__sites = sites
     self.__site_cover = site_cover
@@ -61,7 +59,7 @@ class Traj(object):
               where site in ({0}) and datetime in ({1})
         """.format(','.join(map(lambda x: str(x), self.__sites)), ','.join(times))
     # print(sql_str)
-    return mysql.get_all(sql_str)
+    return mysql.get_all_new_con(sql_str)
 
   def __filter_pid(self, pids):
     """
@@ -82,12 +80,11 @@ class Traj(object):
         if ((state | site_state) == (1 << self.__stop_num) - 1):
           valid_pids.add(pid)
         pid_site[pid] = state | site_state
+    print('pid len:', len(valid_pids))
     return valid_pids
 
-  def __use_c_handle_traj(self, traj_results):
-    preTime = datetime.now()
-    print(len(traj_results), ' @#@#@#')
-    ca_list = [CA(d['peopleid'], d['count'], d['traj']) for d in traj_results]
+  def __wrap_traj(self, traj_results):
+    ca_list = [CA(d['peopleid'], d['traj']) for d in traj_results]
     ca_array = (CA * len(ca_list))(*ca_list)
     k_list = []
     v_list = []
@@ -96,14 +93,20 @@ class Traj(object):
       v_list.append(v)
     k_array = (c_char_p * len(k_list))(*k_list)
     v_array = (c_int * len(v_list))(*v_list)
-    # f = open('c_traj_handle.dll', 'r')
+    return ca_array, k_array, v_array
+
+  def __use_c_handle_traj(self, traj_results):
+    preTime = datetime.now()
+    ca_array, k_array, v_array = self.__wrap_traj(traj_results)
+    time1 = datetime.now()
+    print('传输+整理轨迹完成：' , (time1 - preTime).seconds)
     lib = cdll.LoadLibrary("c_traj_handle.dll") 
     lib.c_handle_traj.argtypes = POINTER(CA), c_int, c_int, POINTER(c_char_p), POINTER(c_int), c_int, c_int
     lib.c_handle_traj.restype = returnType
     ans = lib.c_handle_traj(ca_array, STOPTIME_THRESHOLD, len(ca_array), 
         k_array, v_array, len(k_array), self.__stop_num)
     time2 = datetime.now()
-    print('C++ 计算时间：', (time2 - preTime).seconds)
+    print('C++ 计算时间：', (time2 - time1).seconds)
     traj_list = [None] * ans.cnt
     print(ans.cnt, ' ________')
     for i in range(0, ans.cnt):
@@ -139,14 +142,15 @@ class Traj(object):
     end_time = int(self.__end_time.strftime('%m%d'))
     dates = [str(x) for x in range(start_time, end_time + 1)]
     mysql = querymysqlutil.Mysql()
+    # 限制人数为100000
     sql_str = """
-        select peopleid, count, traj
+        select peopleid, traj
         from phonetrajectory_sortbyid
         where date in ({0}) and peopleid in ({1})
-        order by peopleid, count
+        order by peopleid
         """.format(','.join(dates), ','.join(pids))
     # print(sql_str)
-    traj_results = mysql.get_all(sql_str)
+    traj_results = mysql.get_all_new_con(sql_str)
     print('query sql finish')
     return traj_results
     # trajs = {}
@@ -249,9 +253,7 @@ class Traj(object):
     print('filter pid ....')
     o = self.__filter_pid(o)
     print('get trajs by pids ...')
-    preTime = datetime.now()
     o = self.__get_trajs_by_pids(o)
-    print('传输时间：', (datetime.now() - preTime).seconds)
     return self.__use_c_handle_traj(o)
     # print('handle traj ....')
     # o = self.__handle_traj(o)
