@@ -13,7 +13,7 @@ import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
 
 let resultlist = {
 	container	:d3.select("#list-contain"),
-	showNum 	: 100 ,
+	showNum 	: 50 ,
 	renderTrajs : [] ,
 	orderTrasjs : [] ,
 	filterPids  : [] ,
@@ -211,7 +211,7 @@ resultlist.handleInput = function(){
 				self.removeCheckPid(pid)
 			}
 			drawTopic( self.checkPids )
-
+			updateCheckNum()
 		})
 
 
@@ -283,10 +283,62 @@ function leaveEventHander(){
 function updatePerNum(){
 	let { orderTrasjs ,filterPids } = resultlist
 
-	let avaNum = orderTrasjs.length - filterPids.length
-	let text =  avaNum + '/' + orderTrasjs.length
-	d3.select("#list-contain").select('.per-num')
-		.html(text)
+	let allNum = orderTrasjs.length
+	let selectNum = allNum - filterPids.length
+	// let text =  avaNum + '/' + orderTrasjs.length
+	let numContan = d3.select("#list-contain").select('.per-num')
+		numContan.select('.select-num').text(selectNum)
+		numContan.select('.all-num').text(allNum)		
+
+	updateCheckNum()
+}
+
+bindCheckAllBtn()
+function bindCheckAllBtn(){
+	resultlist.container.select('.btn-container').select('.check-contain').select('input')
+		.on('change',function(){
+				let add = d3.select(this).property('checked') 
+
+				if(add){  
+					checkAll()
+				}else{	   
+					unCheckAll()
+				}
+			updateCheckNum()
+			drawTopic( resultlist.checkPids )
+		})
+}
+function checkAll(){
+	let items = resultlist.container.selectAll('.list-item')
+	let checkedPids = []
+
+	items.each(function(item){
+		let curItem = d3.select(this),
+			curId = curItem.attr('id')
+
+		if( curItem.attr('class').indexOf('filtered') == -1 ){
+			curItem.select('input').property('checked',true)
+			checkedPids.push(curId)
+		}
+	}) 
+	resultlist.checkPids = checkedPids
+}
+function unCheckAll(){
+	let inputs = resultlist.container.selectAll('.list-item').selectAll('input')
+	inputs.property('checked',false)
+
+	resultlist.checkPids = []
+}
+function updateCheckNum(){
+	let checkNumItem = resultlist.container.select('.btn-container').select('.display-num')
+
+	let checkNum = resultlist.checkPids.length
+	checkNumItem.text(checkNum)
+	if(checkNum == 0 ){
+		checkNumItem.style('color','#e8e8e8')
+	}else{
+		checkNumItem.style('color','#595959')
+	}
 }
 
 

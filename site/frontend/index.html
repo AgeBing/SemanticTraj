@@ -75,7 +75,7 @@
             <input type="color" />          
           </div>         
           <div class="range-area">
-            <input type="range"  min="0" max="10" step="1" value="1" />          
+            <input type="range"  min="0" max="7" step="1" value="1" />          
           </div>        
         </div>
 
@@ -100,8 +100,16 @@
 
   <div id = "list-contain" class="panel">
       <div class="btn-container" >
-        <div class="per-num"></div>
-        <div style="text-align: center; margin: 5px;">Result List</div>
+        <div class="check-contain"><input type="checkbox" id="addSelectCheck"><label for="addSelectCheck"></label></div>
+
+        <div class="per-num">
+          <div class="display-num">check-num</div>
+          |
+          <div class="select-num">select-num</div>
+          |
+          <div class="all-num">all-num</div>
+        </div>
+        <!-- <div style="text-align: center; margin: 5px;">Result List</div> -->
         <button id="filter-btn">hide</button>
       </div>
       <div id="resultlist"/>
