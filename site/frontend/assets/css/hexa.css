@@ -16,14 +16,16 @@
     stroke-width: 2px;
 }
 .node-item{
-	fill: #5a5a5a;
-	opacity: 0.1;
-	r : 5;
+    r: 5;
+    stroke: rgb(46, 117, 182);
+    stroke-width: 2;
+    fill: none;
 }
 .link-nomal{
-	stroke: gray;
-	opacity: 1;
-	stroke-width: 4;
+	stroke: rgb(46, 117, 182);
+	opacity: 0.8;
+	stroke-width: 2;
+  stroke-dasharray: 4;
 }
 .title-nomal{
 	font-size: 15px
@@ -46,9 +48,11 @@
 	font-size: 15px;
 }
 .link-item{
-	stroke: #5a5a5a;
-	opacity: 0.1;
-	stroke-width:0.5;
+	stroke: rgb(46, 117, 182);
+  fill: none;
+  opacity: 0.5;
+  stroke-dasharray: 2;
+
 }
 .select-group{
 	opacity: 1;
@@ -126,4 +130,17 @@ float: right;
 }
 .switch-btn.switch-btn-animbg:checked:before {
     transition: left .3s; 
+}
+
+.node-legend-item{
+  position: absolute;
+}
+
+.node-legend-rect{
+  width: 45px;
+    height: 45px;
+    display: inline-block;
+    background-size: 45px;
+    float: left;
+    margin: 0px 10px 0px 10px;
 }
