@@ -260,29 +260,30 @@ input{
     background: whitesmoke;
 }
 .condition_node .spatial_constraints .wordtitle{
-    font-size: 13px;
+       font-size: 13px;
     text-align: center;
     background: white;
     line-height: 23px;
     color: white;
+    height: 22px;
 }
 .condition_node .spatial_constraints .wordtitle .hide_nei_words{
-    font-size: 13px;
-    text-align: center;
-    background: #b1b1b1;
-    line-height: 23px;
-    width:23px;
-    color: white;
-    display:inline-block;
-    float:left;
+   background-size: 12px;
+    width: 13px;
+    height: 16px;
+    margin: 4px 4px;
+    display: inline-block;
+    float: left;
+    background-repeat: no-repeat;
 }
 .condition_node .spatial_constraints .wordtitle .real_wordtitle{
-    font-size: 13px;
-    text-align: center;
-    background: #b1b1b1;
+       font-size: 13px;
+    text-align: left;
+    background: 0;
+    margin-left: 8px;
     line-height: 23px;
-    color: white;
-    display:inline-block;
+    color: #2e75b6;
+    float: left;
     width: calc(100% - 30px);
 }
 
@@ -293,20 +294,21 @@ input{
 }
 
 .condition_node .spatial_constraints .neiwordsdiv{
-	font-size: 14px;
+	    font-size: 14px;
     margin: 4px 0 0 18px;
-    background: #b9b9b9;
+    background: #2e75b6;
     color: white;
     text-align: center;
 }
 
 
 .condition_node .spatial_constraints .locationlistdiv{
-    width: 150px;
-    height: 100%;
+   width: 150px;
+    height: calc(100% - 6px);
     overflow-y: auto;
     position: absolute;
     right: 0;
+    margin: 3px;
 }
 
 

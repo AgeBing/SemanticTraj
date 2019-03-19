@@ -77,14 +77,18 @@ export function renderingwordslist(mergenode) {
       // let num=grand_id.substr(grand_id.length-1,1);
       return 'Worddiv' + (i + 1)
     })
-    .style("background", "#ececec")
+    .style("border", "1px dashed rgb(232, 232, 232)")
+    .style("padding", "3px 0")
+    .style("margin", "2px")
+
+
   let mergewords = addwords.merge(allwords)
   mergewords.style("top", (d, i) => `${i*24}px`)
 
   let addwordtitle = addwords.append("div").classed("wordtitle", true)
   addwords.append("div").classed("wordsubtitle", true);
   addwords.append("div").classed("nei_words", true);
-  let show_hide_div = addwordtitle.append('div').classed('hide_nei_words', true).text('-')
+  let show_hide_div = addwordtitle.append('div').classed('hide_nei_words', true).style("background-image","url(../icon/tri.png)").attr("isshow",true)
   show_hide_div.on('click', show_hide)
   addwordtitle.append('div').classed('real_wordtitle', true).text((d, i) => d.name)
     .append('div').classed('delete', true).text('X').style('margin-right', '5px').on('click', function(d, i) {
@@ -113,7 +117,6 @@ export function renderingwordslist(mergenode) {
         //nodelist.node_rendering(),node_order)
       }
     });
-  mergewords.select(".wordsubtitle").text("Neighbors")
   let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d) {
     return d.data
   })
@@ -533,12 +536,9 @@ nodelist.node_rendering = function(initial_node_data, index) {
     .attr('id', function(d) {
       return 'spatial_left' + d.order
     }).style("width", "182px")
-    .style("float", "left")
-    .style("overflow-y", "auto")
-    .attr("dir", "rtl")
-    .style("height", "calc(100% - 10px)")
-    .style("margin", "5px")
-    .style("border", "1px dashed rgb(232, 232, 232)")
+    .style("height", "calc(100% - 5px)")
+    .style("margin", "3px")
+    // .style("border", "1px dashed rgb(232, 232, 232)")
     .style("position","absolute")
     .each(function() {
       $(this).scroll(function() {
@@ -552,13 +552,28 @@ nodelist.node_rendering = function(initial_node_data, index) {
   spatialwordcontainer.append("div").classed("spatiallogoback", true)
   spatialwordcontainer.append("div").classed("spatiallogo", true).text("Spatial Constraints Words")
   spatialwordcontainer.append("div").classed("spatial_words", true)
-    .style("width", "100%")
+    .style("overflow-y", "auto")
+    .attr("dir", "rtl")
+    .style("width", "calc(100% - 41px)")
+    .style("padding", "3px 1px")
+    .attr("height", "calc(100% - 6px)")    
+    .style("overflow-y", "auto")
+    .style("position", "absolute")
+    .style("right", "0")
+    .style("padding", "3px")
+
+
+
   // .style("font-size", "15px").style("float", "left").style("width", "185px")
 
 
-  spatial_cc.append("svg").style("width", "90px")
-    .style("float", "left")
-    .style("height", "100%").classed("spatial_lines", true)
+  spatial_cc.append("svg").style("width", "70px")
+    .style("position", "absolute")
+    .style("height", "calc(100% - 6px)")
+    .style("left", "177px")
+    .style("margin", "3px 0")
+    .style("z-index", "3").classed("spatial_lines", true)
+
   let locationlistdiv = spatial_cc.append("div").classed("locationlistdiv", true)
     .attr('id', function(d, i) {
       return 'locationlistdiv' + d.order

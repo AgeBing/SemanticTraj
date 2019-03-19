@@ -86,18 +86,17 @@ d3.select('#'+nodelist.order[current_location]).style('left', current_location*(
 
 
 export function show_hide() {
-    let current_val = d3.select(this).text();
     let nei_words= d3.select(this.parentNode.parentNode).select('.nei_words')
     let wordsubtitle=d3.select(this.parentNode.parentNode).select('.wordsubtitle')
     let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');
     index=index.substr(index.length-1,1)
-    if (current_val == '+')//show
+    if (d3.select(this).attr("isshow") =="false")//show
     {
         /*nei_words.style('visibility', 'visible');
         wordsubtitle.style('visibility', 'visible');*/
         nei_words.style('display', 'block');
         wordsubtitle.style('display', 'block');
-        d3.select(this).text('-');
+        d3.select(this).style("background-image","url(../icon/tri.png)").attr("isshow",true);
 
         get_left_nodes(index);//create line
     }
@@ -120,7 +119,7 @@ export function show_hide() {
 
         nei_words.style('display', 'none');
         wordsubtitle.style('display', 'none');
-        d3.select(this).text('+');
+        d3.select(this).style("background-image","url(../icon/trijian.png)").attr("isshow",false);
         get_left_nodes(index);
         //initial_line(index);
     }
