@@ -75,6 +75,10 @@ export function renderingwordslist(mergenode) {
     .attr('id', function(d, i) {
       // let grand_id = d3.select(this.parentNode.parentNode).attr('id')
       // let num=grand_id.substr(grand_id.length-1,1);
+      d.data.sort(function(a, b) {
+        return b.val - a.val
+      })
+
       return 'Worddiv' + (i + 1)
     })
     .style("border", "1px dashed rgb(232, 232, 232)")
@@ -121,11 +125,23 @@ export function renderingwordslist(mergenode) {
     return d.data
   })
 
-  allneiwords.exit().remove()
+  /*allneiwords.exit().remove()
   let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.text(d => d.name)
     .style("top", (d, i) => `${i*24}px`)
+  return show_hide_div*/
+
+
+  allneiwords.exit().remove()
+  let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
+  addneiwords.append('div').classed('wordsval',true)
+      addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
+  let mergeneiwords = addneiwords.merge(allneiwords)
+  mergeneiwords.style("top", (d, i) => `${i*24}px`)
+  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>parseFloat(d.val)*100+'px')
+  mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*100+'px')
+
   return show_hide_div
 }
 
@@ -187,15 +203,15 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     })
 
   allPOI.exit().remove()
-  allPOI.enter().append("div").classed("POIrect", true)
-    .text(function(d, i) {
+ let addPOI = allPOI.enter().append("div").classed("POIrect", true)
+     addPOI.append('div').classed('POIdiv',true)
+         addPOI.append('div').classed('POIname',true)
+    /*.text(function(d, i) {
       return d.poi.name
       //return  d.poi.name.length>8 ? d.poi.name.substring(0,8):d.poi.name
-    })
-    .merge(allPOI)
-    .style("top", d => `${d.order*28}px`)
-    .style("background", d => d.background)
-    .style("color", d => d.color)
+    })*/
+    let POIs=addPOI.merge(allPOI)
+    .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
     .on('mouseenter', (d) => {
       drawPoiInMap([d.poi])
@@ -203,6 +219,13 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     .on('mouseleave', (d) => {
       removePoiInMap()
     })
+        POIs.selectAll('.POIdiv')
+        .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*80+'px')
+         .style("background", d => d.background)
+    .style("color", d => d.color)
+        POIs.selectAll('.POIname')
+        .text(d=>d.poi.name)
+
 
   /*.each(function(){
       let grandparent_id=d3.select(this.parentNode.parentNode).attr('id');
@@ -538,6 +561,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
     }).style("width", "182px")
     .style("height", "calc(100% - 5px)")
     .style("margin", "3px")
+      .style('overflow-y','auto')
     // .style("border", "1px dashed rgb(232, 232, 232)")
     .style("position","absolute")
     .each(function() {
@@ -570,7 +594,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
   spatial_cc.append("svg").style("width", "70px")
     .style("position", "absolute")
     .style("height", "calc(100% - 6px)")
-    .style("left", "177px")
+    .style("left", "173px")
     .style("margin", "3px 0")
     .style("z-index", "3").classed("spatial_lines", true)
 
