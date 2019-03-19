@@ -236,24 +236,50 @@ input{
     overflow-y: hidden;
 }
 
-
+.condition_node .spatial_constraints div div::-webkit-scrollbar{
+display: none;
+}
 .condition_node .spatial_constraints .POIrect{
-	position:absolute;    
+	//position:absolute;
 	width: 137px;
     line-height: 20px;
-    text-align: center;
+    /*text-align: center;*/
     border: 1px solid transparent;
     border-radius: 1px;
     transition-duration: 0.4s;
-    overflow-x: scroll;
+    /*overflow-x: scroll;*/
     font-size: 15px;
+    /*//height:20px;*/
 }
-.condition_node .spatial_constraints .POIrect::-webkit-scrollbar{
+.condition_node .spatial_constraints .POIrect .POIdiv{//长度表示相似度
+	float:left;
+    text-align: center;
+    transition-duration: 0.4s;
+    overflow:hidden;
+    font-size: 15px;
+    display:inline-block;
+    height:20px;
+}
+.condition_node .spatial_constraints .POIrect .POIname{
+	float:right;
+    width:50px;
+    height:20px;
+    text-align: center;
+    transition-duration: 0.4s;
+    overflow: hidden;
+    /*overflow-x: scroll;*/
+    font-size: 10px;
+    display:inline-block;
+}
+/*.condition_node .spatial_constraints .POIrect .POIname::-webkit-scrollbar{
     display:none;
-}
-.condition_node .spatial_constraints .POIrect:hover{
+}*/
+/*.condition_node .spatial_constraints .POIrect::-webkit-scrollbar{
+    display:none;
+}*/
+/*.condition_node .spatial_constraints .POIrect .POIname:hover{
     border: 1px solid #e26b35;
-}
+}*/
 
 .condition_node .srealwordtitlepatial_constraints .worddiv{
     //padding: 2px;
@@ -296,12 +322,28 @@ input{
 .condition_node .spatial_constraints .neiwordsdiv{
 	    font-size: 14px;
     margin: 4px 0 0 18px;
-    background: #2e75b6;
-    color: white;
-    text-align: center;
+    background: white;
+    height:16px;
+    //text-align: center;
 }
 
+.condition_node .spatial_constraints .neiwordsdiv .wordsval{
+	    font-size: 12px;
+    color: black;
+    text-align: center;
+    display: inline-block;
+    width:20px;
+    margin-right: 2px;
+}
 
+.condition_node .spatial_constraints .neiwordsdiv .neiwordsdiv_word{
+	    font-size: 14px;
+    color: white;
+    text-align: center;
+     background: #2e75b6;
+    float:right;
+    display: inline-block;
+}
 .condition_node .spatial_constraints .locationlistdiv{
    width: 150px;
     height: calc(100% - 6px);
