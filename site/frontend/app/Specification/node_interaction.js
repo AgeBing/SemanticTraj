@@ -1,7 +1,7 @@
 import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
 
 export let path_colorscale=d3.scaleQuantize()
-                    .range(['#993404','#d95f0e','#fe9929','#fec44f','#fee391',"#ffffd4"]);
+                    .range(['#993404','#d95f0e','#fe9929','#fec44f'/*,'#fee391',"#ffffd4"*/]);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
     d3.select(this.parentNode).style("z-index",10000)
@@ -52,8 +52,7 @@ export function newdrag() {
                         let current_num=d3.select(this).select('.constraints_order').text();
                         let prev_num = prev_node.select('.title').select('.constraints_order').text();
                         d3.select(this).select('.constraints_order').text(prev_num);
-                        prev_node.select('.title').select('.conpastraints_order').text(current_num);
-
+                        prev_node.select('.title').select('.constraints_order').text(current_num);
                         //d3.select(this).attr('start_x',target_node.style('left'));
                         let temp=nodelist.order[current_location];
                         nodelist.order[current_location]=nodelist.order[current_location-1];
@@ -130,6 +129,13 @@ export function initial_line(index) {//condition_node1
     let locationlistdiv_id=index.replace('condition_node','locationlistdiv');
     let nodelist = require('../Specification/Node.js')
         let left_nodes = line_data[index].left;
+  /*  left_nodes.forEach((left)=>{
+        left.append('circle')
+                .attr('cx',d3.select(left).style('width'))
+                .attr('cy',function(){parseInt(d3.select(left).attr('current_top')) + parseInt(d3.select(left).style('height')) / 2})
+                .attr('r','3')
+                .attr('fill','white')
+    })*/
         let right_nodes = []
     d3.select('#'+locationlistdiv_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){right_nodes.push(this);})
         if (left_nodes.length > 0 && right_nodes.length > 0) {
@@ -142,7 +148,7 @@ export function initial_line(index) {//condition_node1
             for (let i = 0; i < left_nodes.length; i++) {
 let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
 second_title=second_title.substr(0,second_title.length-1)//title后面会有个X，把它删掉
-let third_title=d3.select(left_nodes[i]).text();
+let third_title=d3.select(left_nodes[i]).select('.neiwordsdiv_word').text();
 if(!(second_third_index.hasOwnProperty(second_title)))
 {
 for(let i=0;i<nodelist.data[data_num-1].data.length;i++)
@@ -194,7 +200,7 @@ right_nodes.map((x,y)=>{
                     let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
                     let right_x = parseInt(d3.select(this.parentNode).style('width'))
                     let right_y = parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2//-$('#'+locationlistdiv_id).scrollTop()
-                    let path_way='M 0 ' + left_y + ' ' + 'C ' +(0 +(right_x)/3)+ ' ' +(left_y)+' '+ (0 + right_x*2/3)+' '+right_y + ' ' + right_x + ' ' + right_y;
+                    let path_way='M 8 ' + left_y + ' ' + 'C ' +(8 +(right_x)/3)+ ' ' +(left_y)+' '+ (8 + right_x*2/3)+' '+right_y + ' ' + right_x + ' ' + right_y;
                      return path_way
                 })
                 .attr('stroke', function(d){ return path_colorscale(d.relation_val)})
@@ -204,10 +210,13 @@ right_nodes.map((x,y)=>{
             .attr('initial_y',function(d){return parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2;})//-$('#'+locationlistdiv_id).scrollTop()
              .attr('start_y',function(d){parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2;})
                 spatial_lines.append('circle')
-                .attr('cx','0')
+                .attr('cx','5')
                 .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
                 .attr('r','3')
-                .attr('fill','#b9b9b9')
+                .attr('stroke-width','1')
+                .attr('stroke','rgb(46,117,182)')
+                .attr('fill','white')
+            .attr('z-index',1000)
                   refresh_path_color();//对已存在的线进行重新刷新颜色比例尺
         } else {
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
@@ -267,8 +276,10 @@ export function refresh_POI_color(){
      if(min_vals.length>0) {
          poi_colordomain.min = d3.min(min_vals)
          poi_colordomain.max = d3.max(max_vals)
-         d3.selectAll('.POIrect').style('background', function () {
-             return POI_colorscale(parseFloat(d3.select(this).attr('val')))
+         d3.selectAll('.POIrect').each(function(){
+             d3.select(this).select('.POIdiv').style('background', function () {
+             return POI_colorscale(parseFloat(d3.select(this.parentNode).attr('val')))
+         })
          })
          d3.select('#Relevance_Score').select('.content').select('.max').text(parseFloat(poi_colordomain.max).toFixed(1))
          d3.select('#Relevance_Score').select('.content').select('.min').text(parseFloat(poi_colordomain.min).toFixed(1))
@@ -321,7 +332,7 @@ let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property
 if(current_max-1>=d3.select(this.parentNode).select('.node_num').attr('min'))
 {
     d3.select(this.parentNode).select('.node_num').property('value',current_max-1)
-let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode).attr('id');
 let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
         let current_data=[]
         for(let i=0;i<nodelist.data.length;i++)
@@ -338,7 +349,7 @@ let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property
 if(current_max+1<=d3.select(this.parentNode).select('.node_num').attr('max'))
 {
     d3.select(this.parentNode).select('.node_num').property('value',current_max+1)
-    let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+    let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode).attr('id');
 let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
         let current_data=[]
         for(let i=0;i<nodelist.data.length;i++)
