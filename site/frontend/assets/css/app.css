@@ -10,7 +10,7 @@ html{
 	overflow-y:hidden 
 }
 html, body{
-  height: 95%;
+  height: 100%;
   font-size: 20px;
   font-family: Arial, Helvetica, sans-serif;
   background-color: #ffffff;
@@ -25,27 +25,50 @@ html, body{
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
   background-color: #bbbbbb }
 
-.top-bar{
-	    height: 60px;
-    background-color: #5a5a5a;
+.top-bar{   
+        height: 40%;
+    background-color: #fdfdfd;
+    border: 1px dashed #e8e8e8;
+    margin: 10px;
+    position: absolute;
+    width: calc(100% - 20px);
+    border-left: 0; 
+}
+
+#logoback{
+        line-height: 50px;
+    top: 0;
+    width: 50px;
+    left: 0;
+    position: absolute;
+    background: #e8e8e8;
+    height: 100%;
 }
 .top-bar .logo{
-        display: inline-block;
-    line-height: 60px;
-    float: left;
-    margin: 0 20px;
-    font-size: 26px;
-    font-weight: 600;
+        line-height: 50px;
+    top: calc(50% - 30px);
+    width: 280px;
+    left: -115px;
     font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
-    color: #e0e0e0;
-    width: 60px;
+    color: #1d1d1d;
     text-align: center;
+    position: absolute;
+    transform: rotate(-90deg);
 }
+
+#inputview{
+       position: absolute;
+    width: calc(100% - 50px);
+    background: #e8e8e8;
+    height: 50px;
+    left: 50px;
+}
+
 .search-container{
 	    display: inline-block;
-    margin: 11px 10px;
+    margin: 7px 16px 7px 0;
     float: left;
-    width: calc(90% - 160px);
+    width: calc(100% - 160px);
     border: 0;
     background: #f9f9f9;
     border-radius: 4px;
@@ -68,16 +91,16 @@ html, body{
 }
 
 .top-bar button{
-       background-color: #3690c0;
+    background-color: rgb(46,117,182);
     color: #fff;
     cursor: pointer;
     border: 0;
-    margin: 11px 5px;
+    margin: 7px 5px;
     height: 38px;
-    width: 100px;
+    width: 120px;
     font-size: 15px;
     border-radius: 3px;
-        transition-duration: 0.3s;
+    transition-duration: 0.3s;
 
 }
 .top-bar button:hover{
@@ -116,47 +139,108 @@ html, body{
 
 #Specification_view{
 	    position: absolute;
-    top: 60px;
-    width: calc(82% - 35px);
-    margin: 10px;
-    border: 1px dashed #848484;
-    height: calc(32% - 60px);
-    overflow: auto;
+    top: 50px;
+    left: 50px;
+    width: calc(100% - 60px);
+    margin: 5px;
+    height: calc(100% - 60px);
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 #condition_node_list{
     //width:100%;
     height:100%;
 }
 #semantic-view{
-       position: absolute;
-    border: 1px dashed #848484;
-    width: calc(23% - 10px);
-    height: calc(39%);
-    top: calc(32% + 10px);
+        position: absolute;
+    border: 1px dashed #e8e8e8;
+    width: calc(20% - 10px);
+    height: calc(30%);
+    top: calc(40% + 10px);
     margin: 10px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-    
+}
+.spatiallogo{
+        line-height: 33px;
+    top: calc(50% - 16px);
+    width: 176px;
+    left: -71px;
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    color: #1d1d1d;
+    text-align: center;
+    position: absolute;
+    transform: rotate(-90deg);
+    font-size: 16px;
+}
+.spatiallogoback{
+        height: 100%;
+    width: 35px;
+    position: absolute;
+    background: #e8e8e8;
+    left: 0;
+    top: 0;
 }
 
 #map-view{
-	position: absolute;
-    width: calc(59% - 35px);
-    height: calc(39%);
-    top: calc(32% + 10px);
+	    position: absolute;
+    width: calc(62% - 35px);
+    height: calc(40% + 20px);
+    border: 1px dashed #e8e8e8;
+    top: calc(40% + 10px);
     margin: 10px;
-    left: 23%;
+    left: 20%;
+}
+.subtitle{
+        position: absolute;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    line-height: 35px;
+    background: #e8e8e8;
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-size: 20px;
+}
+#maplegend{
+        position: absolute;
+    top: 0;
+    z-index: 3;
+    width: 100%;
+    text-align: center;
+    line-height: 35px;
+    background: #e8e8e8;
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-size: 20px;
+}
+#timelinetitle{
+        line-height: 29px;
+    top: calc(60% - 30px);
+    width: 153px;left: -53px;
+    font-size: 18px;
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    color: #1d1d1d;
+    text-align: center;
+    position: absolute;
+    transform: rotate(-90deg);
+}
+#timelinetitleback{
+line-height: 50px;
+    top: 0;
+    width: 50px;
+    left: 0;
+    position: absolute;
+    background: #e8e8e8;
+    height: 100%;
 }
 
 #timeline-container{
 	position: absolute;
     width: calc(82% - 35px);
-    height: calc(28% - 33px);
+    height: calc(17% - 33px);
     bottom: 0;
     margin: 10px;
-    border: 1px dashed #848484;
+    border: 1px dashed #e8e8e8;
 }
 #topic-container{
     /*position: absolute;*/
@@ -165,12 +249,13 @@ html, body{
 }
 
 #list-contain{
-	position: absolute;
-	width: 18%;
-	right: 0;
-	height: calc(100% - 84px);
-	margin: 10px 10px;
-	border: 1px dashed #848484;
+	    position: absolute;
+    width: 18%;
+    right: 0;
+    top: calc(40% + 10px);
+    height: calc(60% - 30px);
+    margin: 10px;
+    border: 1px dashed #e8e8e8;
 }
 
 .panel{

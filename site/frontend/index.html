@@ -32,41 +32,56 @@
 
 
   <div class="top-bar" id = 'mds-gsj'>
-      <div class="logo">
-        STVA
+      <div id="logoback">
       </div>
-      <div class='search-container'>
+      <div class="logo">
+        The Condition Specification View
+      </div>
 
-          <div id="input-wrapper">
-            <input type="text" id="search-input-text">
+      <div id="inputview">
+        <div class='search-container'>
+
+            <div id="input-wrapper">
+              <input type="text" id="search-input-text">
+            </div>
+        </div>
+        <button id="search-button">
+           Query
+        </button>
+      </div>
+
+
+      <div id = "Specification_view">
+          <div id="condition_node_list">
           </div>
       </div>
-      <button id="search-button">
-         Query
-      </button>
   </div>
 
 
-
-  <div id = "Specification_view">
-      <div id="condition_node_list">
-      </div>
-  </div>
 
 
   <div id="semantic-view" class="panel right-panel" >
+          <div class="subtitle">The Semantic View</div>
           <div class="sample-area">
             <!-- <img src="../assets/icons/sample.png"> -->
             <!-- <span> Sample </span> -->
             <input class="switch-btn switch-btn-animbg" type="checkbox">
           </div>  
   </div>
+  <div class="panel up-panel" id="topic-legend">
+            <div class="legend-intro">
+                Function Categories
+            </div>
+  </div>
 
   <div id="map-view" class="panel right-panel" >
+      <div id="maplegend">
+          The Map View
+      </div>
         
         <div id="select-area">
           <div id="select-btn">
-            <img style="    height: 30px;" src="../assets/icons/select.svg">
+            <img  src="../assets/icons/select.svg">
           </div>
           <div class="color-area-select">
             <input type="color" />          
@@ -80,25 +95,31 @@
         </div>
 
 
-        <div id="map-container" style= "position: absolute;z-index: 1;"   class="panel right-panel" >
+        <div id="map-container" style= "position: absolute;
+                z-index: 1;
+                top: 35px;
+                height: calc(100% - 35px);
+                width: calc(100% - 2px);"   class="panel right-panel" >
             <div class="default-word"><span> - </span></div>
         </div>
   </div>
 
 
   <div  id="timeline-container" style="position: absolute;" class="panel down-panel">
-      <div class="panel up-panel" id="topic-legend">
-            <div class="legend-intro">
-                Function Categories :
-            </div>
+      
+      <div id="timelinetitleback">
       </div>
-      <div id="topic-container" style = "
-      position: absolute;"  > </div>
-  </div>
+      <div id="timelinetitle" style="    ">
+        The Timeline View
+      </div>
+      <div id="topic-container" style = "position: absolute;"  > </div>
 	</div>
 
 
   <div id = "list-contain" class="panel">
+      <div id="maplegend">
+          The Result List
+      </div>
       <div class="btn-container" >
         <div class="check-contain"><input type="checkbox" id="addSelectCheck"><label for="addSelectCheck"></label></div>
 

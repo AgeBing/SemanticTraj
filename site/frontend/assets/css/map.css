@@ -40,18 +40,20 @@ rect.selection {
 #select-area{
 	    position: absolute;
     background: #ffffff8a;
-    right: 47px;
-    bottom: 2px;
+    left: 12px;
+    top: 120px;
     z-index: 2;
-    height: 40px;
-    width: 243px;
-    border: 1px dashed rgba(0, 0, 0, 0.44);
+    height: 122px;
+    width: 30px;
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
+    border-radius: 3px;
 }
 
 
 #select-btn{
-	height: 100%;
-	width: 40px;
+	    height: 29px;
+    width: 29px;
 	float: left;
     background: #fff;
  	display: inline-block;
@@ -63,16 +65,16 @@ rect.selection {
 	background-color: #dddddd;
 }
 #select-btn img{
-	height: 30px;
-    margin: 5px;
+	     height: 22px;
+    margin: 4px;
 }
 
 .range-area{
-	height: 100%;
-	width: 120px;
-	float: right;
-	display: inline-block;
-	background: #fff;
+	    height: 29px;
+    width: 120px;
+    float: left;
+    display: inline-block;
+    background: #fff;
 }
 .range-area:hover{
 	background-color: #dddddd;
@@ -86,8 +88,8 @@ rect.selection {
 	
 }
 .color-area{
-	height: 100%;
-	width: 40px;
+	    height: 29px;
+    width: 29px;
 	float: left;
     background: #fff;
  	display: inline-block;
@@ -98,14 +100,14 @@ rect.selection {
 	background-color: #dddddd;
 }
 .color-area input{
-	height: 26px;
-	margin: 7px;
-	width: 20px;
+	height: 22px;
+    margin: 2px;
+    width: 22px;background: transparent;
 }
 
 .color-area-select{
-	height: 100%;
-	width: 40px;
+	    height: 29px;
+    width: 29px;
 	float: left;
     background: #fff;
  	display: inline-block;
@@ -116,9 +118,9 @@ rect.selection {
 	background-color: #dddddd;
 }
 .color-area-select input{
-	height: 26px;
-	margin: 7px;
-	width: 20px;
+	height: 22px;
+    margin: 2px;
+    width: 22px;background: transparent;
 }
 .color-area-select.disable{
 	background-color: #dddddd;

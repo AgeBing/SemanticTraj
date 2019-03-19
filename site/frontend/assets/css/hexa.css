@@ -58,12 +58,12 @@
 
 
 .sample-area{
-	position: absolute;
-    right:  10px;
-    bottom:  10px;
+	  position: absolute;
+    right: 10px;
     z-index: 2;
-    height: 30px;
-    width: 	100px;
+    height: 20px;
+    width: 100px;
+    top: 40px;
    /*border: 2px solid rgba(0,0,0,0.2);*/
    /*cursor: pointer*/
 }
@@ -82,9 +82,8 @@
 .switch-btn {
 float: right;
 
-  cursor: pointer;
-  width: 45px;
-  height: 28px;
+  cursor: pointer;    width: 30px;
+    height: 15px;
   position: relative;
   border: 1px solid #dfdfdf;
   background-color: #fdfdfd;
@@ -97,9 +96,8 @@ float: right;
   outline: none; 
 }
 .switch-btn:before {
-    content: '';
-    width: 25px;
-    height: 25px;
+    content: '';    width: 13px;
+    height: 13px;
     position: absolute;
     top: 0;
     left: 0;
@@ -113,7 +111,7 @@ float: right;
     background-color: #595959; 
 }
 .switch-btn:checked:before {
-    left: 18px; 
+    left: 15px; 
 }
 .switch-btn.switch-btn-animbg {
     transition: background-color ease .4s; 

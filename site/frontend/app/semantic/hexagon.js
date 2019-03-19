@@ -12,10 +12,10 @@ export function drawHexagon(argument) {
 	svg = d3.select('#semantic-view')
 		.append('svg')
 			.attr('class','hexagon')
-			.attr('width',SVGlength)
-			.attr('height',SVGlength)
-			
-
+			.style('width',"100%")
+			.style('height',"calc(100% - 35px)")
+			.style('top',"35px")
+			.style('position',"absolute")
 	addLinks()
 	addNodes()
 	

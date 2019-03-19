@@ -194,10 +194,55 @@ function addLegend(){
 
     Config.topicNames.forEach((topicType,i)=>{
     	let item = container.append('div').attr('class','legend-item')
+    				.style("left", `${i%2*50}%`)
+    				.style("top", `${29+Math.floor(i/2)*29}px`)
    	 	item.append('div').attr('class','legend-rect')
-   	 		.style('background-color',Config.colorList[i])
+   	 		.style('background-image',function(){
+				switch(topicType.name){
+					case "住宅":
+						return `url("../icon/Residential.png")`
+					break;
+					case "娱乐商业":
+						return `url("../icon/Entertainment.png")`
+					break;
+					case "办公":
+						return `url("../icon/Business.png")`
+					break;
+					case "医疗":
+						return `url("../icon/Medical.png")`
+					break;
+					case "交通":
+						return `url("../icon/Traffic.png")`
+					break;
+					case "教育":
+						return `url("../icon/Educational.png")`
+					break;
+				}
+   	 		})
+   	 		// .style('background-color',Config.colorList[i])
 	    item.append('div').attr('class','legend-name')
-	    	.text(topicType.name)
+	    	.text(function(){
+				switch(topicType.name){
+					case "住宅":
+						return `Residential Related`
+					break;
+					case "娱乐商业":
+						return `Entertainment Related`
+					break;
+					case "办公":
+						return `Business Related`
+					break;
+					case "医疗":
+						return `Medical Related`
+					break;
+					case "交通":
+						return `Traffic Related`
+					break;
+					case "教育":
+						return `Educational Related`
+					break;
+				}
+   	 		})
     })
     // Config.topicNameList.forEach((name,i)=>{
     // 	let item = container.append('div').attr('class','legend-item')

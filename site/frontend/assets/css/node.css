@@ -46,34 +46,79 @@ width:120px;
     heifht:10px;
     display:inline-block;
 }
-.condition_node{
-	    height: calc(100% - 20px);
-    width: 600px;
+.condition_node{       height: calc(100% - 2px);
+    width: 630px;
     position: absolute;
-    margin: 10px;
-    background: #fbfbfb;
-    border-radius: 2px;
-    z-index:0;
+    border-radius: 0;
+    z-index: 0;
+    border: 1px solid rgb(46,117,182);
 }
 .condition_node .title{
     padding: 7px;
     text-align: center;
-    background: rgb(171,171,171);
+    background: rgb(46, 117, 182);
     color: #fdfdfd;
     font-size: 18px;
 
 }
 
 .condition_node .title .constraints_order{
-    position: absolute;
-    padding: 0 10px;
+        position: absolute;
+    padding: 0;
+    line-height: 22px;
+    width: 22px;
+    height: 22px;    
+    background-size: 22px;
+    color: #2e75b6;
 }
 
-.condition_node  .node_subtitle{
-	padding: 5px 10px;
+.condition_node .spatial_constraints_title{
+	line-height: 33px;
     text-align: center;
-    font-size: 10px;
-    color: #3c3c3c;
+    font-size: 13px;
+    background: #e8e8e8;
+}
+
+.condition_node .max_node_num{
+	width: 100px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 32px;
+}
+.condition_node .max_node_num .text{
+    float: left;
+    line-height: 33px;
+    font-size: 12px;
+}
+.condition_node .max_node_num .decrease{
+    background-size: 22px;
+    width: 22px;
+    height: 22px;
+    float: left;
+    margin: 5px 0 5px 5px;
+    text-align: center;
+    color: white;
+}
+.condition_node .max_node_num .increase{
+    background-size: 22px;
+    width: 22px;
+    height: 22px;
+    float: left;
+    margin: 5px 0 5px 5px;
+    text-align: center;
+    color: white;
+}
+
+
+.condition_node  .node_subtitle{
+	    padding: 0px 10px;
+    text-align: center;
+    font-size: 13px;
+    float: left;
+    background: #e8e8e8;
+    line-height: 38px;
+    color: #1d1d1d;
 }
 .condition_node  .node_subtitle .real_node_subtitle{
 	//padding: 5px 10px;
@@ -144,22 +189,20 @@ input{
     display:inline-block;
 }
 .condition_node .timeconstraints .textcon{
-	    float: left;
-	    font-size: 19px;
-	    color: #3c3c3c;
-	    line-height: 25px;
+	        float: left;
+    font-size: 18px;
+    color: #3c3c3c;
+    line-height: 38px;
 }
 .condition_node .timeconstraints .textinput{
-	    float: left;
-	    font-size: 16px;
-	    padding: 2px 5px;
-	    color: #3c3c3c;
-	    line-height: 25px;
-	    width: 125px;
-	    height: 27px;
-	    margin: 0;
-	    padding: 0 15px;
-	    border: 1px #b1b1b1 solid;
+	     float: left;
+    font-size: 14px;
+    color: #3c3c3c;
+    line-height: 38px;
+    height: 38px;
+    margin: 0;
+    width: 110px;
+    padding: 0 15px;
 }
 .condition_node .timeconstraints .textinput:focus{
     outline: none
@@ -172,45 +215,44 @@ input{
     color: #b1b1b1;
 }
 .condition_node .spatial_constraints{
-	float: left;
-    width: calc(70% - 10px);
+	    float: left;
+    width: calc(65% - 10px);
     margin: 5px;
-    height: calc(100% - 110px);
+    height: calc(100% - 96px);
     position: absolute;
     bottom: 0;
+    border: 1px dashed rgb(232, 232, 232);
 }
 
 .condition_node .semantic_constraints{
-	float: left;
-    width: calc(30% - 10px);
+	    float: left;
+    width: calc(36% - 13px);
     margin: 4px;
-    height: calc(100% - 110px);
-    border-left: 1px dashed #b3b3b3;
-        position: absolute;
+    height: calc(100% - 96px);
+    border: 1px dashed rgb(232, 232, 232);
+    position: absolute;
     right: 0;
     bottom: 0;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 
 .condition_node .spatial_constraints .POIrect{
-	position:absolute;
-	width: 100px;
-    height: 20px;
-    font-size: 17px;
-    position: absolute;
+	position:absolute;    
+	width: 137px;
     line-height: 20px;
-    text-align:center;    
-    border: 2px solid transparent;
+    text-align: center;
+    border: 1px solid transparent;
     border-radius: 1px;
     transition-duration: 0.4s;
     overflow-x: scroll;
+    font-size: 15px;
 }
 .condition_node .spatial_constraints .POIrect::-webkit-scrollbar{
     display:none;
 }
 .condition_node .spatial_constraints .POIrect:hover{
-    border: 2px solid #e26b35;
+    border: 1px solid #e26b35;
 }
 
 .condition_node .srealwordtitlepatial_constraints .worddiv{
@@ -260,7 +302,7 @@ input{
 
 
 .condition_node .spatial_constraints .locationlistdiv{
-    width: 115px;
+    width: 150px;
     height: 100%;
     overflow-y: auto;
     position: absolute;
@@ -309,27 +351,33 @@ input{
 /*
     start for configuration Panel
 */
-.high-level-desc{
-font-size: 11px;
+.high-level-desc{    font-size: 11px;
     text-align: center;
-    padding: 0 10px;
+    padding: 0;
+    height: 19px;
+    line-height: 19px;
+    width: 100%;
+    margin: 3px 0;
 }
 .semantic_constraints .param-rect {
-    height: 28px;
+    height: 24px;
     width: clac(100% - 20px);
     /*border: 1px dashed black;*/
     margin: 0px 0px;
-    padding: 0 10px;
+    padding: 0 3px;
 }
 
 .param-rect .param-name{
     display: inline-block;
     float: left;
-    width: 53px;
+    width: 125px;
+        line-height: 24px;
+
 }
 .param-rect .param-num{
-    display: inline-block;
-    float: right;
+        display: inline-block;
+    float: left;
+    line-height: 24px;
 }
 
 .param-rect div{
@@ -347,7 +395,8 @@ font-size: 11px;
 
 .param-range{
     cursor: pointer;
-    margin: 14px 0;
+    margin: 7px 0;    float: left;
+    margin-right: 5px;
 }
 
 

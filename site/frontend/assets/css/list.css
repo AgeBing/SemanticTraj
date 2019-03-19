@@ -109,10 +109,12 @@
 	opacity: 0;
 }
 .btn-container{
-	padding: 5px;
-	height: 38px;
-    display: flex;
-     /*flex-direction : column;*/
+	    padding: 5px;
+    height: 38px;
+    top: 35px;
+    position: absolute;
+    width: calc(100% - 10px);
+    /* flex-direction: column; */
     justify-content: space-between;
 }
 #filter-btn{

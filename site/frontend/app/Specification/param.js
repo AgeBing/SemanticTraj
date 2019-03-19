@@ -87,14 +87,36 @@ function addOneParamRect(root,i){
 	let  height = visBox.offsetHeight; //高度
 	let  width = visBox.offsetWidth; //宽度
 
-	let  rectWidth = width - 105, rectHeight = 10
+	let  rectWidth = 55,
+			rectHeight = 10
 
 	scale.domain([0,rectWidth])
 
 	let group  = root.append('div').attr('class','param-rect')
 		group.append('div')
 			.attr('class' , 'param-name')
-			.text(Config.topicNames[i].name)
+			.text(function(){
+				switch(Config.topicNames[i].name){
+					case "住宅":
+						return `Residential Related`
+					break;
+					case "娱乐商业":
+						return `Entertainment Related`
+					break;
+					case "办公":
+						return `Business Related`
+					break;
+					case "医疗":
+						return `Medical Related`
+					break;
+					case "交通":
+						return `Traffic Related`
+					break;
+					case "教育":
+						return `Educational Related`
+					break;
+				}
+   	 		})
 
 		let svg = group.append('svg')
 					.attr('class' , 'param-range')
