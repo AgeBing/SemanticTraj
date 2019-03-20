@@ -198,8 +198,8 @@ right_nodes.map((x,y)=>{
                 spatial_lines.append('path')
                 .attr('d', function (d) {
                     let left_y = parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2
-                    let right_x = parseInt(d3.select(this.parentNode).style('width'))
-                    let right_y = parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2//-$('#'+locationlistdiv_id).scrollTop()
+                    let right_x = parseInt(d3.select(this.parentNode).style('width'))+1
+                    let right_y = parseInt(d3.select(d.right).style('top'))+ parseInt(d3.select(d.right).style('height')) / 2 -4//-$('#'+locationlistdiv_id).scrollTop()
                     let path_way='M 8 ' + left_y + ' ' + 'C ' +(8 +(right_x)/3)+ ' ' +(left_y)+' '+ (8 + right_x*2/3)+' '+right_y + ' ' + right_x + ' ' + right_y;
                      return path_way
                 })
@@ -212,8 +212,8 @@ right_nodes.map((x,y)=>{
                 spatial_lines.append('circle')
                 .attr('cx','5')
                 .attr('cy',function(d){return parseInt(d3.select(d.left).attr('current_top')) + parseInt(d3.select(d.left).style('height')) / 2})
-                .attr('r','3')
-                .attr('stroke-width','1')
+                .attr('r','2')
+                .attr('stroke-width','2')
                 .attr('stroke','rgb(46,117,182)')
                 .attr('fill','white')
             .attr('z-index',1000)
