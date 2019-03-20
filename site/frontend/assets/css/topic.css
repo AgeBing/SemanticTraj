@@ -8,14 +8,16 @@
 /*
 	顶部时间轴 container
 */
-.top-axis-container{
-	margin: 10px auto;
+#top-axis-container{
+	margin: 10px 0;
 	position: relative;
 	height: 35px;
-	background-color: #e8e8e8;
+	/*background-color: #e8e8e8;*/
 	opacity: 0.7;
 	box-shadow: 0px 0px 0.01px 0.05px;
 	z-index: 100;
+	/*left: 100px;*/
+	width: calc(100% - 100px)
 }
 
 /*
@@ -42,7 +44,7 @@
 }
 .rect-container{
 	display: inline-block;
-	margin: 4px auto;
+	margin: 4px 0;
 	position: relative;
 }
 
@@ -50,7 +52,7 @@
 	展示具体编码效果 container
 */
 .topic-rect-container{
-	left: 0px;
+	left: 107px;
 	top:  0;
 	position: absolute;
 	display: inline-block;
@@ -58,6 +60,7 @@
 	overflow : hidden      /*防止子元素溢出 ,前提是本身需要设置 width */;
 	/*box-shadow: 0px 2px 6px 0px;*/
 	background-color: #fff;
+	width: calc(100% - 107px);
 }
 .topic-rect{
 	/*该元素不能有 padding 或 border  长度为0情况下总长度需要为0*/
@@ -80,6 +83,13 @@
     font-size: 10px;
 }
 
+.traj-id{
+    width: 100px;
+    float: left;
+    font-size: 12px;
+    line-height: 35px;
+    margin-left: 10px;
+}
 .topic-rect .left-box{
 	display: flex;
 	flex-direction: column;
@@ -176,13 +186,15 @@
 
 
 .brush rect.selection{
-	fill: #8c8c8c;
+	fill: rgb(46, 117, 182);
 	stroke-width: 0;
 }
 .brush rect.handle{
-	fill: #8c8c8c;
-	opacity: 0.5;
+	fill: rgb(46, 117, 182);
+	opacity: 1;
 }
 .brush rect.overlay{
-	pointer-events: none
+	pointer-events: none;
+	fill: rgb(46, 117, 182);
+	opacity: 0.2
 }

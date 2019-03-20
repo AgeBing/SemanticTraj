@@ -456,15 +456,22 @@ display: none;
 }
 
 
-
+.move-circle{
+    fill: rgb(46,117,182);
+    cursor:  w-resize;
+}
 .color-rect{
     position: absolute;
-    fill:#b1b1b1;
+    fill:rgb(46,117,182);
+    opacity: 0.8
+}
+.bottom-rect{
+    position: absolute;
+    fill: #e8e8e8;
 }
 
 .param-range{
-    cursor: pointer;
-    margin: 7px 0;    float: left;
+    margin: 12px 0;    float: left;
     margin-right: 5px;
 }
 

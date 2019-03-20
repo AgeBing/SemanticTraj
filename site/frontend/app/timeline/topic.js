@@ -8,7 +8,7 @@ import { func_list , timeScale } from './time.js'
 
 const visBox = document.getElementById("topic-container");
 let  h = visBox.offsetHeight; //高度
-let  w = visBox.offsetWidth; //宽度
+let  w = visBox.offsetWidth - 100; //宽度
 
 
 // 数据格式转换
@@ -28,8 +28,9 @@ function dataAdapter(_line_data){
 		}
 	}).filter((p)=>p.topics)
 
+
 	return {
-			id : _line_data.id,
+			id : _line_data.pid,
 			ps : ps
 	}
 }
@@ -49,17 +50,27 @@ export class topicZoomRect {
 		this.index 	= index   		//代表第几个实例
 	}
 	_render(){    //注意顺序
+		this._appenTrajId()
 		this._appenSVG()
 		this._appendShowRect()
 		this.update_rect()
 		this._appendTopicRect()
 		this._syncTopicRect()
 	}
+	_appenTrajId(){
+		let { vHeight,vWidth,tLeft,tTop,index ,data } = this
+		console.log(data.id)
+		let idDiv = d3.select('#topic-container').select('.th'+index)  //选择有隐患
+				.append('div')
+				.attr('class','traj-id')
+				.text(data.id)
+	}
 	// 需要当 rootEl 挂载后再 append
 	_appenSVG(){
 		let { vHeight,vWidth,tLeft,tTop,index } = this
 		let svg = d3.select('#topic-container').select('.th'+index)  //选择有隐患
 				.append('svg')
+				.attr("transform" , "translate(" + ((w - vWidth)/2 + 7 ) +",0)" ) 
 				.attr('width',vWidth) 
 				.attr('height',vHeight)
 
@@ -143,6 +154,7 @@ export class topicZoomRect {
 			d3.select('.th'+index)
 			  .insert('div')
 			  .attr('class','topic-rect-container')
+			  .style('left',(100 + (w - vWidth)/2 + 7 )+'px')
 			  .style('height',vHeight + 'px')
 			  .style('width',vWidth   + 'px')
 
