@@ -28,7 +28,7 @@ function addParamRects(root){
 				.text('Parameters for Relevance Computation')
 	addAB(root)
 	root.append('div').attr('class','high-level-desc')
-				.text('High-level Description Information')
+				.text('Function Specification')
 	Config.topicNames.forEach((topic,i)=>{
 		addOneParamRect(root,i)
 	})
