@@ -62,9 +62,17 @@ export function renderingwordslist(mergenode) {
       let heightset = []
       for (let i = 0; i < d.data.length; i++) {
         heightset.push(d.data[i].data.length)
-        for (let j = 0; j < d.data[i].length; j++) {
-          d.data[i].data[j].index = (i, j)
+          let same_word=-1;
+        for (let j = 0; j < d.data[i].data.length; j++) {
+          if(d.data[i].name==d.data[i].data[j].name)
+          {
+              same_word=j
+          }
+          else
+              d.data[i].data[j].index = (i, j)
         }
+        /*if(same_word!=-1)
+            d.data[i].data.splice(same_word,1)*/
       }
       return d.data
     }, (d, i) => d.name)
@@ -134,6 +142,14 @@ export function renderingwordslist(mergenode) {
 
   allneiwords.exit().remove()
   let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
+      .each(function(d){
+          let real_word=d3.select(this.parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text()
+          real_word=real_word.substr(0,real_word.length-1)
+          if(d.name==real_word)
+          {
+              $(this).remove();
+          }
+      })
   addneiwords.append('div').classed('wordsval',true)
       addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
   let mergeneiwords = addneiwords.merge(allneiwords)
@@ -361,7 +377,7 @@ export function initial_right_content() {
   legend_list.map((x, y) => {
     let legend = d3.select('#Specification_view').append('div').classed('legend', true).attr('id', x.id)
         .style('position','fixed')
-    .style('right','20px')
+    .style('right','70px')
           .style('top','380px')
     legend.append('div').classed('text', true).text(x.name)
     let content = legend.append('div').classed('content', true)
