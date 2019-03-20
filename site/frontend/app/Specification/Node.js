@@ -361,8 +361,8 @@ export function initial_right_content() {
   legend_list.map((x, y) => {
     let legend = d3.select('#Specification_view').append('div').classed('legend', true).attr('id', x.id)
         .style('position','fixed')
-    .style('right','0px')
-          .style('top','390px')
+    .style('right','20px')
+          .style('top','380px')
     legend.append('div').classed('text', true).text(x.name)
     let content = legend.append('div').classed('content', true)
     content.append('div').classed('max', true).text(0)
