@@ -85,6 +85,7 @@ d3.select('#'+nodelist.order[current_location]).style('left', current_location*(
 
 
 export function show_hide() {
+    //let real_word=d3.select(this.parentNode).select('.real_wordtitle')//搜索词本身
     let nei_words= d3.select(this.parentNode.parentNode).select('.nei_words')
     let wordsubtitle=d3.select(this.parentNode.parentNode).select('.wordsubtitle')
     let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');
@@ -129,13 +130,6 @@ export function initial_line(index) {//condition_node1
     let locationlistdiv_id=index.replace('condition_node','locationlistdiv');
     let nodelist = require('../Specification/Node.js')
         let left_nodes = line_data[index].left;
-  /*  left_nodes.forEach((left)=>{
-        left.append('circle')
-                .attr('cx',d3.select(left).style('width'))
-                .attr('cy',function(){parseInt(d3.select(left).attr('current_top')) + parseInt(d3.select(left).style('height')) / 2})
-                .attr('r','3')
-                .attr('fill','white')
-    })*/
         let right_nodes = []
     d3.select('#'+locationlistdiv_id).select('.spatial_POIs').selectAll('.POIrect').each(function(){right_nodes.push(this);})
         if (left_nodes.length > 0 && right_nodes.length > 0) {
@@ -146,9 +140,21 @@ export function initial_line(index) {//condition_node1
             let max_val=0;
             let min_val=0;
             for (let i = 0; i < left_nodes.length; i++) {
-let second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
-second_title=second_title.substr(0,second_title.length-1)//title后面会有个X，把它删掉
-let third_title=d3.select(left_nodes[i]).select('.neiwordsdiv_word').text();
+                let second_title=''
+                let third_title=''
+                 if(String($(left_nodes[i]).attr('class'))=='real_wordtitle')
+                 {
+                     second_title=d3.select(left_nodes[i]).text()
+                     second_title=second_title.substr(0,second_title.length-1)//title后面会有个X，把它删掉
+                     third_title=second_title
+                 }
+                else
+                 {second_title=d3.select(left_nodes[i].parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text();
+                 second_title=second_title.substr(0,second_title.length-1)//title后面会有个X，把它删掉
+                third_title = d3.select(left_nodes[i]).select('.neiwordsdiv_word').text();
+                 }
+
+
 if(!(second_third_index.hasOwnProperty(second_title)))
 {
 for(let i=0;i<nodelist.data[data_num-1].data.length;i++)
@@ -216,7 +222,7 @@ right_nodes.map((x,y)=>{
                 .attr('stroke-width','2')
                 .attr('stroke','rgb(46,117,182)')
                 .attr('fill','white')
-            .attr('z-index',1000)
+            //.attr('z-index',1000)
                   refresh_path_color();//对已存在的线进行重新刷新颜色比例尺
         } else {
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
@@ -297,8 +303,16 @@ export function get_left_nodes(index) {//index:1,2,3...
         let bottom_height = top_height + parseInt($('#spatial_left' + index)[0].getBoundingClientRect().height);
         d3.select('#spatial_left' + index).select('.spatial_words').selectAll('.Worddiv')//主题词div集合
             .each(function (d,i) {
-                /*if($(this).length>0)
-                {*/
+                 $(this).find('.real_wordtitle').each(function(){
+                 let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
+                        let element_height = $(this)[0].getBoundingClientRect().height;
+                        if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
+                            d3.select(this).attr('current_top', current_element_top - top_height);
+                            line_data['condition_node'+index].left.push(this);
+                        }
+                })
+
+
                 let order=$(this).attr('id')
                 order=parseInt(order.substr(order.length-1,1))
                 let top_length=0;
@@ -318,7 +332,6 @@ top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height///.outer
                         }
                     })
                 }
-              /*  }*/
             })
         //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
         initial_line('condition_node'+index);
