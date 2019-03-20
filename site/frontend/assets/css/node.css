@@ -17,18 +17,23 @@
     color:white
 }
 .legend{
-    background: white;
+    background:rgba(0,0,0,0.5);
 width:150px;
     display: block;
+    height:60px;
+     color:white;
 }
 .legend .text{
-    font-size: 10px;
+    font-size: 14px;
     float:left;
     display:inline-block;
+    height: 20px;
+    margin-top: 10px;
 }
 .legend .content{
     font-size: 10px;
     display:inline-block;
+    margin-left: 20px;
 }
  .legend .content .max{
     float:left;
