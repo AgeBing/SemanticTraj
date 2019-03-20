@@ -1,46 +1,47 @@
 .right_content{
     float:right;
-    width:120px;
+    width:50px;
     height:100%;
-     background: whitesmoke;
+     background: transparent;
 }
 
 .right_content .add_condition_node{
 
-    height:calc(100% - 100px);
+    height:100%;
     width:50px;
     text-align: center;
    line-height:100px;
-    background:rgb(171,171,171);
+    background:rgb(46,117,182);
     float:right;
     display: block;
+    color:white
 }
-.right_content .legend{
-width:120px;
+.legend{
+    background: white;
+width:150px;
     display: block;
-    margin-top: 10px;
 }
-.right_content .legend .text{
+.legend .text{
     font-size: 10px;
     float:left;
     display:inline-block;
 }
-.right_content .legend .content{
+.legend .content{
     font-size: 10px;
     display:inline-block;
 }
-.right_content .legend .content .max{
+ .legend .content .max{
     float:left;
     width:20px;
     height:10px;
     display:inline-block;
 }
-.right_content .legend .content .color_bar{
+ .legend .content .color_bar{
     width:10px;
     height:10px;
     display:inline-block;
 }
-.right_content .legend .content .min{
+.legend .content .min{
     float:right;
     width:20px;
     heifht:10px;
@@ -183,10 +184,11 @@ input{
 
 .delete{
     float:right;
-    color:white;
+    color:#2e75b6;
     background:transparent;
     margin-top: 2px;
     display:inline-block;
+    font-weight:600;
 }
 .condition_node .timeconstraints .textcon{
 	        float: left;
@@ -241,7 +243,7 @@ display: none;
 }
 .condition_node .spatial_constraints .POIrect{
 	//position:absolute;
-	width: 137px;
+	width: 125px;
     line-height: 20px;
     /*text-align: center;*/
     border: 1px solid transparent;
@@ -249,19 +251,20 @@ display: none;
     transition-duration: 0.4s;
     /*overflow-x: scroll;*/
     font-size: 15px;
-    /*//height:20px;*/
+    height:25px;
 }
 .condition_node .spatial_constraints .POIrect .POIdiv{//长度表示相似度
 	float:left;
     text-align: center;
     transition-duration: 0.4s;
     overflow:hidden;
-    font-size: 15px;
     display:inline-block;
-    height:20px;
+    height:14px;
+    background:#2e75b6;
 }
 .condition_node .spatial_constraints .POIrect .POIname{
-	float:right;
+	right: 2px;
+    position: absolute;
     width:50px;
     height:20px;
     text-align: center;
@@ -337,24 +340,46 @@ display: none;
 }
 
 .condition_node .spatial_constraints .neiwordsdiv .neiwordsdiv_word{
-	    font-size: 14px;
+	    font-size: 10px;
     color: white;
     text-align: center;
      background: #2e75b6;
     float:right;
     display: inline-block;
+    height:14px;
 }
 .condition_node .spatial_constraints .locationlistdiv{
-   width: 150px;
+   width: 125px;
     height: calc(100% - 6px);
     overflow-y: auto;
     position: absolute;
-    right: 0;
-    margin: 3px;
+    right: 37px;
+    margin-top: 3px;
 }
+/*.condition_node .spatial_constraints .locationlistdiv .spatial_POIs{*/
+/*width:calc(100% - 35px);*/
 
-
-
+/*}*/
+.condition_node .spatial_constraints .POIback{
+    height: 100%;
+    width: 35px;
+    position: absolute;
+    background: #e8e8e8;
+    right: 0;
+    margin-top: 3px;
+}
+.condition_node .spatial_constraints .POIlogo{
+    line-height: 33px;
+    top: calc(50% - 16px);
+    width: 176px;
+    right:-71px;
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    color: #1d1d1d;
+    text-align: center;
+    position: absolute;
+    transform: rotate(90deg);
+    font-size: 15px;
+}
 .ticks {
   font: 10px sans-serif;
 }
