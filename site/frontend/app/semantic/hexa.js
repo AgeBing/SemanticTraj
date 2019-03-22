@@ -2,7 +2,7 @@
 import { transDatas,coorCenter  } from  './config.js'
 import { Particle } from './particle.js'
 import { ifSample } from './index.js'
-import { highlightSemanticTraj ,unHighlightSemanticTraj } from '../app.js'
+import { hl_SemanticTraj ,uhl_SemanticTraj } from '../highlight/index.js'
 
 
 class Hexa{
@@ -128,12 +128,12 @@ class Hexa{
 	enterHandler(){
 		let { pid } = this.data
 		this.highlight()
-		highlightSemanticTraj(pid)
+		hl_SemanticTraj(pid)
 	}
 	leaveHandler(){
 		let { pid } = this.data
 		this.unHighlight()
-		unHighlightSemanticTraj(pid)
+		uhl_SemanticTraj(pid)
 	}
 	highlight(){
 		let { g } = this

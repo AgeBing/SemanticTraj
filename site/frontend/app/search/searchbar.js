@@ -94,7 +94,7 @@ function addInputListener(o) {
 
 
 function addParticle(){
-  console.log('add')
+  // console.log('add')
   let name = $('#search-input-text').val()
   const rawText = textData.map(d => d[0]).join('') + name;
   QueryUtil.get_participle(rawText)    
@@ -102,13 +102,20 @@ function addParticle(){
       o = o.filter(d => d[0].trim().length > 0)
       textData = o;      // 获取词性
       createTabs(o)
+      return o
+    })
+    .then(o => {
+         // 只有名称才会被添加
+        o.forEach((d)=>{
+            if(d[0] == name && d[1] == 'n'){
+              addPOI(name);
+            }
+        })
     })
     .then(()=>{
       $('#search-input-text').val('')
     })
-    .then(o => {
-        addPOI(name);
-    })
+
 }
 
 function removeParticle(){

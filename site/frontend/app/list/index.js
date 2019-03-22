@@ -1,14 +1,9 @@
 import * as d3 from 'd3';
 
 import { topicAdd  as drawTopic } from '../app.js'
-import { highLightTrajContorl , 
-		 unHighLightTrajContorl , 
-		 highLightTopiContorl ,
-		 unHighLightTopiContorl,
-		 highlightPoisInTrajs,
-		 unHighlightPoisInTrajs
-		  }  from '../app.js' 
+import { hl_listItem,uhl_listItem }  from '../highlight/index.js' 
 import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
+
 
 
 let resultlist = {
@@ -278,25 +273,16 @@ function enterEventHandler(){
 	if(disable) return
 	
 	let pid = d3.select(this).attr('id')
+	let checked =  d3.select(this).select('input').property('checked')
+	hl_listItem( pid , checked )
 
-	highLightOneItem(pid)
-	highLightTrajContorl(pid)
-	highlightPoisInTrajs(pid)
-	highlightHexa(pid)
-	if( d3.select(this).select('input').property('checked') )
-		highLightTopiContorl(pid)
 }
 function leaveEventHander(){
 	let disable = d3.select(this).select('input').property('disabled')
 	if(disable) return
 	let pid = d3.select(this).attr('id')
-	unhighLightOneItem(pid)
-	unHighLightTrajContorl()
-	unHighlightPoisInTrajs()
-	unHighlightHexa(pid)
-	if( d3.select(this).select('input').property('checked') ){
-		unHighLightTopiContorl(pid)
-	}
+	let checked =  d3.select(this).select('input').property('checked')
+	uhl_listItem( pid , checked )
 }
 
 function updatePerNum(){

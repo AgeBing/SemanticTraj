@@ -468,5 +468,19 @@ function lineShowConfig(len){
 
 }
 
+
+export function shadowCanvas(){
+	d3.select('#canvas-upon-map')
+		.style('opacity' , 0.5)
+	d3.select('#canvas-upon-map-select')
+		.style('opacity' , 0.5)		
+}
+export function unShadowCanvas(){
+	d3.select('#canvas-upon-map')
+		.style('opacity' , 1)
+	d3.select('#canvas-upon-map-select')
+		.style('opacity' , 1)		
+}
+
 // 变量
 export { filter , stack }

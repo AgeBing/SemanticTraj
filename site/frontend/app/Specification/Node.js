@@ -47,10 +47,11 @@ let nodelist = {
 export let line_data = [];
 export let is_initial_right_content = false;
 export let POI_colorscale = d3.scaleQuantize()
-  .range(['#f1eef6', '#d0d1e6',
-    '#a6bddb', '#74a9cf',
-    '#2b8cbe', "#045a8d"
-  ])
+  // .range(['#f1eef6', '#d0d1e6',
+  //   '#a6bddb', '#74a9cf',
+  //   '#2b8cbe', "#045a8d"
+  // ])
+    .range( [ '#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a'])
 export let poi_colordomain = {
   max: 0,
   min: 0
@@ -369,7 +370,8 @@ export function initial_right_content() {
   },*/ {
     id: 'Relevance_Information',
     name: 'Relevance Information:',
-    color: ['#993404', '#d95f0e', '#fe9929', '#fec44f', '#fee391', "#ffffd4"]
+    // color: ['#993404', '#d95f0e', '#fe9929', '#fec44f', '#fee391', "#ffffd4"]
+    color: [ '#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a']
   }]
   // let height = parseInt($('#Specification_view').css('height'))
   let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
