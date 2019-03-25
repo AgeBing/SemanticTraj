@@ -396,6 +396,7 @@ export function initial_right_content() {
         .style('position','fixed')
     .style('right','70px')
           .style('top','380px')
+          .style('padding','0 10px')
     legend.append('div').classed('text', true).text(x.name)
     let content = legend.append('div').classed('content', true)
     content.append('div').classed('max', true).text(0)

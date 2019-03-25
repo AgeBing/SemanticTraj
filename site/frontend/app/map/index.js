@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import $ from 'jquery';
+// import $ from 'jquery';
 
 import { draw }  from './pic'
 
@@ -8,6 +8,7 @@ import { draw as drawPoi } from './poi'
 import { draw as drawTraj } from './traj'
 import { draw as drawSelect } from './select'
 import { appendWidget } from './widget'
+
 
 appendWidget()
 let event_queue = false
@@ -28,9 +29,46 @@ let map = L.map('map-container').setView([28.0152686, 120.6558736], zoomRate);
 let osmLayer = L.tileLayer(tilemapservice).addTo(map);
 
 
+let heatmap = L.heatLayer([]);
+let heatpoint = 0;
+heatmap.addTo(map)
+
+
+function drawheatmap(trajsData){
+	let heatmapdata = [];
+	heatpoint=0;
+	for(let traj of trajsData){
+		for(let point of traj.traj){
+			heatmapdata.push([point.latitude,point.longitude])
+			heatpoint++
+		}
+	}
+	heatmap.setLatLngs(heatmapdata)
+	heatmap.setOptions({radius: 12,max:  heatpoint*0.00035})
+}
+
+ $("#heatmapslider").slider()
+    .on( "slide", function( event, ui ) {
+        // heatmap.setOptions({radius: 10,max: heatpoint*0.00035})
+
+		if(ui.value==200){
+			heatmap.setOptions({radius: 12,max: heatpoint*5*ui.value})
+		}else{
+			heatmap.setOptions({radius: 12,max: heatpoint*0.000005*ui.value})
+		}
+
+
+    }) 
+    .slider( "option", "min", 1)
+    .slider( "option", "max", 200 )
+    .slider( "option", "step", 1 )
+    .slider( "value", 70 )
+d3.select("#heatmapslider").select("span").style("width","8px").style("margin-left", "-4px")
+    			.style("height","17px")
+
+
 let canvas = d3.select(map.getPanes().overlayPane).append("canvas").attr('id','canvas-upon-map')
 d3.select(map.getPanes().overlayPane).append("canvas").attr('id','canvas-upon-map-select')
-
 
 
 let poiSvg = d3.select(map.getPanes().overlayPane)
@@ -107,12 +145,6 @@ function drawPic() {
 	drawTraj() //绘制勾选的轨迹
 }
 
-
-function drawheatmap(){
-
-}
-
-
 let debounceTimer
 function debounceResize( delay ){
 
@@ -130,4 +162,4 @@ function debounceResize( delay ){
 	}
 }
 
-export { map,boundry,zoom,width,height }
+export { map,boundry,zoom,width,height,drawheatmap }
