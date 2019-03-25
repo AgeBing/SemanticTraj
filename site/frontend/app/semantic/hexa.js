@@ -145,6 +145,16 @@ class Hexa{
 		g.selectAll('circle').style('opacity',0.5)
 		g.selectAll('path').style('opacity',0.5)
 	}
+	dark(){
+		let { g } = this
+		g.selectAll('circle').style('opacity',0.01)
+		g.selectAll('path').style('opacity',0.01)
+	}
+	undark(){
+		let { g } = this
+		g.selectAll('circle').style('opacity',0.5)
+		g.selectAll('path').style('opacity',0.5)
+	}
 	destroy(){
 		let { g } = this
 		g.remove()

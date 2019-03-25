@@ -60,11 +60,22 @@ function btnHandler(){
 
 
 export function highlightHexa(pid){
-	let obj = objsH.get(pid)
-	if(obj) obj.obj.highlight()
+
+	objsH.forEach((obj , _pid)=>{
+		if (_pid == pid ){
+			if(obj) obj.obj.highlight()
+		}else{
+			if(obj) obj.obj.dark()
+		}
+	})
 }
 
 export function unHighlightHexa(pid){
-	let obj = objsH.get(pid)
-	if(obj) obj.obj.unHighlight()
+	objsH.forEach((obj , _pid)=>{
+		if (_pid == pid ){
+			if(obj) obj.obj.unHighlight()
+		}else{
+			if(obj) obj.obj.undark()
+		}
+	})
 }

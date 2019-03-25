@@ -52,7 +52,7 @@ function setTopAxis(){
 	let axisFunc =  d3.axisBottom(timeScale)
 	let tr = d3.timeMinute.range(timeRange[0],timeRange[1],10)
 		// console.log(tr)
-		axisFunc.ticks(10)  //显示的个数
+		axisFunc.ticks(5)  //显示的个数
 			.tickFormat(  d3.timeFormat("%x %H:%M")  )
 		// axisFunc.tickValues(tr)
 		//   	.tickSizeOuter(0)

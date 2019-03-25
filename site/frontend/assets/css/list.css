@@ -78,6 +78,7 @@
     font-size: 12px;
     padding: 0 6px;
     color: #595959;
+    width: 120px;
 }
 .percent-rect{
     min-width: 40px;
