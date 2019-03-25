@@ -182,10 +182,9 @@ function addOneParamRect111(root,i){
 }
 
 function addOneParamRect(root,i){
-	let current_order=0
+	let current_node_id=''
 	root.each(function(){
-	current_order=d3.select(this.parentNode).attr('id')
-	current_order=current_order.substr(current_order.length-1,1)
+	current_node_id=d3.select(this.parentNode).attr('id')
 	})
 
 	let  visBox = document.getElementsByClassName("semantic_constraints")[0];
@@ -238,9 +237,10 @@ function addOneParamRect(root,i){
 				$(this).slider()
 	    .on( "slide", function( event, ui ) {
 			Config.picTrajOpacity = ui.value
-			d3.select(this.parentNode).select('.num').text(parseFloat(ui.value).toFixed(1))
+			d3.select(this.parentNode).select('.param-num').text(parseFloat(ui.value).toFixed(1))
 			Config.PicUpdateFlag = true
 			draw()
+            calcSims(current_node_id)
 	    })
 	    .slider( "option", "min", 0)
 	    .slider( "option", "max", 1)
@@ -251,7 +251,7 @@ function addOneParamRect(root,i){
 	    			.style("height","14px")
 			})
 			drag_bar.append('div')
-				.attr('class','num')
+				.attr('class','param-num')
 			.style('position','absolute')
 				.style('right','1px')
 				.style('line-height','30px')
@@ -324,6 +324,10 @@ function addOneParamRect(root,i){
 
 
 function addAB(root){
+    let current_node_id=''
+	root.each(function(){
+	current_node_id=d3.select(this.parentNode).attr('id')
+	})
 	let group = root.append('div').attr('class','param-ab-rect')
 	let Agroup = group.append('div').attr('class','param-half-rect param-a')
 	let Bgroup = group.append('div').attr('class','param-half-rect param-b')
@@ -370,7 +374,8 @@ function addAB(root){
 			}
 			Config.PicUpdateFlag = true
 			draw()
-	    })
+            calcSims(current_node_id)
+	    })//if(d.data[i].data[j].data[m].latitude>27.9248561995 &&d.data[i].data[j].data[m].latitude<28.0769120675 &&d.data[i].data[j].data[m].longitude>120.5833650410&&d.data[i].data[j].data[m].longitude<120.7579719628)
 	    .slider( "option", "min", 0)
 	    .slider( "option", "max", 1)
 	    .slider( "option", "step", 0.1)
