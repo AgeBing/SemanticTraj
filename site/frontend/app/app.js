@@ -100,19 +100,22 @@ function getTrajScore(pid){
 	// sites 数据有bug  stoppoint 表示经过点的次数 ！！！！！！！！
 
 	if(!sites || sites.length == 0)  return 0 
-	let sum = 0 , sitescores 
+	let max = 0 , sitescores , max_id 
 	sites.forEach((site)=>{
 		// sitescores 为该site周围的poi 的score ，大多为一个 
 		sitescores =  nodelist.siteScore.get(+site.siteId)
 		if(!sitescores)  return 0
 
-		for (let s of sitescores.values()) {
-		  sum += s
+		// 取 max 
+		for (let s of sitescores.values()){ 
+		    if( s > max ){
+		    	max = s 
+		    }
 		}
 
 	})
 
-	return sum
+	return max
 }
 
 
