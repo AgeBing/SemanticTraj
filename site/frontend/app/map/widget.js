@@ -45,7 +45,8 @@ function bindSelectColorPickEvent(){
 function bindOpacityChangeEvent(){
 	$("#trajslider").slider()
 	    .on( "slide", function( event, ui ) {
-			Config.picTrajOpacity = ui.value*0.01
+			Config.picTrajOpacity = ui.value*0.001
+			console.log(Config.picTrajOpacity)
 			Config.PicUpdateFlag = true
 			draw()
 	    }) 
