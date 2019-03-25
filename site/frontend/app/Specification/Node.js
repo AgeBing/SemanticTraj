@@ -187,7 +187,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
               let index = poi_map[poi_name]
               pois[index].val += d.data[i].data[j].data[m].val
             } else {
-              poi_map[poi_name] = pois.length
+                if(d.data[i].data[j].data[m].latitude>27.9248561995 &&d.data[i].data[j].data[m].latitude<28.0769120675 &&d.data[i].data[j].data[m].longitude>120.5833650410&&d.data[i].data[j].data[m].longitude<120.7579719628)
+                {
+                    poi_map[poi_name] = pois.length
               pois.push({
                 index: pois.length,
                 poi: d.data[i].data[j].data[m],
@@ -196,6 +198,7 @@ export function renderingPOIlist(mergenode, max_num = 20) {
                   S: (j, d.data[i].data[j].name)
                 },
               })
+                }
             }
           }
         }
