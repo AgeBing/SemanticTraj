@@ -5,6 +5,7 @@ import * as Config from '../timeline/config'
 import { nodelist  } from './Node.js'
 
 import * as DataManager from '../search/datamanager.js';
+import {draw} from "../map/pic";
 
 let scale = d3.scaleLinear()
 	.range([0,1])
@@ -114,7 +115,7 @@ function paramHander() {
 	calcSims( nodeId )
 
 }
-function addOneParamRect(root,i){
+function addOneParamRect111(root,i){
 	let  visBox = document.getElementsByClassName("semantic_constraints")[0];
 	let  height = visBox.offsetHeight; //高度
 	let  width = visBox.offsetWidth; //宽度
@@ -180,6 +181,147 @@ function addOneParamRect(root,i){
 			.text(1)	
 }
 
+function addOneParamRect(root,i){
+	let current_order=0
+	root.each(function(){
+	current_order=d3.select(this.parentNode).attr('id')
+	current_order=current_order.substr(current_order.length-1,1)
+	})
+
+	let  visBox = document.getElementsByClassName("semantic_constraints")[0];
+	let  height = visBox.offsetHeight; //高度
+	let  width = visBox.offsetWidth; //宽度
+
+	let  rectWidth = 55,
+			rectHeight = 10
+
+	scale.domain([0,rectWidth - 15])
+
+	let group  = root.append('div').attr('class','param-rect')
+		group.append('div')
+			.attr('class' , 'param-name')
+			.text(function(){
+				switch(Config.topicNames[i].name){
+					case "住宅":
+						return `Residential Related`
+					break;
+					case "娱乐商业":
+						return `Entertainment Related`
+					break;
+					case "办公":
+						return `Business Related`
+					break;
+					case "医疗":
+						return `Medical Related`
+					break;
+					case "交通":
+						return `Traffic Related`
+					break;
+					case "教育":
+						return `Educational Related`
+					break;
+				}
+   	 		})
+			let drag_bar = group.append('div')
+					// .attr('class' , 'param-range')
+					.style('height' , rectHeight + 4)
+					.style('width' , rectWidth)
+
+			drag_bar.append('rect')
+				// .attr('class','bottom-rect')
+				.style('position','absolute')
+					.style('width',rectWidth+'px')
+					.style('height',6+'px')
+				.style('margin','9px')
+					.attr('y' , 5)
+	.each(function(){
+				$(this).slider()
+	    .on( "slide", function( event, ui ) {
+			Config.picTrajOpacity = ui.value
+			d3.select(this.parentNode).select('.num').text(parseFloat(ui.value).toFixed(1))
+			Config.PicUpdateFlag = true
+			draw()
+	    })
+	    .slider( "option", "min", 0)
+	    .slider( "option", "max", 1)
+	    .slider( "option", "step", 0.1)
+	    .slider( "value", 1 )
+		Config.picTrajOpacity = 0.1
+	d3.select(this).select("span").style("width","8px").style("margin-left", "-4px")
+	    			.style("height","14px")
+			})
+			drag_bar.append('div')
+				.attr('class','num')
+			.style('position','absolute')
+				.style('right','1px')
+				.style('line-height','30px')
+			.text(1)
+
+			/*drag_bar.append('rect').attr('class','color-rect')
+					.attr('width',rectWidth)
+					.attr('height',4)
+					.attr('y' , 5)*/
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+	$("#trajslider").slider()
+	    .on( "slide", function( event, ui ) {
+			Config.picTrajOpacity = ui.value*0.01
+			Config.PicUpdateFlag = true
+			draw()
+	    })
+	    .slider( "option", "min", 1)
+	    .slider( "option", "max", 100)
+	    .slider( "option", "step", 1)
+	    .slider( "value", 10 )
+	Config.picTrajOpacity = 0.1
+	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
+	    			.style("height","17px")
+*/
+
+
+
+/*
+		let svg = group.append('div')
+					.attr('class' , 'param-range')
+					.attr('height' , rectHeight + 4)
+					.attr('width' , rectWidth)
+
+			svg.append('rect').attr('class','bottom-rect')
+					.attr('width',rectWidth)
+					.attr('height',4)
+					.attr('y' , 5)
+
+			svg.append('rect').attr('class','color-rect')
+					.attr('width',rectWidth)
+					.attr('height',4)
+					.attr('y' , 5)
+
+		let circle	= svg.append('rect').attr('class','move-circle')
+					.attr('width',rectHeight + 4)
+					.attr('height',rectHeight + 4)
+					.attr('rx',rectHeight + 4)
+					.attr('ry',rectHeight + 4)
+					.attr('x',rectWidth - 14)
+
+		circle.on('mousedown',mouseDownHander)
+		svg.on('mouseup',mouseUpHander)
+
+		group.append('div')
+			.attr('class' , 'param-num')
+			.text(1)*/
+}
+
 
 function addAB(root){
 	let group = root.append('div').attr('class','param-ab-rect')
@@ -193,8 +335,56 @@ function addAB(root){
 	group.selectAll('.param-half-rect')
 		.append('div').attr('class','param-name')
 
-	let svg = group.selectAll('.param-half-rect')
-				.append('svg')
+	group.selectAll('.param-half-rect')
+		.append('div')
+		.style('width','50px')
+		.style('position','absolute')
+					.style('height',6+'px')
+				.style('margin','15px')
+		.each(function(){
+			$(this).slider()
+	    .on( "slide", function( event, ui ) {
+			Config.picTrajOpacity = ui.value
+			let num=parseFloat(ui.value).toFixed(1)
+			d3.select(this.parentNode).select('.param-num').text(num)
+			if(d3.select(this.parentNode).attr('class')=='param-half-rect param-a')
+			{
+				let another=(1-num).toFixed(1)
+				d3.select(this.parentNode.parentNode).selectAll('div').each(function(){
+					if(d3.select(this).attr('class')=='param-half-rect param-b'){
+						let x=d3.select(this).select('.param-num')
+					x.text(another)
+					}
+				})
+
+			}
+			else
+			{
+				let another=(1-num).toFixed(1)
+				d3.select(this.parentNode.parentNode).selectAll('div').each(function(){
+					if(d3.select(this).attr('class')=='param-half-rect param-a'){
+						let x=d3.select(this).select('.param-num')
+					x.text(another)
+					}
+				})
+			}
+			Config.PicUpdateFlag = true
+			draw()
+	    })
+	    .slider( "option", "min", 0)
+	    .slider( "option", "max", 1)
+	    .slider( "option", "step", 0.1)
+	    .slider( "value"/*, function(){
+	    	if(d3.select(this.parentNode).attr('class')=='param-half-rect param-a')
+	    		return 1
+			else
+				return 0
+		}*/,1)
+		Config.picTrajOpacity = 0.1
+	d3.select(this).select("span").style("width","8px").style("margin-left", "-4px")
+	    			.style("height","14px")
+		})
+				/*.append('svg')
 				.attr('class' , 'param-range')
 				.attr('height' , rectHeight +  4)
 				.attr('width' , rectWidth)
@@ -207,7 +397,7 @@ function addAB(root){
 		svg.append('rect').attr('class','color-rect')
 			.attr('width',rectWidth * 0.5)
 			.attr('height',4)
-			.attr('y' , 5)
+			.attr('y' , 5)*/
 
 	// group.selectAll('svg').on('click',paramHander)
 	
@@ -218,7 +408,7 @@ function addAB(root){
 		.append('div').attr('class','param-num')
 
 
-		let circle	= svg.append('rect').attr('class','move-circle')
+		/*let circle	= svg.append('rect').attr('class','move-circle')
 					.attr('width',rectHeight + 4)
 					.attr('height',rectHeight + 4)
 					.attr('rx',rectHeight + 4)
@@ -226,18 +416,18 @@ function addAB(root){
 					// .attr('x',rectWidth - 14)
 
 	circle.on('mousedown',mouseDownHander)
-	svg.on('mouseup',mouseUpHander)
+	svg.on('mouseup',mouseUpHander)*/
 	
 	Agroup.select('.param-name').text('α')
-	Agroup.select('.color-rect').attr('width',rectWidth)
+	//Agroup.select('.color-rect').attr('width',rectWidth)
 	Agroup.select('.param-num').text(1)
-	Agroup.select('.move-circle').attr('x',rectWidth - 13)
+	//Agroup.select('.move-circle').attr('x',rectWidth - 13)
 
 
 	Bgroup.select('.param-name').text('β')
-	Bgroup.select('.color-rect').attr('width',0)
+	//Bgroup.select('.color-rect').attr('width',0)
 	Bgroup.select('.param-num').text(0)
-	Bgroup.select('.move-circle').attr('x',0)
+	//group.select('.move-circle').attr('x',0)
 }
 
 function getParamVals(nodeId) {
