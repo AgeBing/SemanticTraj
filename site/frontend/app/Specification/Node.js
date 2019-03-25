@@ -42,7 +42,8 @@ let nodelist = {
   data: [],
   order: [],
 
-  siteScore: new Map()
+  siteScore: new Map() ,
+  searchSiteList : new Map()
 }
 export let line_data = [];
 export let is_initial_right_content = false;
@@ -162,6 +163,12 @@ export function renderingwordslist(mergenode) {
 }
 
 export function renderingPOIlist(mergenode, max_num = 20) {
+
+  // by ykj
+  // 列表现实的前 max_num  poi 存储在 POIS 中
+  let POIS = []
+
+
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
     .data(function(d) {
       let textcolorscale = 0
@@ -169,6 +176,8 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       // data
       let pois = []
       let poi_map = {}
+      
+      
       for (let i = 0; i < d.data.length; i++) {
         for (let j = 0; j < d.data[i].data.length; j++) {
 
@@ -208,6 +217,15 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         pois[i].background = POI_colorscale(pois[i].poi.val)
       }
       pois = pois.slice(0, max_num)
+
+
+      // by ykj
+      // 用于向后台返回数据
+      POIS = pois.slice()
+      let node_name = d.name
+      nodelist.searchSiteList.set(node_name , POIS)
+
+
       //reorder
       pois.sort(function(a, b) {
         return a.poi.index - b.poi.index
@@ -216,6 +234,8 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     }, function(d) {
       return d.poi.name;
     })
+
+
 
   allPOI.exit().remove()
  let addPOI = allPOI.enter().append("div").classed("POIrect", true)
@@ -229,15 +249,23 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
     .on('mouseenter', (d) => {
-      drawPoiInMap([d.poi])
+
+      let _pois_show_in_map = POIS.map((p)=>p.poi)
+      drawPoiInMap( _pois_show_in_map )
+      
+      // drawPoiInMap([d.poi])
+      // console.log(POIS)
     })
     .on('mouseleave', (d) => {
       removePoiInMap()
     })
-        POIs.selectAll('.POIdiv')
+       
+      POIs.selectAll('.POIdiv')
         .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
-        POIs.selectAll('.POIname')
+      POIs.selectAll('.POIname')
         .text(d=>d.poi.name)
+
+
 
 
   /*.each(function(){

@@ -439,7 +439,7 @@ display: none;
 }
 .semantic_constraints .param-rect {
     height: 24px;
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     /*border: 1px dashed black;*/
     margin: 0px 0px;
     padding: 0 3px;

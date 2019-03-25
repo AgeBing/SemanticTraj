@@ -70,6 +70,30 @@ def get_similiar_sites(words):
   logging.info('get_similiar_sites done!')
   return traj.Traj(len(words), sites, _site_cover)
 
+
+
+
+# by ykj
+# 根据前端返回的 poi 对应的 sites 列表进行查询
+# sites : [  [ p1_s1,p1_s2,p1_s3 ] ,
+#            [ p2_s1,p2_s2,p2_s3,p2_s4 ], ... ]
+def get_k_sites(sites):
+  _sites = set()
+  _site_cover = {}
+  for i in range(0, len(sites)):
+    for site in sites[i]:
+      _sites.add( site )
+      state = _site_cover.get( site , 0)
+      _site_cover[ site ] = state | (1 << i)  
+  
+  print(_sites)
+  print(_site_cover)
+
+  return traj.Traj(len(sites), _sites, _site_cover)
+  
+
+
+
 def get_similiar_sites_simple(words):
   """
   用于get_poi_layer()函数，简化了get_similiar_sites()函数
