@@ -241,17 +241,11 @@ export function renderingPOIlist(mergenode, max_num = 20) {
  let addPOI = allPOI.enter().append("div").classed("POIrect", true)
      addPOI.append('div').classed('POIdiv',true)
          addPOI.append('div').classed('POIname',true)
-    /*.text(function(d, i) {
-      return d.poi.name
-      //return  d.poi.name.length>8 ? d.poi.name.substring(0,8):d.poi.name
-    })*/
     let POIs=addPOI.merge(allPOI)
     .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
     .on('mouseenter', (d) => {
-
-      let _pois_show_in_map = POIS.map((p)=>p.poi)
-      drawPoiInMap( _pois_show_in_map )
+      drawPoiInMap( [d.poi] )
       
       // drawPoiInMap([d.poi])
       // console.log(POIS)
@@ -264,21 +258,14 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
       POIs.selectAll('.POIname')
         .text(d=>d.poi.name)
-
-
-
-
-  /*.each(function(){
-      let grandparent_id=d3.select(this.parentNode.parentNode).attr('id');
-     if(parseInt(d3.select(this).style('top'))<$('#'+grandparent_id)[0].getBoundingClientRect().height){
-         d3.select(this).attr('current_top',parseInt(d3.select(this).style('top')))
-         let index=grandparent_id.replace('locationlistdiv','condition_node');
-         //let index=c_id.substr(0,c_id.length-1);
-         line_data[index].right.push(this);
-         //let c_id=grandparent_id.replace('-spatial_POIs-','condition_node');
-         //              let index=c_id.substr(0,c_id.length-1);
-     }
-  })*/
+  mergenode.select('.title')
+      .on('mouseenter', function() {
+      let _pois_show_in_map = POIS.map((p)=>p.poi)
+      drawPoiInMap( _pois_show_in_map )
+    })
+    .on('mouseleave', function() {
+      removePoiInMap()
+    })
 }
 
 nodelist.reOrder = function refresh_list(a, current_node_id) {
