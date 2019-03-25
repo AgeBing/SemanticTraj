@@ -24,6 +24,7 @@ export function draw(trajs){
 	if(trajData){
 		delTrajsInMap()
 		drawTrajsInMap(trajData)
+		console.log(trajData)
 	}
 }
 
@@ -82,8 +83,15 @@ export function delTrajsInMap(){
 
 
 let timeoutList = []
+
+
+
+
+
+
+
 //绘制高亮的 整条轨迹
-export function highLightTrajInMap(traj){
+export function highLightTrajInMapDynamic(traj){
 	let poiSvg = d3.select('#svg-poi')
 	poiSvg.append('g').attr('id','traj')
 
@@ -123,6 +131,68 @@ export function highLightTrajInMap(traj){
 		}
 	}
 }
+
+
+//绘制高亮的 整条轨迹
+export function highLightTrajInMap(traj , outer){
+	let poiSvg = d3.select('#svg-poi')
+	poiSvg.append('g').attr('id','traj')
+
+	let sites  = traj.traj,
+		lat,lng 
+
+	let box = [ boundry.bottom_left.lng , boundry.bottom_left.lat 
+				, boundry.top_right.lng , boundry.top_right.lat ]
+
+	for(let i = 0 ;i< sites.length - 1;i++){
+		let lat1 =  sites[i].latitude,
+			lng1 =  sites[i].longitude,
+			lat2 =  sites[i + 1].latitude,
+			lng2 =  sites[i + 1].longitude,
+			// startTime = sites[i].startTime,
+			// endTime  =  sites[i].endTime,
+			// startDate = new Date(  startTime.split(' ')[0]  + 'T' + startTime.split(' ')[1] ),
+			// endDate = new Date(  endTime.split(' ')[0]  + 'T' + endTime.split(' ')[1] ),
+			da = [] , db = [] , res 
+
+
+		res = clip( [lng1,lat1] , [lng2,lat2] , box , da , db)
+
+		if( res ){
+			let pa = _l2pb(da[1], da[0]) , 
+				pb = _l2pb(db[1], db[0])
+				
+			drawTwoColorLine( pa, pb , outer )  
+		}
+	}
+}
+
+// 轨迹中的一段
+function drawTwoColorLine( pa , pb , outer){
+	// console.log("经过 ",duration +'ms')
+
+	let svg = d3.select('#svg-poi').select('#traj')
+
+	if( outer ){
+		svg.append('line')
+			.attr('y1',pa[1])
+			.attr('x1',pa[0])
+			.style('stroke',Config.oneWholeTrajOuterColor)
+			.style('stroke-width',6)
+			.style('opacity',0.7)
+			.attr('x2',pb[0])
+			.attr('y2',pb[1])
+	}else{
+		svg.append('line')
+			.attr('y1',pa[1])
+			.attr('x1',pa[0])
+			.style('stroke',Config.oneWholeTrajinnerColor)
+			.style('stroke-width',2)
+			.attr('x2',pb[0])
+			.attr('y2',pb[1])
+	}
+}
+
 
 function clearTimeOuts(){
 	timeoutList.forEach((id)=>{

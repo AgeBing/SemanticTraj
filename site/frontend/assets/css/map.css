@@ -38,12 +38,12 @@ rect.selection {
 
 
 #select-area{
-	    position: absolute;
+	position: absolute;
     background: #ffffff8a;
     left: 12px;
     top: 120px;
     z-index: 2;
-    height: 122px;
+    height: 212px;
     width: 30px;
     border: 2px solid rgba(0,0,0,0.2);
     background-clip: padding-box;
@@ -70,18 +70,22 @@ rect.selection {
 }
 
 .range-area{
-	    height: 29px;
+    height: 2px;
     width: 120px;
-    float: left;
     display: inline-block;
     background: #fff;
+    transform: rotate(-270deg);
+    position: absolute;
+    left: -33px;
+    top: 150px;
 }
 .range-area:hover{
 	background-color: #dddddd;
 }
 .range-area input{
 	width: 110px;
-    margin: 12px 5px;
+    /*margin: 12px 5px;*/
+        cursor: s-resize;
 }
 .range-area input:hover{
     cursor: pointer; 

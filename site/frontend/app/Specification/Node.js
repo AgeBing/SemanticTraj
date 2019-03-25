@@ -16,7 +16,6 @@ import {
   drag_end,
   show_hide,
   refresh_path_color,
-  refresh_POI_color,
   get_left_nodes,
   initial_line,
   refresh_line,
@@ -43,15 +42,17 @@ let nodelist = {
   data: [],
   order: [],
 
-  siteScore: new Map()
+  siteScore: new Map() ,
+  searchSiteList : new Map()
 }
 export let line_data = [];
 export let is_initial_right_content = false;
 export let POI_colorscale = d3.scaleQuantize()
-  .range(['#f1eef6', '#d0d1e6',
-    '#a6bddb', '#74a9cf',
-    '#2b8cbe', "#045a8d"
-  ])
+  // .range(['#f1eef6', '#d0d1e6',
+  //   '#a6bddb', '#74a9cf',
+  //   '#2b8cbe', "#045a8d"
+  // ])
+    .range( [ '#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a'])
 export let poi_colordomain = {
   max: 0,
   min: 0
@@ -63,9 +64,17 @@ export function renderingwordslist(mergenode) {
       let heightset = []
       for (let i = 0; i < d.data.length; i++) {
         heightset.push(d.data[i].data.length)
-        for (let j = 0; j < d.data[i].length; j++) {
-          d.data[i].data[j].index = (i, j)
+          let same_word=-1;
+        for (let j = 0; j < d.data[i].data.length; j++) {
+          if(d.data[i].name==d.data[i].data[j].name)
+          {
+              same_word=j
+          }
+          else
+              d.data[i].data[j].index = (i, j)
         }
+        /*if(same_word!=-1)
+            d.data[i].data.splice(same_word,1)*/
       }
       return d.data
     }, (d, i) => d.name)
@@ -75,6 +84,10 @@ export function renderingwordslist(mergenode) {
     .attr('id', function(d, i) {
       // let grand_id = d3.select(this.parentNode.parentNode).attr('id')
       // let num=grand_id.substr(grand_id.length-1,1);
+      d.data.sort(function(a, b) {
+        return b.val - a.val
+      })
+
       return 'Worddiv' + (i + 1)
     })
     .style("border", "1px dashed rgb(232, 232, 232)")
@@ -121,15 +134,41 @@ export function renderingwordslist(mergenode) {
     return d.data
   })
 
-  allneiwords.exit().remove()
+  /*allneiwords.exit().remove()
   let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.text(d => d.name)
     .style("top", (d, i) => `${i*24}px`)
+  return show_hide_div*/
+
+
+  allneiwords.exit().remove()
+  let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
+      .each(function(d){
+          let real_word=d3.select(this.parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text()
+          real_word=real_word.substr(0,real_word.length-1)
+          if(d.name==real_word)
+          {
+              $(this).remove();
+          }
+      })
+  addneiwords.append('div').classed('wordsval',true)
+      addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
+  let mergeneiwords = addneiwords.merge(allneiwords)
+  mergeneiwords.style("top", (d, i) => `${i*24}px`)
+  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>parseFloat(d.val)*100+'px')
+  mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*100+'px')
+
   return show_hide_div
 }
 
 export function renderingPOIlist(mergenode, max_num = 20) {
+
+  // by ykj
+  // 列表现实的前 max_num  poi 存储在 POIS 中
+  let POIS = []
+
+
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
     .data(function(d) {
       let textcolorscale = 0
@@ -137,6 +176,8 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       // data
       let pois = []
       let poi_map = {}
+      
+      
       for (let i = 0; i < d.data.length; i++) {
         for (let j = 0; j < d.data[i].data.length; j++) {
 
@@ -168,7 +209,6 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
       poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
       POI_colorscale.domain([poi_colordomain.min, poi_colordomain.max])
-      refresh_POI_color()
       textcolorscale = pois[0].poi.val
       //update data index and color
       for (let i = 0; i < pois.length; i++) {
@@ -177,6 +217,15 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         pois[i].background = POI_colorscale(pois[i].poi.val)
       }
       pois = pois.slice(0, max_num)
+
+
+      // by ykj
+      // 用于向后台返回数据
+      POIS = pois.slice()
+      let node_name = d.name
+      nodelist.searchSiteList.set(node_name , POIS)
+
+
       //reorder
       pois.sort(function(a, b) {
         return a.poi.index - b.poi.index
@@ -186,23 +235,38 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       return d.poi.name;
     })
 
+
+
   allPOI.exit().remove()
-  allPOI.enter().append("div").classed("POIrect", true)
-    .text(function(d, i) {
+ let addPOI = allPOI.enter().append("div").classed("POIrect", true)
+     addPOI.append('div').classed('POIdiv',true)
+         addPOI.append('div').classed('POIname',true)
+    /*.text(function(d, i) {
       return d.poi.name
       //return  d.poi.name.length>8 ? d.poi.name.substring(0,8):d.poi.name
-    })
-    .merge(allPOI)
-    .style("top", d => `${d.order*28}px`)
-    .style("background", d => d.background)
-    .style("color", d => d.color)
+    })*/
+    let POIs=addPOI.merge(allPOI)
+    .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
     .on('mouseenter', (d) => {
-      drawPoiInMap([d.poi])
+
+      let _pois_show_in_map = POIS.map((p)=>p.poi)
+      drawPoiInMap( _pois_show_in_map )
+      
+      // drawPoiInMap([d.poi])
+      // console.log(POIS)
     })
     .on('mouseleave', (d) => {
       removePoiInMap()
     })
+       
+      POIs.selectAll('.POIdiv')
+        .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
+      POIs.selectAll('.POIname')
+        .text(d=>d.poi.name)
+
+
+
 
   /*.each(function(){
       let grandparent_id=d3.select(this.parentNode.parentNode).attr('id');
@@ -327,25 +391,30 @@ module.exports = nodelist;
 
 export function initial_right_content() {
   nodelist.container.select('.right_content').remove()
-  let legend_list = [{
+  let legend_list = [/*{
     id: 'Relevance_Score',
     name: 'Relevance Score:',
     color: ["#045a8d", '#2b8cbe', '#74a9cf', '#a6bddb', '#d0d1e6', '#f1eef6']
-  }, {
+  },*/ {
     id: 'Relevance_Information',
     name: 'Relevance Information:',
-    color: ['#993404', '#d95f0e', '#fe9929', '#fec44f', '#fee391', "#ffffd4"]
+    // color: ['#993404', '#d95f0e', '#fe9929', '#fec44f', '#fee391', "#ffffd4"]
+    color: [ '#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a']
   }]
-  let height = parseInt($('#Specification_view').css('height'))
+  // let height = parseInt($('#Specification_view').css('height'))
   let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
   right_content.append('div').classed('add_condition_node', true).text('+').on('click', add_condition_node) //./style('height',height-100+'px');
   legend_list.map((x, y) => {
-    let legend = right_content.append('div').classed('legend', true).attr('id', x.id)
+    let legend = d3.select('#Specification_view').append('div').classed('legend', true).attr('id', x.id)
+        .style('position','fixed')
+    .style('right','70px')
+          .style('top','380px')
     legend.append('div').classed('text', true).text(x.name)
     let content = legend.append('div').classed('content', true)
     content.append('div').classed('max', true).text(0)
     x.color.map((color, i) => {
-      content.append('div').classed('color_bar', true).style('background', color)
+      content.append('div').classed('color_bar', true)
+          .style('background', color)
     })
     content.append('div').classed('min', true).text(0)
   })
@@ -378,17 +447,16 @@ nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1�
   let current_order = nodelist.order.indexOf("condition_node" + index)
   for (let m = current_order; m < nodelist.order.length - 1; m++) {
     nodelist.order[m] = nodelist.order[m + 1];
-    d3.select('#' + nodelist.order[m]).style('left', 622 * m + 'px').select('.title').select('.constraints_order').text(m + 1);
+    d3.select('#' + nodelist.order[m]).style('left', 652 * m + 'px').select('.title').select('.constraints_order').text(m + 1);
   }
   nodelist.order.pop(); //最后一个没用，删掉
   fresh_list_width();
   refresh_path_color()
-  refresh_POI_color();
   initial_siteScore(nodelist) //更新sitescore
 }
 
 export function fresh_list_width() { //condition_node_list的宽度
-  let current_width = nodelist.data.length * 622 + 120;
+  let current_width = nodelist.data.length * 652 + 50;
   let spe_width = parseInt(document.getElementById('Specification_view').offsetWidth)
   let width = current_width > spe_width ? current_width : spe_width
   nodelist.container.style('width', width + 'px');
@@ -431,14 +499,17 @@ nodelist.node_rendering = function(initial_node_data, index) {
          .on("start", drag_start)
           .on("drag", newdrag)
           .on('end',drag_end));*/
-    current_node.style("left", d => `${622*(index-1)}px`)
+    current_node.style("left", d => `${652*(index-1)}px`)
   }
 
   //title
   let title = current_node.append("div").classed("title", true)
   title.append("div").classed("constraints_order", true)
   title.append("div").classed("text", true).style('display', 'inline-block')
-  title.append('div').classed('delete', true).text('X').style('margin', '5px').on('click', function(d) {
+  title.append('div').classed('delete', true).text('X')
+      .style('line-height', '22px')
+    .style('background-size','22px')
+      .style('width','22px').style('background-image', 'url(../icon/circle.png)').on('click', function(d) {
     nodelist.delete_node_byOrder(d.order);
   })
 
@@ -527,7 +598,8 @@ nodelist.node_rendering = function(initial_node_data, index) {
         refresh_line(current_conditionnode_order);
       }
     })
-  spatial_constraints.select('.max_node_num').append('div').classed('increase', true).text('+').style("width", "14px").on('click', increase_locationlist)
+  spatial_constraints.select('.max_node_num').append('div').classed('increase', true).text('+').on('click', increase_locationlist)
+    .style("background-image", "url(../icon/circleblue.png)")
   let spatial_cc = spatial_constraints.append("div").style("height", "calc(100% - 33px)")
     .style("position", "absolute")
     .style("width", "100%")
@@ -538,6 +610,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
     }).style("width", "182px")
     .style("height", "calc(100% - 5px)")
     .style("margin", "3px")
+      .style('overflow-y','auto')
     // .style("border", "1px dashed rgb(232, 232, 232)")
     .style("position","absolute")
     .each(function() {
@@ -567,10 +640,10 @@ nodelist.node_rendering = function(initial_node_data, index) {
   // .style("font-size", "15px").style("float", "left").style("width", "185px")
 
 
-  spatial_cc.append("svg").style("width", "70px")
+  spatial_cc.append("svg").style("width", "64px")
     .style("position", "absolute")
     .style("height", "calc(100% - 6px)")
-    .style("left", "177px")
+    .style("left", "173px")
     .style("margin", "3px 0")
     .style("z-index", "3").classed("spatial_lines", true)
 
@@ -582,6 +655,9 @@ nodelist.node_rendering = function(initial_node_data, index) {
     .append("div")
     .classed("spatial_POIs", true)
     .style("width", "100%")
+
+spatial_cc.append("div").classed("POIback", true)
+    spatial_cc.append("div").classed("POIlogo", true).text("Location List")
 
   let show_hide_div = renderingwordslist(current_node)
   renderingPOIlist(current_node)

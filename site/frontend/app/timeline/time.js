@@ -5,7 +5,7 @@ import { filterDataInTime as filter } from '../app.js'
 
 const visBox = document.getElementById("topic-container");
 let  h = visBox.offsetHeight;  //高度
-let  w = visBox.offsetWidth;   //宽度
+let  w = visBox.offsetWidth - 100;   //宽度
 
 let syncAsixFunc		 	// 时间轴同步方法
 let timeRange 		 		// 时间范围 [start,end]\
@@ -38,9 +38,9 @@ function appendWidgets(){
 function setTimeScale(){
 	// scales 
 	timeScale = d3.scaleTime()
-		.range([0, w])
+		.range([0, w * 0.9])
 	timeScale2 = d3.scaleTime()
-		.range([0, w])
+		.range([0, w * 0.9])
 
 	// set domain
 	timeScale.domain(timeRange)
@@ -52,28 +52,32 @@ function setTopAxis(){
 	let axisFunc =  d3.axisBottom(timeScale)
 	let tr = d3.timeMinute.range(timeRange[0],timeRange[1],10)
 		// console.log(tr)
-		axisFunc.tickValues(tr)
-		  	.tickSizeOuter(0)
-		  	.tickPadding(10)
-			.tickFormat(function(d, i) {
-				// 设置间隙
-				let interval = Math.ceil(60 / (timeScale(tr[1]) - timeScale(tr[0])))
-				let r = ''
-				if(i % interval == 0){
-					if( (i>0) && d.toDateString() != tr[i-1].toDateString())
-						r += d.toLocaleDateString()+' '
-					r += d.toTimeString().slice(0,8)
-				}
-				return r 
-			});	
+		axisFunc.ticks(10)  //显示的个数
+			.tickFormat(  d3.timeFormat("%x %H:%M")  )
+		// axisFunc.tickValues(tr)
+		//   	.tickSizeOuter(0)
+		//   	.tickPadding(10)
+		// 	.tickFormat(function(d, i) {
+		// 		// 设置间隙
+		// 		let interval = Math.ceil(60 / (timeScale(tr[1]) - timeScale(tr[0])))
+		// 		let r = ''
+		// 		if(i % interval == 0){
+		// 			if( (i>0) && d.toDateString() != tr[i-1].toDateString())
+		// 				r += d.toLocaleDateString()+' '
+		// 			r += d.toTimeString().slice(0,8)
+		// 		}
+		// 		return r 
+		// 	});	
 
 	let topAxis =  d3.select('#topic-container')
 						.append('div')
-						.attr('class','top-axis-container')
+						.attr('id','top-axis-container')
+						.style('left',(100 + w * 0.05) + 'px' )
 						.append('svg')
-							.attr('width',w * 0.9)
+							.attr('width',w * 0.9 + 14)
 							.attr('height',40)
 						.append("g")
+							.attr("transform" , "translate(7 , -2 )" )
 					      .attr("class", "axis axis--top")
 					      .call(axisFunc);
 
@@ -97,6 +101,7 @@ function setZoom(){
 	// 底部的 zoom 监听svg
 	let listenerRect = 
 		d3.select('#topic-container').append('svg')
+			.attr("transform" , "translate(100,0)" ) 
 			.attr('width',w - 10)
 			.attr('height',40)
 			.attr('class','listener-svg')
@@ -118,7 +123,7 @@ function setZoom(){
 		// 	d3.select('#topic-container').selectAll('.tick-line').remove()
 		// })
 
-	d3.select('.top-axis-container').select('svg').call(zoomFunc)
+	d3.select('#top-axis-container').select('svg').call(zoomFunc)
 	// listenerRect.call(zoomFunc)
 }
 function func_zoomed(){
@@ -156,34 +161,55 @@ function func_tickmove(x){
 }
 function setBrush(){
 	var brushFunc = d3.brushX()
-	    .extent([[0, 0], [w * 0.9, Config.vRectHeight]])
+	    .extent([[0, 0], [w * 0.9,10]])
+	    // .extent([[0, 0], [w * 0.9, Config.vRectHeight]])
 	    .on("start", ()=>{
 	    	// console.log('start')
+	    	brushStyle()
 	    })
 	    .on("brush",()=>{
+		    brushStyle()
 	    	// console.log('brush')
 	    })
 	    .on("end", debounceSelect() );
 
-	d3.select('.top-axis-container').select('svg')
+
+	d3.select('#top-axis-container').select('svg')
 		.append('g')
 		.attr("class", "brush")
+		.attr("transform" , "translate(7 , 20 )" )
       	.call(brushFunc)
       	.call(brushFunc.move, [0,w * 0.9]); //拖动框
 
-    let brushG = d3.select('.brush')
 
-    	// brushG.select('.overlay')   
-    	brushG.select('.selection')
-    			.attr('height',function(a){
-    				return 39
-    			})
-    	// brushG.select('.handle--e')
-    	// .attr('fill','red')
-    	// brushG.select('.handle--w')
-    	// .attr('fill','red')
 
 }
+
+function brushStyle(){
+
+    let brushG = d3.select('.brush')
+
+    	brushG.select('.selection')
+    			.attr('height',function(a){
+    				return 10
+    			})
+
+    	brushG.select('.handle--e')
+    		.attr('width',10)
+    		.attr('height',10)
+    		.attr('rx',10)
+    		.attr('ry',10)
+    		.attr('y',0)
+
+    	brushG.select('.handle--w')
+    	   	.attr('width',10)
+    		.attr('height',10)
+    		.attr('rx',10)
+    		.attr('ry',10)
+    		.attr('y',0)
+}
+
+
 function brushed(){
 	console.log('start select')
 	timeSelect()

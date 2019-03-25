@@ -54,10 +54,20 @@ class NlpConsumer(WebsocketConsumer):
           results = nlp.get_poi_layer(words)
           self._send(results)
         elif nlp_method == 'trajs_new':
-          words = json.loads(data['text'])
-          trajNode = nlp.get_similiar_sites(words)
+          
+          # words = json.loads(data['text'])
+          # print(words)
+          # trajNode = nlp.get_similiar_sites(words)
+          # trajs = trajNode.get_traj()
+          # self._send(trajs)
+
+
+          sites = json.loads(data['text'])
+          print(sites)
+          trajNode = nlp.get_k_sites(sites)
           trajs = trajNode.get_traj()
           self._send(trajs)
+
         elif nlp_method == 'cache':
           trajs = data['trajs']
           cachedata.write_topic(trajs)

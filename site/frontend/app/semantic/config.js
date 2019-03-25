@@ -5,13 +5,20 @@ export let SVGlength = 400
 
 export let stepLen = 300
 
-let r = 90    //  半径/2
+
+const visBox = document.getElementById("semantic-view");
+let  h = visBox.offsetHeight - 35;  //高度
+let  w = visBox.offsetWidth;
+let  m = (( h>= w)?w:h )
+
+// let r = 60    //  半径/2
+let r = Math.floor(m/5)
 const sqrt3 = Math.sqrt(3)
 
 //中心点 坐标位置
 export let coorCenter = {    			 
-  	 x : 2 * r + 10 ,
-	   y : 2 * r + 10 ,			 
+  	 x :  Math.floor( w/2 ) ,
+	   y :  Math.floor( h/2 )			 
 }
 
 export let coorHexagon = [

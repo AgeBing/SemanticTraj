@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as Config from './config.js';
-import { HighLightTrajSectionContorl,unHighLightTrajSectionContorl } from '../app.js'
+import { hl_timeline,uhl_timeline } from '../highlight/index.js'
 
 
 import { func_list , timeScale } from './time.js'
@@ -8,17 +8,12 @@ import { func_list , timeScale } from './time.js'
 
 const visBox = document.getElementById("topic-container");
 let  h = visBox.offsetHeight; //高度
-let  w = visBox.offsetWidth; //宽度
+let  w = visBox.offsetWidth - 100; //宽度
 
 
 // 数据格式转换
 function dataAdapter(_line_data){
-	
-
 	// 将 topics 为空的项去掉 用后面的数据连起来
-
-
-
 	let ps = _line_data.traj.map((line) => {
 		return {
 			date : line.startTime.split(' ')[0],
@@ -28,8 +23,9 @@ function dataAdapter(_line_data){
 		}
 	}).filter((p)=>p.topics)
 
+
 	return {
-			id : _line_data.id,
+			id : _line_data.pid,
 			ps : ps
 	}
 }
@@ -49,17 +45,27 @@ export class topicZoomRect {
 		this.index 	= index   		//代表第几个实例
 	}
 	_render(){    //注意顺序
+		this._appenTrajId()
 		this._appenSVG()
 		this._appendShowRect()
 		this.update_rect()
 		this._appendTopicRect()
 		this._syncTopicRect()
 	}
+	_appenTrajId(){
+		let { vHeight,vWidth,tLeft,tTop,index ,data } = this
+		console.log(data.id)
+		let idDiv = d3.select('#topic-container').select('.th'+index)  //选择有隐患
+				.append('div')
+				.attr('class','traj-id')
+				.text(data.id)
+	}
 	// 需要当 rootEl 挂载后再 append
 	_appenSVG(){
 		let { vHeight,vWidth,tLeft,tTop,index } = this
 		let svg = d3.select('#topic-container').select('.th'+index)  //选择有隐患
 				.append('svg')
+				.attr("transform" , "translate(" + ((w - vWidth)/2 + 7 ) +",0)" ) 
 				.attr('width',vWidth) 
 				.attr('height',vHeight)
 
@@ -143,6 +149,7 @@ export class topicZoomRect {
 			d3.select('.th'+index)
 			  .insert('div')
 			  .attr('class','topic-rect-container')
+			  .style('left',(100 + (w - vWidth)/2 + 7 )+'px')
 			  .style('height',vHeight + 'px')
 			  .style('width',vWidth   + 'px')
 
@@ -279,20 +286,15 @@ export class topicZoomRect {
 		let { index,data,dates }  = this 
 		let topicIndex = dates.indexOf(t),
 			fillColor = data.ps[topicIndex].topicsHexa[0].color
-		// console.log(fillColor)
-
-		HighLightTrajSectionContorl(index,t,fillColor)
+		hl_timeline(index,t,fillColor)
 	}
 	unhigh_light_rect(){  //所有亮的变亮
 		let { index }  = this
 		d3.selectAll('.topic-rect').style('opacity',1)
-		unHighLightTrajSectionContorl(index)
+		uhl_timeline(index)
 	}
 	high_light_whole(){  // 整个高亮 => 当整条轨迹被选中
 		let { index } = this
-		// console.log(index)
-		// console.log(d3.select('#topic-container').select('.th'+index).select('#topic-rect-container'))
-
 		d3.select('#topic-container').select('.th'+index).select('.topic-rect-container')
 			.style('box-shadow','0px 1px 5.5px #333333')
 	}

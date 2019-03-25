@@ -94,7 +94,7 @@ function addInputListener(o) {
 
 
 function addParticle(){
-  console.log('add')
+  // console.log('add')
   let name = $('#search-input-text').val()
   const rawText = textData.map(d => d[0]).join('') + name;
   QueryUtil.get_participle(rawText)    
@@ -102,13 +102,20 @@ function addParticle(){
       o = o.filter(d => d[0].trim().length > 0)
       textData = o;      // 获取词性
       createTabs(o)
+      return o
+    })
+    .then(o => {
+         // 只有名称才会被添加
+        o.forEach((d)=>{
+            if(d[0] == name && (d[1] == 'n') || (d[1] == 'ns')){
+              addPOI(name);
+            }
+        })
     })
     .then(()=>{
       $('#search-input-text').val('')
     })
-    .then(o => {
-        addPOI(name);
-    })
+
 }
 
 function removeParticle(){
@@ -162,26 +169,24 @@ function addSearchListener(o) {
       let t1 = new Date().getTime()
       console.log('Start Getting Data ...')
       let nodelist= require('../Specification/Node.js')
-    
-      // console.log(nodelist)
-      // console.log(textData)
+  
 
+      let sites_arr = []
+      // 按照顺序 插入
       nodelist.order.forEach((d)=>{
+         //  d = >  condition_node1 、condition_node2
           let name = d3.select('#'+d).select('.title').select('.text').text()
-          for(let i = 0;i < textData.length;i++){
-            if( textData[i][0] == name){
-              searchData.push(textData[i])
-              break
-            }
-            if( tag_diff_data.hasOwnProperty(name)){
-              searchData.push([name,tag_diff_data[name]])
-              break
-            }
-          }
+
+          let pois  = nodelist.searchSiteList.get( name )
+          console.log(pois)
+          let sites = pois.map((p)=>{ return p.poi.site_id})
+          console.log(sites)
+
+          sites_arr.push( sites )
       })
 
 
-    QueryUtil.get_trajs_new(searchData)
+    QueryUtil.get_trajs_new(sites_arr)
       .then(results => {
         DataManager.drawTraj = results;
         console.log('_____',results.length)

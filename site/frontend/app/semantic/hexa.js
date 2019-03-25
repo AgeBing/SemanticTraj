@@ -2,7 +2,7 @@
 import { transDatas,coorCenter  } from  './config.js'
 import { Particle } from './particle.js'
 import { ifSample } from './index.js'
-import { highlightSemanticTraj ,unHighlightSemanticTraj } from '../app.js'
+import { hl_SemanticTraj ,uhl_SemanticTraj } from '../highlight/index.js'
 
 
 class Hexa{
@@ -45,7 +45,6 @@ class Hexa{
 	          	.on('mouseenter',()=>{self.enterHandler()})
 	          	.on('mouseleave',()=>{self.leaveHandler()})
 	    }
-		
 	    this.g = g
 	}
 	generatePaticle(){
@@ -71,7 +70,7 @@ class Hexa{
 	}
 	start(){
 		let self = this
-		let iterations = 120,
+		let iterations = 20,    //迭代次数
 			interval = 50
 
 		for(let i =0 ;i < iterations;i++){
@@ -95,37 +94,56 @@ class Hexa{
 	}
 	updateNodeLinks(){
 		let { g,Ps } = this
-		g.selectAll('line').remove()
-		for(let i = 1 ;i < Ps.length ;i++){
-			let s = Ps[i-1].getXY(),
-				d = Ps[i].getXY()
-			g.append("line")
-			  .attr('class', 'link-item')
-			    .attr("x1",  s.x )
-			    .attr("y1",  s.y )
-			    .attr("x2",  d.x )
-			    .attr("y2",  d.y );	
+		g.selectAll('path').remove()
+		
+		let cn = 0.5
+		let curveLine = d3.line()
+					.x(d => d.x)
+					.y(d => d.y)
+					.curve(d3.curveBasisOpen)
+
+		// let cps = [Ps[0].getXY()]
+		// for(let i = 1 ;i < Ps.length - 1;i++){
+		// 	let last = Ps[i - 1].getXY(),
+		// 		now  = Ps[i].getXY(),
+		// 		next = Ps[i + 1].getXY(),
+		// 		center = {
+  //               	x : Math.floor( next.x * cn + (1-cn)*now.x ),
+  //               	y : Math.floor( next.y * cn + (1-cn)*now.y )
+  //           	}
+  //           cps.push(center)
+		// }
+
+		let cps = []
+		for(let i = 0 ;i < Ps.length;i++){
+			cps.push( Ps[i].getXY())
 		}
+
+    	g.append('path')
+			.attr('class', 'link-item')
+			.attr('d', function(d) { return curveLine(cps);	})
+
+		// console.log(cps)
 	}
 	enterHandler(){
 		let { pid } = this.data
 		this.highlight()
-		highlightSemanticTraj(pid)
+		hl_SemanticTraj(pid)
 	}
 	leaveHandler(){
 		let { pid } = this.data
 		this.unHighlight()
-		unHighlightSemanticTraj(pid)
+		uhl_SemanticTraj(pid)
 	}
 	highlight(){
 		let { g } = this
 		g.selectAll('circle').style('opacity',1)
-		g.selectAll('line').style('opacity',1)
+		g.selectAll('path').style('opacity',1)
 	}
 	unHighlight(){
 		let { g } = this
-		g.selectAll('circle').style('opacity',0.1)
-		g.selectAll('line').style('opacity',0.1)
+		g.selectAll('circle').style('opacity',0.5)
+		g.selectAll('path').style('opacity',0.5)
 	}
 	destroy(){
 		let { g } = this

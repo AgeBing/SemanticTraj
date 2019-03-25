@@ -1,19 +1,15 @@
 import * as d3 from 'd3';
 
 import { topicAdd  as drawTopic } from '../app.js'
-import { highLightTrajContorl , 
-		 unHighLightTrajContorl , 
-		 highLightTopiContorl ,
-		 unHighLightTopiContorl,
-		 highlightPoisInTrajs,
-		 unHighlightPoisInTrajs
-		  }  from '../app.js'
+import { hl_listItem,uhl_listItem }  from '../highlight/index.js' 
 import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
+
 
 
 let resultlist = {
 	container	:d3.select("#list-contain"),
 	showNum 	: 50 ,
+	addNum      : 50 , 
 	renderTrajs : [] ,
 	orderTrasjs : [] ,
 	filterPids  : [] ,
@@ -103,9 +99,9 @@ resultlist.draw = function(){
 		.style("width", d=> d.per * 0.01 * rectWidth + 'px')
 
 	// value
-	addtraj.append('div').attr('class','percent-word')
-	mergetraj.select('.percent-word')
-		.text(d=> d.per+'%')
+	// addtraj.append('div').attr('class','percent-word')
+	// mergetraj.select('.percent-word')
+	// 	.text(d=> d.per+'%')
 
 
 	mergetraj.on('mouseenter',enterEventHandler).on('mouseleave',leaveEventHander)
@@ -240,8 +236,26 @@ d3.select('#filter-btn')
 
 
 
+d3.select('#filter-btn').on('mousedown',btnEventHandler)
+function btnHandler(){
+	let checked = d3.select('#semantic-view').select('.switch-btn').property('checked')
+	ifSample = !ifSample
+
+	// 重新绘制
+	for(let pid of objsH.keys()) {
+		let traj = objsH.get(pid).data
+		let h = objsH.get(pid).obj
+		h.destroy()
+		addHexa(traj)
+	}
+}
+
+
 function btnEventHandler(){
-	let isFiltered =  d3.select('#filter-btn').attr('filtered')
+	// let isFiltered =  d3.select('#filter-btn').attr('filtered')
+	resultlist.showNum = resultlist.addNum
+	
+	let isFiltered = d3.select('#filter-btn').property('checked')
 	if(isFiltered){
 		d3.select(this).text('hide')
 		d3.select(this).attr('filtered',null)
@@ -259,25 +273,16 @@ function enterEventHandler(){
 	if(disable) return
 	
 	let pid = d3.select(this).attr('id')
+	let checked =  d3.select(this).select('input').property('checked')
+	hl_listItem( pid , checked )
 
-	highLightOneItem(pid)
-	highLightTrajContorl(pid)
-	highlightPoisInTrajs(pid)
-	highlightHexa(pid)
-	if( d3.select(this).select('input').property('checked') )
-		highLightTopiContorl(pid)
 }
 function leaveEventHander(){
 	let disable = d3.select(this).select('input').property('disabled')
 	if(disable) return
 	let pid = d3.select(this).attr('id')
-	unhighLightOneItem(pid)
-	unHighLightTrajContorl()
-	unHighlightPoisInTrajs()
-	unHighlightHexa(pid)
-	if( d3.select(this).select('input').property('checked') ){
-		unHighLightTopiContorl(pid)
-	}
+	let checked =  d3.select(this).select('input').property('checked')
+	uhl_listItem( pid , checked )
 }
 
 function updatePerNum(){
@@ -342,6 +347,37 @@ function updateCheckNum(){
 }
 
 
+
+
+
+d3.select('#resultlist').on('scroll',scrollHander)
+
+let listLoadingFlag = false
+function scrollHander(){
+	// console.log('scroll')
+	let scrollTop = d3.event.target.scrollTop
+	let scrollHeight = visBox.scrollHeight
+	let clientHeight = visBox.clientHeight
+
+	let distance = scrollHeight - clientHeight - scrollTop
+	if( distance < 30){
+		// console.log('come to bottom')
+		if( listLoadingFlag != true){
+			loadMore()
+		}
+	}
+}
+
+function loadMore(){
+	listLoadingFlag = true
+	console.log('loading')
+	resultlist.showNum += resultlist.addNum
+	// if( resultlist.showNum >= )
+	resultlist.filter()
+	listLoadingFlag = false
+}
+
 export function demo(){
 	resultlist.draw()
 }
+

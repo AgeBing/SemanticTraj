@@ -16,25 +16,16 @@ import { draw as drawList , filterListGeo  , filterListTime  } from './list/inde
 import { draw as drawTopic } from './timeline/index.js'
 import { init as timeInit }  from './timeline/time.js'
 import { draw as drawHexa } from './semantic/index.js'
-import { highLightTrajInMap ,unHighLightTrajInMap , 
-		 highLightTrajSectionInMap, unHighLightTrajSectionInMap,
-		 draw as drawTraj  } from './map/traj.js'
-import { highLightTopic , unHighLightTopic } from './timeline/index.js'
-import { highLightOneItem , unhighLightOneItem  } from './list/index.js'
-import { highlightHexa , unHighlightHexa } from './semantic/index.js'
-import { draw as drawHexagon } from './semantic/index.js' 
-import { mock as mockNode } from '../mock/setNode.js'
-import { mock as mockList } from '../mock/setData.js'
 
 
 
-let trajs  // 全量数据 
+export let trajs  // 全量数据 
 let orderedTrajs = []
 let trajsPis = []
-let topicLists = [] 
-let availableTrajsinLimitTime = []
+export let topicLists = []  //选中的轨迹id 
+export let availableTrajsinLimitTime = []  //在设定时间段内的轨迹
 
-let trajId2Points = new Map() // id => stoppoints
+export let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
 datamanager.init().then(o => SearchBar.init())
@@ -247,114 +238,3 @@ export function topicAdd(topicPids){
 	drawTopic(topicLists)
 	drawHexa(topicLists)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-export function highLightTrajContorl(id){
-	trajs.forEach((traj)=>{
-		if(traj.pid == id){
-			highLightTrajInMap(traj)
-		}
-	})
-}
-export function unHighLightTrajContorl(id){
-	unHighLightTrajInMap()
-}
-export function highLightTopiContorl(pid){
-	for(let i = 0; i < topicLists.length; i++){
-		if(pid == topicLists[i].pid){
-			highLightTopic(i)
-		}
-	}
-}
-export function unHighLightTopiContorl(pid){
-	for(let i = 0; i < topicLists.length; i++){
-		if(pid == topicLists[i].pid){
-			unHighLightTopic(i)
-		}
-	}
-}
-export function HighLightTrajSectionContorl(i,t,fillColor){ 
-	let traj = topicLists[i].traj
-	// console.log(traj,t)
-
-	highlightHexa(topicLists[i].pid)
-	highLightOneItem( topicLists[i].pid)
-	highLightTrajContorl( topicLists[i].pid  )
-	for(let j = 0;j < traj.length ; j++){
-		let startTime = traj[j].startTime
-
-		let date = startTime.split(' ')[0],
-			time = startTime.split(' ')[1],
-			_t = new Date(date + 'T' + time)
-		// console.log(_t)
-		if(_t.getTime()  == t.getTime()){
-
-			let siteId1 = +traj[j].site,
-				siteId2 = +traj[j+1].site
-
-			highLightTrajSectionInMap(siteId1,siteId2,fillColor)
-			break;
-		}
-	}
-}
-export function unHighLightTrajSectionContorl(i){
-	let id = topicLists[i].pid
-	unHighLightTrajSectionInMap()
-	unhighLightOneItem(id)
-	unHighLightTrajInMap()
-	unHighlightHexa(id)
-}
-export function highlightPoisInTrajs(pid){
-	let sites = trajId2Points.get(pid) 
- 	let nodelist = require('./Specification/Node.js')
-
- 	// console.log(nodelist.data)
- 	console.log(pid)
-	console.log(sites)
-	let pois = []
-	sites.forEach((site)=>{
-		nodelist.data.forEach((a)=>{
-			a.data.forEach((b)=>{
-				b.data.forEach((c)=>{
-					c.data.forEach((_site)=>{
-						if(_site.site_id == site.siteId){
-							pois.push(_site)
-						}
-					})
-				})
-			})
-
-		})
-
-	})
-
-	// 有可能 site 有 stoppoint 但是 无 poi 
-	console.log(pois)
-	drawPoi(pois)
-}
-
-export function unHighlightPoisInTrajs(){
-	removePoi()
-}
-export function highlightSemanticTraj(pid){
-	highLightTopiContorl(pid)
-	highLightOneItem(pid)
-	highLightTrajContorl(pid)
-}
-export function unHighlightSemanticTraj(pid){
-	unHighLightTrajContorl()
-	unHighLightTopiContorl(pid)
-	unhighLightOneItem(pid)
-}
-
-
