@@ -19,7 +19,6 @@ import { draw as drawHexa } from './semantic/index.js'
 
 
 
-
 export let trajs  // 全量数据 
 let orderedTrajs = []
 let trajsPis = []

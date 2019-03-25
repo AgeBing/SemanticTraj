@@ -108,6 +108,10 @@ function drawPic() {
 }
 
 
+function drawheatmap(){
+
+}
+
 
 let debounceTimer
 function debounceResize( delay ){
