@@ -23,7 +23,8 @@ let  width = visBox.offsetWidth; //宽度
 // let tilemapservice = 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
 // let tilemapservice = 'http://b.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 // let tilemapservice = 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}'
-let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
+let tilemapservice = `https://api.mapbox.com/styles/v1/zhaosong/cjf1is65m72mn2smykzyevmv0/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoiemhhb3NvbmciLCJhIjoiY2pmMWlyb3BzMGJueTJ6cTd2eGpqZjZwdCJ9.ahNyvzEQ9ZlnK8hcBLQyvg`
+// let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
 let zoomRate = 12;
 let map = L.map('map-container').setView([28.0152686, 120.6558736], zoomRate);
 let osmLayer = L.tileLayer(tilemapservice).addTo(map);

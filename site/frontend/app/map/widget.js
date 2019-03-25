@@ -18,7 +18,6 @@ function selectColorPickHander(){
 	draw()
 }
 function opacityChange(){
-
 	// console.log(d3.event.target.value)
 	let i = d3.event.target.value
 	Config.picTrajOpacity = Config.picTrajOpacitys[i]

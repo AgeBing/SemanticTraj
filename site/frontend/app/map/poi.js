@@ -22,13 +22,16 @@ let iconLayers
 
 export  function draw(pois) {
   iconLayers = []
-  var PoiIcon = L.icon({
-      iconUrl: '../icon/POIicon.png',
-      iconSize:     [24, 24], // size of the icon
-  });
+  // var PoiIcon = L.icon({
+  //     iconUrl: '../icon/POIicon.png',
+  //     iconSize:     [21, 24], // size of the icon
+  // });
   pois.forEach((poi)=>{
-      let iconLayer  = L.marker([poi.latitude , poi.longitude], {icon: PoiIcon , title : poi.name })
-      iconLayer.addTo(map).bindTooltip(poi.name,{direction : 'top' , offset : [0,-6], opacity :0.9}).openTooltip()
+      let iconLayer  = L.marker([poi.latitude , poi.longitude], {title : poi.name })
+      iconLayer.addTo(map)
+	    // .bindPopup(poi.name)
+	    // .openPopup();
+	    .bindTooltip(`Name:${poi.name}, Type:${poi.type}`,{direction : 'top' , offset : [0,-6], opacity :0.9}).openTooltip()
       iconLayers.push(iconLayer)
   })
 
