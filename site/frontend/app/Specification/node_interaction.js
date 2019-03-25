@@ -1,7 +1,7 @@
 import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
 
 export let path_colorscale=d3.scaleQuantize()
-                    .range(['#993404','#d95f0e','#fe9929','#fec44f'/*,'#fee391',"#ffffd4"*/]);
+                                .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
     d3.select(this.parentNode).style("z-index",10000)
