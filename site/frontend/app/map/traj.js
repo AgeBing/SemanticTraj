@@ -24,6 +24,7 @@ export function draw(trajs){
 	if(trajData){
 		delTrajsInMap()
 		drawTrajsInMap(trajData)
+		console.log(trajData)
 	}
 }
 

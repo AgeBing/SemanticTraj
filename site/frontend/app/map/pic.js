@@ -30,6 +30,8 @@ import { _l2p, updateTileBoundry , showLoading ,hideLoading, loadTrajsData , col
 import { filterGlobalData } from '../app.js'
 import * as Config from './config.js';
 
+import {drawheatmap}  from './index.js'
+
 
 export function draw(data) {
 	let isChanged = updateTileBoundry(),
@@ -52,7 +54,10 @@ export function draw(data) {
 			selectPiexelPoints = null
 			stack[0].url =  GetTrajsPicUrl(originPiexelPoints , 0)
 		}
-		 
+		console.log(trajsData)
+
+		drawheatmap(trajsData)
+
 	}else {
 		if(!trajsData) return   //没有数据 且 无data 
 	}

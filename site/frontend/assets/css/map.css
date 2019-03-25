@@ -37,7 +37,7 @@ rect.selection {
 }
 
 
-#select-area{
+/*#select-area{
 	position: absolute;
     background: #ffffff8a;
     left: 12px;
@@ -48,9 +48,9 @@ rect.selection {
     border: 2px solid rgba(0,0,0,0.2);
     background-clip: padding-box;
     border-radius: 3px;
-}
+}*/
 
-
+/*
 #select-btn{
 	    height: 29px;
     width: 29px;
@@ -60,13 +60,13 @@ rect.selection {
     cursor: pointer; 
     border-right: 1px solid #ccc;   
      transition-duration: 0.5s;
-}
+}*/
 #select-btn:hover{
 	background-color: #dddddd;
 }
 #select-btn img{
-	     height: 22px;
-    margin: 4px;
+	    height: 19px;
+    margin: 2px;
 }
 
 .range-area{
@@ -103,11 +103,11 @@ rect.selection {
 .color-area:hover{
 	background-color: #dddddd;
 }
-.color-area input{
+/*.color-area input{
 	height: 22px;
     margin: 2px;
     width: 22px;background: transparent;
-}
+}*/
 
 .color-area-select{
 	    height: 29px;
@@ -121,15 +121,15 @@ rect.selection {
 .color-area-select:hover{
 	background-color: #dddddd;
 }
-.color-area-select input{
+/*.color-area-select input{
 	height: 22px;
     margin: 2px;
     width: 22px;background: transparent;
-}
-.color-area-select.disable{
+}*/
+/*.color-area-select.disable{
 	background-color: #dddddd;
     cursor: auto; 
-}
+}*/
 
 
 #poi-icon{

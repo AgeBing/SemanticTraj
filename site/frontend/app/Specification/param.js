@@ -172,10 +172,6 @@ function addOneParamRect(root,i){
 					.attr('ry',rectHeight + 4)
 					.attr('x',rectWidth - 14)
 
-
-
-
-
 		circle.on('mousedown',mouseDownHander)
 		svg.on('mouseup',mouseUpHander)
 

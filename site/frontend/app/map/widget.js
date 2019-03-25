@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 import * as Config from './config.js';
 import { draw } from './pic'
 
+import {heatmap}  from './index.js'
+
 function colorPickHander(){
 	let color = d3.event.target.value
 	Config.picTrajColor = color
@@ -16,6 +18,8 @@ function selectColorPickHander(){
 	draw()
 }
 function opacityChange(){
+
+	// console.log(d3.event.target.value)
 	let i = d3.event.target.value
 	Config.picTrajOpacity = Config.picTrajOpacitys[i]
 	Config.PicUpdateFlag = true
@@ -36,10 +40,29 @@ function bindSelectColorPickEvent(){
 	d3.select('#map-view').select('#select-area').select('.color-area-select')
 				.attr('class','color-area-select disable')
 }
+
+
 function bindOpacityChangeEvent(){
-	let colorInput = d3.select('#map-view').select('#select-area').select('.range-area').select('input')
-	colorInput.on('change',opacityChange)
+	$("#trajslider").slider()
+	    .on( "slide", function( event, ui ) {
+			Config.picTrajOpacity = ui.value*0.01
+			Config.PicUpdateFlag = true
+			draw()
+	    }) 
+	    .slider( "option", "min", 1)
+	    .slider( "option", "max", 100)
+	    .slider( "option", "step", 1)
+	    .slider( "value", 10 )
+	Config.picTrajOpacity = 0.1
+	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
+	    			.style("height","17px")
 }
+
+
+// function bindOpacityChangeEvent(){
+// 	let colorInput = d3.select('#map-view').select('#select-area').select('.range-area').select('input')
+// 	colorInput.on('change',opacityChange)
+// }
 
 
 export function appendWidget(){
