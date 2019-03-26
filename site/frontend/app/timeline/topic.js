@@ -217,7 +217,6 @@ export class topicZoomRect {
 			let topic_3rd_val =  Math.round(+topic_3rd.val * 100)+ '%'
 
 
-
 			_rect.style('width',width+'px')
 				.style('height',height+'px')
 				.style('left',x  + 'px')
@@ -228,32 +227,39 @@ export class topicZoomRect {
 
 					_rect.style('background-color','#bfbfbf')
 			
-			}else if(+width  <  Config.topicThemesConfig.max_width){
-				let box = _rect.append('div')
-							.attr('class','mid-box')
+			}else{
+
+				for(let j = 0 ;j < 6;j++){
+					let box =  _rect.append('div')
+									.attr('class','left-box')
+
+					if( (j + 1) *  Config.topicThemesConfig.oneBoxWidth > +width)  break;
+
 					box.append('img')		
-						.attr('src',Config.iconSrcUrl + topic_top_icon )
+						.attr('src',Config.iconSrcUrl + data.ps[i].topicsHexa[j].icon )
 					box.append('div')
 						.attr('class','precent-text')
-						.html(topic_top_val)	
-			}else{
-				let left_box = _rect.append('div')
-							.attr('class','left-box')
-				let right_box = _rect.append('div')
-							.attr('class','right-box')
+						.html(Math.round(+ data.ps[i].topicsHexa[j].val * 100)+ '%')
 
-					left_box.append('img')		
-						.attr('src',Config.iconSrcUrl + topic_top_icon)
-					left_box.append('div')
-						.attr('class','precent-text')
-						.html(topic_top_val)
+				}
+			
+				// let left_box = _rect.append('div')
+				// 			.attr('class','left-box')
+				// let right_box = _rect.append('div')
+				// 			.attr('class','right-box')
 
-					right_box.append('div')
-						.attr('class','precent-text')
-						.html(topic_2rd_name + ' : ' + topic_2rd_val)
-					right_box.append('div')
-						.attr('class','precent-text')
-						.html(topic_3rd_name + ' : ' + topic_3rd_val)
+				// 	left_box.append('img')		
+				// 		.attr('src',Config.iconSrcUrl + topic_top_icon)
+				// 	left_box.append('div')
+				// 		.attr('class','precent-text')
+				// 		.html(topic_top_val)
+
+				// 	right_box.append('div')
+				// 		.attr('class','precent-text')
+				// 		.html(topic_2rd_name + ' : ' + topic_2rd_val)
+				// 	right_box.append('div')
+				// 		.attr('class','precent-text')
+				// 		.html(topic_3rd_name + ' : ' + topic_3rd_val)
 			}
 
 		})

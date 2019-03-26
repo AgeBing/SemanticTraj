@@ -137,8 +137,8 @@ class Hexa{
 	}
 	highlight(){
 		let { g } = this
-		g.selectAll('circle').style('opacity',1)
-		g.selectAll('path').style('opacity',1)
+		g.selectAll('circle').style('opacity',0.7)
+		g.selectAll('path').style('opacity',0.7)
 	}
 	unHighlight(){
 		let { g } = this
@@ -159,6 +159,29 @@ class Hexa{
 		let { g } = this
 		g.remove()
 		this.alive = false  // 死了
+	}
+	highlightOnePoint(index){
+		let { Ps , g ,alive , stopPointsIndex  } = this
+		let { pid }  = this.data
+
+		if( ifSample ){
+			stopPointsIndex.forEach((val,i)=>{   // val 为 index
+				if(val == index){
+				   	 g.select('circle:nth-child('+(i+1)+')')
+					    	.style('opacity',1)
+	    					.style('fill','rgb(46, 117, 182)')
+				}
+			})
+		}else{
+					g.select('circle:nth-child('+(index+1)+')')
+		        			.style('opacity',1)
+		    				.style('fill','rgb(46, 117, 182)')
+		}
+
+	}
+	unHighlightOnePoint(){
+		let { g } = this
+		g.selectAll('circle').style("fill", 'none')
 	}
 }
 

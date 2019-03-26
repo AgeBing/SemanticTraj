@@ -8,7 +8,7 @@ import { highLightTrajInMap ,unHighLightTrajInMap ,
 		 highLightTrajSectionInMap, unHighLightTrajSectionInMap } from '../map/traj.js'
 import { highLightTopic , unHighLightTopic } from '../timeline/index.js'
 import { highLightOneItem , unhighLightOneItem  } from '../list/index.js'
-import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
+import { highlightHexa , unHighlightHexa , highlightHexaInOnePoint , unHighlightHexaInOnePoint} from '../semantic/index.js'
 import { draw as drawPoi , remove as removePoi} from '../map/poi.js'
 import { shadowCanvas ,unShadowCanvas } from '../map/pic.js'
 
@@ -144,10 +144,10 @@ export function hl_timeline(i,t,fillColor){
 	let traj = topicLists[i].traj
 
 	let pid = topicLists[i].pid
-	highlightHexa( pid)
+
+
 	highLightOneItem( pid)
 	highLightTrajContorl( pid  )
-
 	highlightPoisInTrajs( pid )
 
 
@@ -162,7 +162,11 @@ export function hl_timeline(i,t,fillColor){
 
 			let siteId1 = +traj[j].site,
 				siteId2 = +traj[j+1].site
-			highLightTrajSectionInMap(siteId1,siteId2,fillColor)
+
+			highlightHexaInOnePoint( pid , j )
+			console.log(pid,j)
+			// highLightTrajSectionInMap(siteId1,siteId2,fillColor)
+
 			break;
 		}
 	}
@@ -172,7 +176,7 @@ export function uhl_timeline(i){
 	unHighLightTrajSectionInMap()
 	unhighLightOneItem(id)
 	unHighLightTrajInMap()
-	unHighlightHexa(id)
+	unHighlightHexaInOnePoint(id)
 	unHighlightPoisInTrajs()
 	unHighLightTrajContorl()
 }
