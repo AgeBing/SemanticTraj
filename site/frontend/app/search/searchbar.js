@@ -9,10 +9,10 @@ import {
   setGlobalTrajData
 } from '../app.js'
 import {
-  word_tab_start,
   word_tab_move,
   word_tab_end
 } from "../Specification/node_operate";
+import {remove as removePoiInMap} from "../map/poi";
 
 let textData = []
 
@@ -20,8 +20,9 @@ let name2POIMap = new Map()
 
 let tag_diff_data = {}
 
+let filter_words=['查询','经过','的','轨迹','后']
 
-
+let word_img={'n':'../assets/icons/POI.svg','t':'../assets/icons/time.svg','v':'../assets/icons/action.svg','o':'../assets/icons/others.svg'}
 export function getMerge_data(_name) {
   console.log(_name)
   let _textData = textData.slice()
@@ -103,7 +104,7 @@ function addParticle() {
   const rawText = textData.map(d => d[0]).join('') + name;
   QueryUtil.get_participle(rawText)
     .then(o => {
-      o = o.filter(d => d[0].trim().length > 0)
+      o = o.filter(d => d[0].trim().length > 0&&(filter_words.indexOf(d[0])==-1))
       textData = o; // 获取词性
       createTabs(o)
       return o
@@ -243,6 +244,7 @@ function dataTrans_YKJ() {
 let preClickedIndex = null
 
 function createTabs(data) {
+
   const container = d3.select('.search-container')
   const divData = container.selectAll('.word-tab')
     .data(data, (d, i) => d[0] + '_' + d[i])
@@ -252,31 +254,53 @@ function createTabs(data) {
   const div = divData.enter()
     .insert('div', '#input-wrapper')
     .attr('class', 'word-tab')
-    .call(d3.drag()
-      .on('start', word_tab_start)
-      .on('drag', word_tab_move)
-      .on('end', word_tab_end))
 
 
-  div.append('div')
+  let image_container=div.append('div')
     .attr('class', 'tab-image-container')
-    .append('img')
+  .on('click',function(){
+let status=d3.select(this).select('.change_type').style('display')
+    d3.select(this).select('.change_type').style('display',status=='block'?'none':'block')
+      })
+  image_container.append('img')
     .attr('src', d => {
-      if (d[1].indexOf('n') != -1) {
-        return '../assets/icons/POI.svg';
-      } else if (d[1].indexOf('t') != -1) {
-        return '../assets/icons/time.svg';
-      } else if (d[1].indexOf('v') != -1) {
-        return '../assets/icons/action.svg';
-      } else {
-        return '../assets/icons/others.svg';
-      }
+     return word_img[d[1]]
     })
+
+let change_type=image_container.append('div')
+    .classed('change_type',true)
+    .style('background','whitesmoke')
+     .style('z-index',1)
+    .style('position','absolute')
+    .style('width','24px')
+    .style('display','none')
+ for(let k in word_img){
+   if(!(image_container.select('img').empty())&&word_img[k]==image_container.select('img').attr('src'))
+     continue;
+    change_type.append('img')
+        .style('display','block')
+        .style('padding','5px 0px 5px 0px')
+        .style('background','gray')
+        .style('width','100%')
+        .style('margin-top','5px')
+        .style('margin-left','0px')
+        .on('click',function(){
+          let target_src=d3.select(this.parentNode.parentNode).select('img').attr('src')
+          d3.select(this.parentNode.parentNode).select('img').attr('src',d3.select(this).attr('src'))
+          d3.select(this).attr('src',target_src)
+        })
+   .attr('src', word_img[k])
+  }
+
   div.append('div')
     .attr('class', 'tab-text-container')
+      .call(d3.drag()
+      .on('drag', word_tab_move)
+      .on('end', word_tab_end))
     .append('div')
     .attr('class', 'tab-text')
     .text(d => d[0].split('_').join(''))
+
   divData.exit().remove();
 
 
