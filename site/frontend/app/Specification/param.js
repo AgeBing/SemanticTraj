@@ -34,153 +34,6 @@ function addParamRects(root){
 		addOneParamRect(root,i)
 	})
 }
-
-function mouseDownHander(){
-
-	d3.select('.semantic_constraints').selectAll('svg').on('mousemove',paramHander)
-}
-function mouseUpHander(){
-	console.log('up')
-	d3.select('.semantic_constraints').selectAll('svg').on('mousemove',null)
-}
-
-function paramHander() {
-	let v_p  = d3.mouse( this ),
-		x = v_p[0],
-		nodeId,
-		thmax 
-
-
-	// console.log(v_p)
-	// return 
-
-
-
-	let item = d3.event.target.parentNode
-
-
-
-
-	if(item.className.baseVal == 'color-rect' ){
-		item = item.parentNode.parentNode
-	}else{
-		item = item.parentNode
-	}
-	if(item.className.indexOf('param-half-rect')!= -1){
-		nodeId = item.parentNode.parentNode.parentNode.id     //condition_node1
-		thmax = 20
-	}else{
-		nodeId = item.parentNode.parentNode.id     
-		thmax = 40
-	}
-
-	if(x > thmax) x = thmax
-	d3.select(item).select('.color-rect')
-		.attr('width',x + 4)
-	d3.select(item).select('.move-circle')
-		.attr('x',x)
-
-	let n =	d3.select(item).select('.param-name').text(),
-		v , v_o , w_o , other_rect
-
-	if(n == 'α' || n == 'β'){
-		v= scaleAB(x).toFixed(2)
-		if( v < 0)  v= 0
-		if( v > 1)  v= 1
-		v_o = 1 - v 
-		v_o = v_o.toFixed(2)
-		w_o = scaleAB.invert(v_o)
-		if(n == 'α'){
-			d3.select(item).select('.param-num').text(v)
-			other_rect = d3.select(item.parentNode).select('.param-b')
-			other_rect.select('.param-num').text(v_o)
-			other_rect.select('.color-rect').attr('width',w_o+2)
-			other_rect.select('.move-circle').attr('x',w_o)
-		}else{
-			d3.select(item).select('.param-num').text(v)
-			other_rect = d3.select(item.parentNode).select('.param-a')
-			other_rect.select('.param-num').text(v_o)
-			other_rect.select('.color-rect').attr('width',w_o+2)
-			other_rect.select('.move-circle').attr('x',w_o)
-		}
-
-	}else{
-
-		v =scale(x).toFixed(2)
-		if( v < 0)  v= 0
-		if( v > 1)  v= 1
-		d3.select(item).select('.param-num').text(v)
-	}
-
-	calcSims( nodeId )
-
-}
-function addOneParamRect111(root,i){
-	let  visBox = document.getElementsByClassName("semantic_constraints")[0];
-	let  height = visBox.offsetHeight; //高度
-	let  width = visBox.offsetWidth; //宽度
-
-	let  rectWidth = 55,
-			rectHeight = 10
-
-	scale.domain([0,rectWidth - 15])
-
-	let group  = root.append('div').attr('class','param-rect')
-		group.append('div')
-			.attr('class' , 'param-name')
-			.text(function(){
-				switch(Config.topicNames[i].name){
-					case "住宅":
-						return `Residential Related`
-					break;
-					case "娱乐商业":
-						return `Entertainment Related`
-					break;
-					case "办公":
-						return `Business Related`
-					break;
-					case "医疗":
-						return `Medical Related`
-					break;
-					case "交通":
-						return `Traffic Related`
-					break;
-					case "教育":
-						return `Educational Related`
-					break;
-				}
-   	 		})
-
-		let svg = group.append('svg')
-					.attr('class' , 'param-range')
-					.attr('height' , rectHeight + 4)
-					.attr('width' , rectWidth)
-
-			svg.append('rect').attr('class','bottom-rect')
-					.attr('width',rectWidth)
-					.attr('height',4)
-					.attr('y' , 5)
-
-			svg.append('rect').attr('class','color-rect')
-					.attr('width',rectWidth)
-					.attr('height',4)
-					.attr('y' , 5)
-
-		let circle	= svg.append('rect').attr('class','move-circle')
-					.attr('width',rectHeight + 4)
-					.attr('height',rectHeight + 4)
-					.attr('rx',rectHeight + 4)
-					.attr('ry',rectHeight + 4)
-					.attr('x',rectWidth - 14)
-
-		circle.on('mousedown',mouseDownHander)
-		svg.on('mouseup',mouseUpHander)
-
-		group.append('div')
-			.attr('class' , 'param-num')
-			.text(1)	
-}
-
 function addOneParamRect(root,i){
 	let current_node_id=''
 	root.each(function(){
@@ -234,17 +87,13 @@ function addOneParamRect(root,i){
 	.each(function(){
 				$(this).slider()
 	    .on( "slide", function( event, ui ) {
-			Config.picTrajOpacity = ui.value
 			d3.select(this.parentNode).select('.param-num').text(parseFloat(ui.value).toFixed(1))
-			Config.PicUpdateFlag = true
-			draw()
             calcSims(current_node_id)
 	    })
 	    .slider( "option", "min", 0)
 	    .slider( "option", "max", 1)
 	    .slider( "option", "step", 0.1)
 	    .slider( "value", 1 )
-		Config.picTrajOpacity = 0.1
 	d3.select(this).select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","14px")
 			})
@@ -282,7 +131,6 @@ function addAB(root){
 		.each(function(){
 			$(this).slider()
 	    .on( "slide", function( event, ui ) {
-			Config.picTrajOpacity = ui.value
 			let num=parseFloat(ui.value).toFixed(1)
 			d3.select(this.parentNode).select('.param-num').text(num)
 			if(d3.select(this.parentNode).attr('class')=='param-half-rect param-a')
@@ -310,8 +158,7 @@ function addAB(root){
 					}
 				})
 			}
-			Config.PicUpdateFlag = true
-			draw()
+			//draw()
             calcSims(current_node_id)
 	    })
 	    .slider( "option", "min", 0)
