@@ -1,7 +1,8 @@
 import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
 
 export let path_colorscale=d3.scaleQuantize()
-                                .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
+    .range(['#fef0d9','#fdd49e','#fdbb84','#fc8d59','#e34a33','#b30000'])
+                                // .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
     d3.select(this.parentNode).style("z-index",10000)
@@ -100,23 +101,7 @@ export function show_hide() {
 
         get_left_nodes(index);//create line
     }
-    else {//hide
-        /*let hide_nodes = d3.select(this.parentNode.parentNode).select('.nei_words').selectAll('.neiwordsdiv');
-        let current_show_nodes = [];
-        for (let i = 0; i < line_data[index].left.length; i++) {
-            let is_delete = false;
-            hide_nodes.each(function () {
-                if (this == line_data[index].left[i]) {
-                    is_delete = true;
-                }
-            })
-            if (!is_delete)
-                current_show_nodes.push(line_data[index].left[i])
-        }
-        line_data[index].left = current_show_nodes;*/
-        /*nei_words.style('visibility', 'hidden');
-        wordsubtitle.style('visibility', 'hidden');*/
-
+    else {
         nei_words.style('display', 'none');
         wordsubtitle.style('display', 'none');
         d3.select(this).style("background-image","url(../icon/trijian.png)").attr("isshow",false);
@@ -266,7 +251,7 @@ return path_colorscale(d3.select(this).attr('relation_val'));
      }
 }
 
-export function refresh_POI_color(){
+export function refresh_POI_length(){
     let max_vals=[];
     d3.selectAll('.condition_node').each(function(){
         let max=d3.select(this).attr('max_val')
@@ -283,16 +268,12 @@ export function refresh_POI_color(){
          poi_colordomain.min = d3.min(min_vals)
          poi_colordomain.max = d3.max(max_vals)
          d3.selectAll('.POIrect').each(function(){
-             d3.select(this).select('.POIdiv').style('background', function () {
-             return POI_colorscale(parseFloat(d3.select(this.parentNode).attr('val')))
+             d3.select(this).select('.POIdiv').style('width', function () {
+             return parseFloat(d3.select(this.parentNode).attr('val'))/poi_colordomain.max*60+"px"
          })
          })
-         d3.select('#Relevance_Score').select('.content').select('.max').text(parseFloat(poi_colordomain.max).toFixed(1))
-         d3.select('#Relevance_Score').select('.content').select('.min').text(parseFloat(poi_colordomain.min).toFixed(1))
      }
      else{
-d3.select('#Relevance_Score').select('.content').select('.max').text(0)
-         d3.select('#Relevance_Score').select('.content').select('.min').text(0)
          poi_colordomain.min = 0
          poi_colordomain.max = 0
      }
