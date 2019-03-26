@@ -348,16 +348,10 @@ module.exports = nodelist;
 
 export function initial_right_content() {
   nodelist.container.select('.right_content').remove()
-  let legend_list = [/*{
-    id: 'Relevance_Score',
-    name: 'Relevance Score:',
-    color: ["#045a8d", '#2b8cbe', '#74a9cf', '#a6bddb', '#d0d1e6', '#f1eef6']
-  },*/ {
+  let legend_list = [{
     id: 'Relevance_Information',
     name: 'Relevance Information:',
-    // color: ['#993404', '#d95f0e', '#fe9929', '#fec44f', '#fee391', "#ffffd4"]
-    // color: [ '#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a']
-      color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
+   color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
   }]
   // let height = parseInt($('#Specification_view').css('height'))
   let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
