@@ -79,3 +79,28 @@ export function unHighlightHexa(pid){
 		}
 	})
 }
+
+
+
+// 高亮某条轨迹对应的某个时间段
+export function highlightHexaInOnePoint( pid , i ){
+	objsH.forEach((obj , _pid)=>{
+		if (_pid == pid ){
+			if(obj) obj.obj.highlight()
+			if(obj) obj.obj.highlightOnePoint(i)
+		}else{
+			if(obj) obj.obj.dark()
+		}
+	})
+}
+export function unHighlightHexaInOnePoint(pid){
+	objsH.forEach((obj , _pid)=>{
+		if (_pid == pid ){
+			if(obj) obj.obj.unHighlightOnePoint()
+			if(obj) obj.obj.unHighlight()
+		}else{
+			if(obj) obj.obj.undark()
+		}
+	})
+
+}

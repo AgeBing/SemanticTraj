@@ -4,12 +4,14 @@ export let topicNameList = ["Beauty","Food","Shop","Uptown","Education",
 				"Enterprise","Scenicspot","Government"]
 
 
-export let colorList = ['#8dd3c7','#bebada','#fb8072','#28B78D','#fdb462',
-				'#FFD034','#fccde5','#d9d9d9','#bc80bd','#ccebc5',
-				'#80b1d3','#F40076','#b3de69','#fccde5']
+// export let colorList = ['#8dd3c7','#bebada','#fb8072','#28B78D','#fdb462',
+// 				'#FFD034','#fccde5','#d9d9d9','#bc80bd','#ccebc5',
+// 				'#80b1d3','#F40076','#b3de69','#fccde5']
 
 
-export let iconSrcUrl = './assets/icons_/'
+
+export let colorList  = ['#8dd3c7'  , '#fb8072' , '#fdb462',   '#28B78D','#bebada','#f8b739']
+export let iconSrcUrl = '../icon/'
 export let topicThemesConfig = {
 	min_width : 50,    // 显示 icon
 	oneBoxWidth : 50    // 单个 icon box 的宽度
@@ -28,7 +30,7 @@ export const  topicNames = [
     		'Education'  : 0.1,
     		'Hospital'	 : 0.1
     	},
-    	icon : 'life.png'
+    	icon : 'Residential_white.png'
     },{
     	name : '娱乐商业', 
     	contain : ['Beauty','Food','Finance','Shop','Hotel'],
@@ -39,7 +41,7 @@ export const  topicNames = [
     		'Shop'	 : 0.2,
     		'Hotel'  : 0.1
 	    	},
-    	icon : 'food.png'
+    	icon : 'Entertainment_white.png'
     },{
     	name : '办公', 
     	contain : ['Enterprise','Government','Finance'],
@@ -48,14 +50,14 @@ export const  topicNames = [
     		'Government' : 0.4,
     		'Finance'	 : 0.2
     	},
-    	icon : 'finance.png'
+    	icon : 'Business_white.png'
     },{
     	name : '医疗', 
     	contain : ['Hospital' ],
     	percent : {
     		'Hospital'  : 1
     	},
-    	icon : 'hospital.png'
+    	icon : 'Medical_white.png'
     },
     {
     	name : '交通', 
@@ -63,7 +65,7 @@ export const  topicNames = [
     	percent : {
     		'Traffic'   : 1
     	},
-    	icon : 'traffic.png'
+    	icon : 'Traffic_white.png'
     },
     {
     	name: '教育',
@@ -71,7 +73,7 @@ export const  topicNames = [
     	percent : {
     		'Education' : 1
     	},
-    	icon : 'education.png'
+    	icon : 'Educational_white.png'
     }
 ]
 
