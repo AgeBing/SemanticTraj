@@ -56,7 +56,7 @@ export function draw(data) {
 		}
 		console.log(trajsData)
 
-		drawheatmap(trajsData)
+		// drawheatmap(trajsData)
 
 	}else {
 		if(!trajsData) return   //没有数据 且 无data 
@@ -123,14 +123,18 @@ export function draw(data) {
 
 		urlCache = {
 			origin : stack[0].url,
-			select : stack[stack.length - 1].url 
+			select : stack[stack.length - 1].url,
+			originData : stack[0].latlng,
+			selectData : stack[stack.length - 1].latlng,
 		}
 
 
 	}else{
 		urlCache = {
 			origin : stack[0].url,
-			select : null
+			select : null,
+			originData : stack[0].latlng,
+			selectData : null	
 		}
 	}
 
@@ -143,6 +147,29 @@ export function draw(data) {
 // #canvas-upon-map 	   上绘制未选择的轨迹
 // #canvas-upon-map-select 上为选择后留下的轨迹
 function drawTrajs(url){
+	if(url.select){
+		let canvasSelect = document.getElementById('canvas-upon-map-select');
+	    let ctxSelect = canvasSelect.getContext('2d');
+
+		let t3 = new Date().getTime();
+	    canvasSelect.width =  width
+	    canvasSelect.height = height
+		ctxSelect.clearRect(0,0,width,height)
+
+		var imgSelect = new Image();
+		imgSelect.src = url.select
+	   	imgSelect.onload = function(){
+	    	ctxSelect.drawImage(imgSelect ,t_left,t_top,width,height,0,0,width,height)
+	    	let  t4= new Date().getTime();
+			// console.log('draw select pic: ' + (t4-t3) + 'ms')
+		}
+		
+		drawheatmap( url.selectData )
+		// 不画 origin 轨迹
+		return
+	}
+
+
 	if(url.origin){
 		let canvasOrigin = document.getElementById('canvas-upon-map');
 	    let ctxOrigin = canvasOrigin.getContext('2d');
@@ -163,24 +190,10 @@ function drawTrajs(url){
 	    	let  t2 = new Date().getTime();
 			// console.log('draw origin pic: ' + (t2-t1) + 'ms')
 		}
-	}
-	if(url.select){
-		let canvasSelect = document.getElementById('canvas-upon-map-select');
-	    let ctxSelect = canvasSelect.getContext('2d');
 
-		let t3 = new Date().getTime();
-	    canvasSelect.width =  width
-	    canvasSelect.height = height
-		ctxSelect.clearRect(0,0,width,height)
-
-		var imgSelect = new Image();
-		imgSelect.src = url.select
-	   	imgSelect.onload = function(){
-	    	ctxSelect.drawImage(imgSelect ,t_left,t_top,width,height,0,0,width,height)
-	    	let  t4= new Date().getTime();
-			// console.log('draw select pic: ' + (t4-t3) + 'ms')
-		}
+		drawheatmap( url.originData )
 	}
+
 
 }
 

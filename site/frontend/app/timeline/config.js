@@ -12,10 +12,10 @@ export let colorList = ['#8dd3c7','#bebada','#fb8072','#28B78D','#fdb462',
 export let iconSrcUrl = './assets/icons_/'
 export let topicThemesConfig = {
 	min_width : 50,    // 显示 icon
-	max_width : 150	   // 显示 比例
+	oneBoxWidth : 50    // 单个 icon box 的宽度
 }
 
-export let vRectHeight = 35
+export let vRectHeight = 27
 
 export const  topicNames = [
 	{
