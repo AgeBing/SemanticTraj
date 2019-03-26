@@ -264,7 +264,7 @@ nodelist.reOrder = function refresh_list(a, current_node_id) {
       break;
     }
   }
-  initial_siteScore(current_data, alpha);
+  initial_siteScore(current_data, alpha,true);
   normalization(current_data)
   renderingPOIlist(d3.select('#locationlistdiv' + current_conditionnode_order).data([current_data]), parseInt($('#' + current_node_id).find('.node_num').prop('value')));
   initial_line('condition_node' + current_conditionnode_order)
@@ -685,9 +685,10 @@ function normalization(initial_data) {
   })
 }
 
-function initial_siteScore(initial_data, alpha = 1) { //若alpha=1则说明基于nodelist更新sitescore，反之则是仅对当前标签的数据进行poi中val的更新(simT和alpha)，然后更新sitescore
+function initial_siteScore(initial_data, alpha = 1,param=false) { //若alpha=1则说明基于nodelist更新sitescore，反之则是仅对当前标签的数据进行poi中val的更新(simT和alpha)，然后更新sitescore.
+    //param为true表示alpha来自参数面板
   let unify_data = {}
-  if (alpha != 1)
+  if (param)
     unify_data = {
       data: [initial_data]
     } //使各个部分的结构层数都一样
@@ -698,7 +699,7 @@ function initial_siteScore(initial_data, alpha = 1) { //若alpha=1则说明基�
     first_word.data.forEach(second_word => {
       second_word.data.forEach(third_word => {
         third_word.data.forEach(poi => {
-          if (alpha != 1)
+          if (param)
             poi.val = poi.relation_val * alpha + poi.simT
           let scores = nodelist.siteScore.get(poi.site_id)
           if (!scores) {
