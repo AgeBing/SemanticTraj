@@ -1,4 +1,4 @@
-/*@import './map.css'*/
+word-tab/*@import './map.css'*/
 
 html{
 	-webkit-touch-callout: none;
@@ -109,7 +109,7 @@ html, body{
 .tab-image-container{
     float: left;
     height: 100%;
-    background: gray;
+    background: rgb(46, 117, 182);
     line-height: 32px;
 }
 .tab-image-container img{
