@@ -222,12 +222,10 @@ function addOneParamRect(root,i){
 				}
    	 		})
 			let drag_bar = group.append('div')
-					// .attr('class' , 'param-range')
 					.style('height' , rectHeight + 4)
 					.style('width' , rectWidth)
 
 			drag_bar.append('rect')
-				// .attr('class','bottom-rect')
 				.style('position','absolute')
 					.style('width',rectWidth+'px')
 					.style('height',6+'px')
@@ -256,70 +254,6 @@ function addOneParamRect(root,i){
 				.style('right','1px')
 				.style('line-height','30px')
 			.text(1)
-
-			/*drag_bar.append('rect').attr('class','color-rect')
-					.attr('width',rectWidth)
-					.attr('height',4)
-					.attr('y' , 5)*/
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-	$("#trajslider").slider()
-	    .on( "slide", function( event, ui ) {
-			Config.picTrajOpacity = ui.value*0.01
-			Config.PicUpdateFlag = true
-			draw()
-	    })
-	    .slider( "option", "min", 1)
-	    .slider( "option", "max", 100)
-	    .slider( "option", "step", 1)
-	    .slider( "value", 10 )
-	Config.picTrajOpacity = 0.1
-	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
-	    			.style("height","17px")
-*/
-
-
-
-/*
-		let svg = group.append('div')
-					.attr('class' , 'param-range')
-					.attr('height' , rectHeight + 4)
-					.attr('width' , rectWidth)
-
-			svg.append('rect').attr('class','bottom-rect')
-					.attr('width',rectWidth)
-					.attr('height',4)
-					.attr('y' , 5)
-
-			svg.append('rect').attr('class','color-rect')
-					.attr('width',rectWidth)
-					.attr('height',4)
-					.attr('y' , 5)
-
-		let circle	= svg.append('rect').attr('class','move-circle')
-					.attr('width',rectHeight + 4)
-					.attr('height',rectHeight + 4)
-					.attr('rx',rectHeight + 4)
-					.attr('ry',rectHeight + 4)
-					.attr('x',rectWidth - 14)
-
-		circle.on('mousedown',mouseDownHander)
-		svg.on('mouseup',mouseUpHander)
-
-		group.append('div')
-			.attr('class' , 'param-num')
-			.text(1)*/
 }
 
 
@@ -356,8 +290,10 @@ function addAB(root){
 				let another=(1-num).toFixed(1)
 				d3.select(this.parentNode.parentNode).selectAll('div').each(function(){
 					if(d3.select(this).attr('class')=='param-half-rect param-b'){
-						let x=d3.select(this).select('.param-num')
-					x.text(another)
+						d3.select(this).select('.param-num').text(another)
+                         d3.select(this).select('.ui-slider').each(function () {
+                            $(this).slider('value',another)
+                        })
 					}
 				})
 
@@ -367,72 +303,38 @@ function addAB(root){
 				let another=(1-num).toFixed(1)
 				d3.select(this.parentNode.parentNode).selectAll('div').each(function(){
 					if(d3.select(this).attr('class')=='param-half-rect param-a'){
-						let x=d3.select(this).select('.param-num')
-					x.text(another)
+						d3.select(this).select('.param-num').text(another)
+                        d3.select(this).select('.ui-slider').each(function () {
+                            $(this).slider('value',another)
+                        })
 					}
 				})
 			}
 			Config.PicUpdateFlag = true
 			draw()
             calcSims(current_node_id)
-	    })//if(d.data[i].data[j].data[m].latitude>27.9248561995 &&d.data[i].data[j].data[m].latitude<28.0769120675 &&d.data[i].data[j].data[m].longitude>120.5833650410&&d.data[i].data[j].data[m].longitude<120.7579719628)
+	    })
 	    .slider( "option", "min", 0)
 	    .slider( "option", "max", 1)
 	    .slider( "option", "step", 0.1)
-	    .slider( "value"/*, function(){
+	    .slider( "value", 1/*function(){
+	        console.log(this,'this--------------------------')
 	    	if(d3.select(this.parentNode).attr('class')=='param-half-rect param-a')
 	    		return 1
 			else
 				return 0
-		}*/,1)
+		}*/)
 		Config.picTrajOpacity = 0.1
 	d3.select(this).select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","14px")
 		})
-				/*.append('svg')
-				.attr('class' , 'param-range')
-				.attr('height' , rectHeight +  4)
-				.attr('width' , rectWidth)
-		
-		svg.append('rect').attr('class','bottom-rect')
-					.attr('width',rectWidth)
-					.attr('height',4)
-					.attr('y' , 5)
-
-		svg.append('rect').attr('class','color-rect')
-			.attr('width',rectWidth * 0.5)
-			.attr('height',4)
-			.attr('y' , 5)*/
-
-	// group.selectAll('svg').on('click',paramHander)
-	
-
-
-
-	group.selectAll('.param-half-rect')
+    group.selectAll('.param-half-rect')
 		.append('div').attr('class','param-num')
-
-
-		/*let circle	= svg.append('rect').attr('class','move-circle')
-					.attr('width',rectHeight + 4)
-					.attr('height',rectHeight + 4)
-					.attr('rx',rectHeight + 4)
-					.attr('ry',rectHeight + 4)
-					// .attr('x',rectWidth - 14)
-
-	circle.on('mousedown',mouseDownHander)
-	svg.on('mouseup',mouseUpHander)*/
-	
 	Agroup.select('.param-name').text('α')
-	//Agroup.select('.color-rect').attr('width',rectWidth)
 	Agroup.select('.param-num').text(1)
-	//Agroup.select('.move-circle').attr('x',rectWidth - 13)
-
 
 	Bgroup.select('.param-name').text('β')
-	//Bgroup.select('.color-rect').attr('width',0)
 	Bgroup.select('.param-num').text(0)
-	//group.select('.move-circle').attr('x',0)
 }
 
 function getParamVals(nodeId) {
