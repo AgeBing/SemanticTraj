@@ -22,7 +22,7 @@ let tag_diff_data = {}
 
 let filter_words=['查询','经过','的','轨迹','后']
 
-let word_img={'n':'../assets/icons/POI.svg','t':'../assets/icons/time.svg','v':'../assets/icons/action.svg','o':'../assets/icons/others.svg'}
+let word_img={'n':'../assets/icons/POI.svg','t':'../assets/icons/time.svg','o':'../assets/icons/others.svg'}
 export function getMerge_data(_name) {
   console.log(_name)
   let _textData = textData.slice()
@@ -104,7 +104,11 @@ function addParticle() {
   const rawText = textData.map(d => d[0]).join('') + name;
   QueryUtil.get_participle(rawText)
     .then(o => {
-      o = o.filter(d => d[0].trim().length > 0&&(filter_words.indexOf(d[0])==-1))
+      o = o.filter(d => d[0].trim().length > 0)//&&(filter_words.indexOf(d[0])==-1))
+      o.forEach((d,i)=>{
+if(filter_words.indexOf(d[0])!=-1)
+  o[i][1]='o'
+      })
       textData = o; // 获取词性
       createTabs(o)
       return o
@@ -280,7 +284,7 @@ let change_type=image_container.append('div')
     change_type.append('img')
         .style('display','block')
         .style('padding','5px 0px 5px 0px')
-        .style('background','gray')
+        .style('background','rgb(46, 117, 182)')
         .style('width','100%')
         .style('margin-top','5px')
         .style('margin-left','0px')
