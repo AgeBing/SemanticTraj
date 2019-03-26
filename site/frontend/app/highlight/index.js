@@ -2,7 +2,7 @@
  * 视图间的联动高亮
  */
 
-import { trajs ,topicLists,trajId2Points ,availableTrajsinLimitTime }  from '../app.js' 
+import { trajs ,topicLists,trajId2Points ,availableTrajsinLimitTime  , mockTrans }  from '../app.js' 
 
 import { highLightTrajInMap ,unHighLightTrajInMap , 
 		 highLightTrajSectionInMap, unHighLightTrajSectionInMap } from '../map/traj.js'
@@ -51,7 +51,10 @@ function highlightPoisInTrajs(pid){
 			a.data.forEach((b)=>{
 				b.data.forEach((c)=>{
 					c.data.forEach((_site)=>{
-						if(_site.site_id == site.siteId){
+						// let mockId = mockTrans(site.siteId)  //case1 打开此行 
+						let mockId = site.siteId
+						// console.log( site.siteId , "  => " , mockId)
+						if(_site.site_id == mockId){
 							pois.push(_site)
 						}
 					})
@@ -164,8 +167,7 @@ export function hl_timeline(i,t,fillColor){
 				siteId2 = +traj[j+1].site
 
 			highlightHexaInOnePoint( pid , j )
-			console.log(pid,j)
-			// highLightTrajSectionInMap(siteId1,siteId2,fillColor)
+			highLightTrajSectionInMap(siteId1,siteId2,fillColor)
 
 			break;
 		}
