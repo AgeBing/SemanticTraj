@@ -158,7 +158,6 @@ function addAB(root){
 					}
 				})
 			}
-			//draw()
             calcSims(current_node_id)
 	    })
 	    .slider( "option", "min", 0)
@@ -171,7 +170,6 @@ function addAB(root){
 			else
 				return 0
 		}*/)
-		Config.picTrajOpacity = 0.1
 	d3.select(this).select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","14px")
 		})
