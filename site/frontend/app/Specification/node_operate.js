@@ -8,32 +8,25 @@ export function add_condition_node(){
     //nodelist.node_rendering(nodelist.data.length)
 }
 
-export function word_tab_start(){
-//d3.select(this).style('position','absolute').style('left',d3.event.x+'px').style('top',d3.event.y+'px').style('z-index',10000)
-
-}
 export function word_tab_move(){
-d3.select(this).style('position','absolute').style('left',d3.event.x+'px').style('top',d3.event.y+'px').style('z-index',10000)
-    //d3.select(this).style('left',d3.event.x+'px');
-   // d3.select(this).style('top',d3.event.y+'px');
+d3.select(this.parentNode).style('position','absolute').style('left',d3.event.x+'px').style('top',d3.event.y+'px').style('z-index',10000)
    }
 
 export function word_tab_end(){
-    let x=parseInt(d3.select(this).style('left'))
-    let y=d3.select(this).style('top')
-    let word=d3.select(this).select('.tab-text-container').select('.tab-text').text()
+    let x=parseInt(d3.select(this.parentNode).style('left'))
+    let y=d3.select(this.parentNode).style('top')
+    let word=d3.select(this).select('.tab-text').text()
     let left_length=$('#Specification_view').scrollLeft();
     d3.selectAll('.condition_node').each(function(){
         let current_left=parseInt(d3.select(this).style('left'))-left_length
         let current_right=current_left+parseInt(d3.select(this).style('width'));
-        //let current_top=parseInt(d3.select(this).style('top'))-left_length
         if(x>=current_left &&(x<=current_right))
         {
             Add_word(d3.select(this).attr('id'),word)
         }
 
     })
-    d3.select(this).style('position','static')
+    d3.select(this.parentNode).style('position','static')
 }
 
 function Add_word(node_id,word){
