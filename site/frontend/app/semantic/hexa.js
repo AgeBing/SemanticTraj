@@ -167,21 +167,21 @@ class Hexa{
 		if( ifSample ){
 			stopPointsIndex.forEach((val,i)=>{   // val 为 index
 				if(val == index){
-				    g.select('circle:nth-child('+(i+1)+')')
-				    	.style('opacity',1)
-    					.style("stroke", 'red')
+				   	 g.select('circle:nth-child('+(i+1)+')')
+					    	.style('opacity',1)
+	    					.style('fill','rgb(46, 117, 182)')
 				}
 			})
 		}else{
-
-			g.select('circle:nth-child('+(index+1)+')')
-        		.style("stroke", 'red')
+					g.select('circle:nth-child('+(index+1)+')')
+		        			.style('opacity',1)
+		    				.style('fill','rgb(46, 117, 182)')
 		}
 
 	}
 	unHighlightOnePoint(){
 		let { g } = this
-		g.selectAll('circle').style("stroke", 'rgb(46, 117, 182)')
+		g.selectAll('circle').style("fill", 'none')
 	}
 }
 
