@@ -3,7 +3,7 @@ import { topicNames } from '../timeline/config.js'
 
 export let SVGlength = 400
 
-export let stepLen = 300
+export let stepLen = 100
 
 
 const visBox = document.getElementById("semantic-view");

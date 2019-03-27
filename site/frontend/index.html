@@ -83,30 +83,40 @@
           The Map View
       </div>
 
-  <div style="position: absolute;z-index: 5;width: 225px;bottom: 0;margin: 6px;height: 90px;background: #ffffffd6;border: 1px dashed #cacaca;">
+  <div style="position: absolute;z-index: 5;width: 225px;bottom: 0;margin: 6px;height: 110px;background: #ffffffd6;border: 1px dashed #cacaca;">
 
       
         <div id="select-area">
 
-          <div style="position: absolute;bottom: 67px;left: 5px;font-size: 12px;"> Region Selection</div>
-          <div id="select-btn" style="position: absolute;bottom: 63px;left: 115px;width: 22px;height: 22px;transition-duration: 0.3s;">
+          <div style="position: absolute;bottom: 87px;left: 5px;font-size: 12px;"> Region Selection</div>
+          <div id="select-btn" style="position: absolute;bottom: 83px;left: 115px;width: 22px;height: 22px;transition-duration: 0.3s;">
             <img  src="../assets/icons/select.svg">
           </div>
 
 
-          <div style="position: absolute;bottom: 47px;left: 5px;font-size: 12px;"> Queried Trajectories</div>
-          <div style="position: absolute;bottom: 47px;left: 115px;width: 100px;height: 10px;transition-duration: 0.3s;" class="color-area">
-            <input style ="cursor:pointer;height: 17px;background: transparent;width: 100px;position: absolute;top: -4px;" type="color" />          
+          <div style="position: absolute;bottom: 67px;left: 5px;font-size: 12px;"> Queried Trajectories</div>
+          <div style="position: absolute;bottom: 67px;left: 115px;width: 100px;height: 10px;transition-duration: 0.3s;" class="color-area">
+            <input style ="cursor:pointer;height: 17px;background: transparent;width: 100px;position: absolute;top: -4px;" type="color" />        
           </div> 
         </div>
 
-        <div style="position: absolute;bottom: 27px;left: 5px;font-size: 12px;"> Trajectory Opacity</div>
-        <span style="position: absolute;bottom: 27px;left: 108px;font-size: 11px;" id="opacity-num"> </span>
-        <div id="trajslider" style="right:0; position: absolute;z-index: 5;width: 70px;bottom: 20px;margin: 9px;height: 6px;"></div>
+        <div style="position: absolute;bottom: 47px;left: 5px;font-size: 12px;"> Trajectory Opacity</div>
+        <span style="position: absolute;bottom: 47px;left: 108px;font-size: 11px;" id="opacity-num"> </span>
+        <div id="trajslider" style="right:0; position: absolute;z-index: 5;width: 70px;bottom: 40px;margin: 9px;height: 6px;"></div>
         
-        <div style="position: absolute;bottom: 7px;left: 5px;font-size: 12px;"> Heatmap Intensity</div>
-        <span style="position: absolute;bottom: 7px;left: 108px;font-size: 11px;" id="intensity-num"> </span>
-        <div id="heatmapslider" style="right:0; position: absolute;z-index: 5;width:70px;bottom: 0;margin: 9px;height: 6px;"></div>
+        <div style="position: absolute;bottom: 27px;left: 5px;font-size: 12px;"> Heatmap Intensity</div>
+        <span style="position: absolute;bottom: 27px;left: 108px;font-size: 11px;" id="intensity-num"> </span>
+        <div id="heatmapslider" style="right:0; position: absolute;z-index: 5;width:70px;bottom: 20px;margin: 9px;height: 6px;"></div>
+
+
+        <div style="position: absolute;bottom: 5px;left: 5px;font-size: 12px;">Heatmap Legend</div>
+        <div class="legend" id="heatmap-legend" 
+            style="right:0; position: absolute;z-index: 5;width:117px;bottom: 15px;;height: 6px;">
+            <div class="content">
+                <div class="max" id="heatmap-legend-min" style="font-size:11px;margin-right: -7px"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="min"  id="heatmap-legend-max" style="font-size:11px;margin-left: 3px "></div>
+          </div>
+        </div>
+
   </div>
   
 

@@ -135,3 +135,11 @@ rect.selection {
 #poi-icon{
 	position: absolute;
 }
+
+
+.high-light-line{
+    /*stroke-width:2 ;*/
+    /*opacity :0.7 ;*/
+    /*stroke : rgb(121, 157, 189);*/
+    fill: none;
+}

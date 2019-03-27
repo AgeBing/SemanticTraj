@@ -46,7 +46,7 @@ function bindOpacityChangeEvent(){
 			// Config.picTrajOpacity = ui.value*0.001
 
 
-				let i = Math.floor( ui.value * 0.7 / 10 )
+				let i = Math.floor( ui.value / 10 )
 	            	
 	            let opacity_before = Config.picTrajOpacity
 	            Config.picTrajOpacity = Config.picTrajOpacitys[ i ]
@@ -59,8 +59,8 @@ function bindOpacityChangeEvent(){
 	    .slider( "option", "max", 100)
 	    .slider( "option", "step", 1)
 	    .slider( "value", 10 )
-	Config.picTrajOpacity = 0.1
-	d3.select('#opacity-num').text(0.1)
+
+	d3.select('#opacity-num').text(Config.picTrajOpacity)
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }
@@ -73,11 +73,18 @@ function bindIntensityChangeEvent(){
 	    	d3.select('#intensity-num').text(v)
 	        // heatmap.setOptions({radius: 10,max: heatpoint*0.00035})
 
+	        let max 
 			if(ui.value==200){
 				heatmap.setOptions({radius: 12,max: heatpoint*5*ui.value})
+				max = 'Infinity'
 			}else{
-				heatmap.setOptions({radius: 12,max: heatpoint*0.000005*ui.value})
+				max = heatpoint*Config.heatMapIntensity*ui.value
+				max = max.toFixed(2)
+				heatmap.setOptions({radius: 12,max: max })
 			}
+			d3.select('#heatmap-legend').select('#heatmap-legend-max')
+					.text(max)
+
 	    }) 
 	    .slider( "option", "min", 1)
 	    .slider( "option", "max", 200 )
@@ -86,11 +93,26 @@ function bindIntensityChangeEvent(){
 	
 	d3.select('#intensity-num').text(70)
 
-
+	
 	d3.select("#heatmapslider").select("span").style("width","8px").style("margin-left", "-4px")
     			.style("height","17px")
+
 }
 
+
+function initHeatMapLegend(){
+	let rects = d3.select('#heatmap-legend').selectAll('.color_bar')
+
+	rects.each(function(d,i){
+		console.log(i)
+		d3.select(this)
+			.style('background-color' ,Config.heatMapColor[i] )
+	})
+
+
+	let min = d3.select('#heatmap-legend').select('#heatmap-legend-min')
+					.text(0)
+}
 // function bindOpacityChangeEvent(){
 // 	let colorInput = d3.select('#map-view').select('#select-area').select('.range-area').select('input')
 // 	colorInput.on('change',opacityChange)
@@ -102,5 +124,6 @@ export function appendWidget(){
 	bindOpacityChangeEvent()
 	// bindSelectColorPickEvent()
 	bindIntensityChangeEvent()
+	initHeatMapLegend()
 }
 

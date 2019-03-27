@@ -5,13 +5,12 @@ import { draw }  from './pic'
 
 
 import { draw as drawPoi } from './poi'
-import { draw as drawTraj } from './traj'
+// import { draw as drawTraj } from './traj'
 import { draw as drawSelect } from './select'
 import { appendWidget } from './widget'
 import * as Config from  './config'
 
 
-appendWidget()
 let event_queue = false
 
 let  visBox = document.getElementById("map-container");
@@ -25,6 +24,11 @@ let  width = visBox.offsetWidth; //宽度
 // let tilemapservice = 'http://b.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 let tilemapservice = 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}'
 // let tilemapservice = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png'
+
+
+// let mapBoxToken = 'sk.eyJ1IjoieWtqYWdlIiwiYSI6ImNqdHF3N3d6ajA1MDczeW1tbWk5Y3hqaTkifQ.0ZBTN4_X9IYAH8hB9UWm0Q'
+// let tilemapservice =  'https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.mvt?style=mapbox://styles/mapbox/streets-v11@00&access_token=' + mapBoxToken
+
 let zoomRate = 12;
 let map = L.map('map-container').setView([28.0152686, 120.6558736], zoomRate);
 let osmLayer = L.tileLayer(tilemapservice).addTo(map);
@@ -33,6 +37,9 @@ let osmLayer = L.tileLayer(tilemapservice).addTo(map);
 let heatmap = L.heatLayer([]);
 let heatpoint = 0;
 heatmap.addTo(map)
+
+
+appendWidget()
 
 
 function drawheatmap(trajsData){
@@ -45,9 +52,14 @@ function drawheatmap(trajsData){
 		}
 	}
 	heatmap.setLatLngs(heatmapdata)
+
+	let v = +d3.select('#intensity-num')  || 70
+	let max =  heatpoint*Config.heatMapIntensity*v
+	d3.select('#heatmap-legend').select('#heatmap-legend-max')
+					.text( max.toFixed(2) )
 	heatmap.setOptions({
 		radius: 12,
-		max:  heatpoint*0.00035 ,
+		max:  max ,
 		gradient: {
 			0.25 : Config.heatMapColor[0],
 			0.55 : Config.heatMapColor[1],
@@ -137,7 +149,7 @@ function drawPic() {
 
 
  	draw()  //绘制轨迹
-	drawTraj() //绘制勾选的轨迹
+	// drawTraj() //绘制勾选的轨迹
 }
 
 let debounceTimer
