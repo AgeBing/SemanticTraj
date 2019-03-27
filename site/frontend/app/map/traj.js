@@ -13,6 +13,8 @@ import * as Config from './config.js';
 let trajData //全局数据 ，保存
 
 
+
+/*
 // 那些用户勾选的轨迹
 export function draw(trajs){
 	if(trajs){
@@ -66,6 +68,7 @@ export function drawTrajsInMap(trajs){
 	// 轨迹中的一段
 	function drawOneLineInTrajs( pa , pb , id ){
 		let svg = d3.select('#svg-poi').select('#id'+id)
+		
 		svg.append('line')
 			.attr('y1',pa[1])
 			.attr('x1',pa[0])
@@ -81,16 +84,25 @@ export function delTrajsInMap(){
 	d3.select('#svg-poi').selectAll('.trajs').remove()
 }
 
+*/
 
+
+
+
+
+
+
+
+
+
+
+
+/*
+	动态的 绘制高亮的 整条轨迹
+*/
+
+/*
 let timeoutList = []
-
-
-
-
-
-
-
-//绘制高亮的 整条轨迹
 export function highLightTrajInMapDynamic(traj){
 	let poiSvg = d3.select('#svg-poi')
 	poiSvg.append('g').attr('id','traj')
@@ -132,68 +144,6 @@ export function highLightTrajInMapDynamic(traj){
 	}
 }
 
-
-//绘制高亮的 整条轨迹
-export function highLightTrajInMap(traj , outer){
-	let poiSvg = d3.select('#svg-poi')
-	poiSvg.append('g').attr('id','traj')
-
-	let sites  = traj.traj,
-		lat,lng 
-
-	let box = [ boundry.bottom_left.lng , boundry.bottom_left.lat 
-				, boundry.top_right.lng , boundry.top_right.lat ]
-
-	for(let i = 0 ;i< sites.length - 1;i++){
-		let lat1 =  sites[i].latitude,
-			lng1 =  sites[i].longitude,
-			lat2 =  sites[i + 1].latitude,
-			lng2 =  sites[i + 1].longitude,
-			// startTime = sites[i].startTime,
-			// endTime  =  sites[i].endTime,
-			// startDate = new Date(  startTime.split(' ')[0]  + 'T' + startTime.split(' ')[1] ),
-			// endDate = new Date(  endTime.split(' ')[0]  + 'T' + endTime.split(' ')[1] ),
-			da = [] , db = [] , res 
-
-
-		res = clip( [lng1,lat1] , [lng2,lat2] , box , da , db)
-
-		if( res ){
-			let pa = _l2pb(da[1], da[0]) , 
-				pb = _l2pb(db[1], db[0])
-				
-			drawTwoColorLine( pa, pb , outer )  
-		}
-	}
-}
-
-// 轨迹中的一段
-function drawTwoColorLine( pa , pb , outer){
-	// console.log("经过 ",duration +'ms')
-
-	let svg = d3.select('#svg-poi').select('#traj')
-
-	if( outer ){
-		svg.append('line')
-			.attr('y1',pa[1])
-			.attr('x1',pa[0])
-			.style('stroke',Config.oneWholeTrajOuterColor)
-			.style('stroke-width',6)
-			.style('opacity',0.7)
-			.attr('x2',pb[0])
-			.attr('y2',pb[1])
-	}else{
-		svg.append('line')
-			.attr('y1',pa[1])
-			.attr('x1',pa[0])
-			.style('stroke',Config.oneWholeTrajinnerColor)
-			.style('stroke-width',2)
-			.attr('x2',pb[0])
-			.attr('y2',pb[1])
-	}
-}
-
-
 function clearTimeOuts(){
 	timeoutList.forEach((id)=>{
 		clearTimeout(id)
@@ -214,7 +164,7 @@ function setTimeScale(sites){
 	return ts
 }
 
-	// 轨迹中的一段
+// 	// 轨迹中的一段
 	function drawOneLine( pa , pb, duration){
 		// console.log("经过 ",duration +'ms')
 		let svg = d3.select('#svg-poi').select('#traj')
@@ -231,6 +181,95 @@ function setTimeScale(sites){
 			.attr('y2',pb[1])
 
 	}
+*/
+
+
+
+
+
+/*
+	绘制高亮的 整条轨迹
+*/
+export function highLightTrajInMap(traj , outer){
+	let poiSvg = d3.select('#svg-poi')
+	poiSvg.append('g').attr('id','traj')
+
+	let sites  = traj.traj,
+		lat,lng 
+
+	let box = [ boundry.bottom_left.lng , boundry.bottom_left.lat 
+				, boundry.top_right.lng , boundry.top_right.lat ]
+
+	let draw_points = []
+	for(let i = 0 ;i< sites.length - 1;i++){
+		let lat1 =  sites[i].latitude,
+			lng1 =  sites[i].longitude,
+			lat2 =  sites[i + 1].latitude,
+			lng2 =  sites[i + 1].longitude,
+			da = [] , db = [] , res 
+
+		res = clip( [lng1,lat1] , [lng2,lat2] , box , da , db)
+
+		if( res ){
+			let pa = _l2pb(da[1], da[0]) , 
+				pb = _l2pb(db[1], db[0])
+				
+			// 会有重合点
+			draw_points.push(pa)
+			draw_points.push(pb)
+		}
+	}
+
+	let curveLine = d3.line()
+			.x(d => d[0])
+			.y(d => d[1])
+			.curve(d3.curveNatural)
+
+	d3.select('#svg-poi').select('#traj')
+		.append('path')
+		.attr('class', 'high-light-line')
+		.attr('d', function(d) { return curveLine(draw_points);	})
+		.style('stroke',Config.oneWholeTrajOuterColor)
+		.style('stroke-width',2)
+		.style('opacity',0.5)
+
+	d3.select('#svg-poi').select('#traj')
+		.append('path')
+		.attr('class', 'high-light-line')
+		.attr('d', function(d) { return curveLine(draw_points);	})
+		.style('stroke',Config.oneWholeTrajinnerColor)
+		.style('stroke-width',1)
+
+
+}
+
+// 轨迹中的一段
+// function drawTwoColorLine( pa , pb , outer){
+// 	let svg = d3.select('#svg-poi').select('#traj')
+
+// 	if( outer ){
+// 		svg.append('line')
+// 			.attr('y1',pa[1])
+// 			.attr('x1',pa[0])
+// 			.style('stroke',Config.oneWholeTrajOuterColor)
+// 			.style('stroke-width',2)
+// 			.style('opacity',0.7)
+// 			.attr('x2',pb[0])
+// 			.attr('y2',pb[1])
+// 	}else{
+// 		svg.append('line')
+// 			.attr('y1',pa[1])
+// 			.attr('x1',pa[0])
+// 			.style('stroke',Config.oneWholeTrajinnerColor)
+// 			.style('stroke-width',1)
+// 			.attr('x2',pb[0])
+// 			.attr('y2',pb[1])
+// 	}
+// }
+
+
+
+
 // 删除高亮整条轨迹
 export function unHighLightTrajInMap(){
 	d3.select('#svg-poi').select('#traj').remove()
@@ -239,7 +278,11 @@ export function unHighLightTrajInMap(){
 
 
 
-// 高亮轨迹片段
+
+
+/*
+	 高亮 region
+*/
 export function highLightTrajSectionInMap(siteId1,siteId2,fillColor){
 
 	let poiSvg = d3.select('#svg-poi')
@@ -271,18 +314,6 @@ export function highLightTrajSectionInMap(siteId1,siteId2,fillColor){
 	// 可能 vertice1 数据为空
 	drawOneSectonPolygon(vertice1,fillColor)
 	// drawOneSectonPolygon(vertice2)
-}
-
-function drawOneSection( pa , pb){
-	let svg = d3.select('#svg-poi').select('#traj-section')
-	//直线
-	svg.append('line')
-		.attr('y1',pa[1])
-		.attr('x1',pa[0])
-		.attr('x2',pb[0])
-		.attr('y2',pb[1])
-		.style('stroke',Config.oneSectionTrajColor)
-		.style('stroke-width',2)
 }
 function drawOneSectonPolygon(vertice,fillColor){   
 	let vertices = [] ,points = ""
@@ -323,8 +354,6 @@ function drawOneSectonPolygon(vertice,fillColor){
 		.style('fill',fillColor)
 		.style('opacity',0.6)
 }
-
-
 export function unHighLightTrajSectionInMap(){
 	d3.select('#svg-poi').select('#traj-section').remove()
 }

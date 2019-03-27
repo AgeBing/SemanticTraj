@@ -70,8 +70,8 @@ class Hexa{
 	}
 	start(){
 		let self = this
-		let iterations = 20,    //迭代次数
-			interval = 50
+		let iterations = 50,    //迭代次数
+			interval = 20
 
 		for(let i =0 ;i < iterations;i++){
 			setTimeout(()=>{self.tick()}, i * interval )
@@ -100,7 +100,7 @@ class Hexa{
 		let curveLine = d3.line()
 					.x(d => d.x)
 					.y(d => d.y)
-					.curve(d3.curveBasisOpen)
+					.curve(d3.curveNatural)
 
 		// let cps = [Ps[0].getXY()]
 		// for(let i = 1 ;i < Ps.length - 1;i++){

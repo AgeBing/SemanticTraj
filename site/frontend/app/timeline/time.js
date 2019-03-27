@@ -12,6 +12,9 @@ let timeRange 		 		// 时间范围 [start,end]\
 export let timeScale,timeScale2     //两个 timeScale 
 export let func_list
 
+
+var brushFunc
+
 // for all instances 
 export function init(_timeRange){
 	d3.select('#topic-container')
@@ -50,24 +53,9 @@ function setTimeScale(){
 function setTopAxis(){
 	// 顶部时间轴 
 	let axisFunc =  d3.axisBottom(timeScale)
-	let tr = d3.timeMinute.range(timeRange[0],timeRange[1],10)
-		// console.log(tr)
+
 		axisFunc.ticks(5)  //显示的个数
 			.tickFormat(  d3.timeFormat("%x %H:%M")  )
-		// axisFunc.tickValues(tr)
-		//   	.tickSizeOuter(0)
-		//   	.tickPadding(10)
-		// 	.tickFormat(function(d, i) {
-		// 		// 设置间隙
-		// 		let interval = Math.ceil(60 / (timeScale(tr[1]) - timeScale(tr[0])))
-		// 		let r = ''
-		// 		if(i % interval == 0){
-		// 			if( (i>0) && d.toDateString() != tr[i-1].toDateString())
-		// 				r += d.toLocaleDateString()+' '
-		// 			r += d.toTimeString().slice(0,8)
-		// 		}
-		// 		return r 
-		// 	});	
 
 	let topAxis =  d3.select('#topic-container')
 						.append('div')
@@ -93,6 +81,7 @@ function addTopicContains(){
 function setZoom(){
 	let zoomFunc = d3.zoom()
 		.scaleExtent([1, 100]) 	//缩放比例
+		// .translateExtent([[-w * 0.9, 0], [2 *w * 0.9,10] ])
 		.on('zoom',()=>{
 			// console.log('zoom')
 			func_zoomed()
@@ -111,27 +100,34 @@ function setZoom(){
 			.attr('y',0)
 			.attr('width',w)
 			.attr('height',40)
-		// .on('mousemove',() =>{      //标线
-		// 	let x = d3.event.offsetX
-		// 	if(x <= w * 0.05 || x >= w * 0.95){
-		// 		d3.select('#topic-container').selectAll('.tick-line').remove()
-		// 	}else{
-		// 		func_tickmove(x)
-		// 	}
-		// })
-		// .on('mouseleave',()=>{
-		// 	d3.select('#topic-container').selectAll('.tick-line').remove()
-		// })
 
 	d3.select('#top-axis-container').select('svg').call(zoomFunc)
-	// listenerRect.call(zoomFunc)
 }
 function func_zoomed(){
 	let t = d3.event.transform
+
+	// console.log(timeScale2.invert(t))
+
+	// d3.select('#top-axis-container').select('svg')
+	// 	.call( brushFunc.move , timeScale.range().map(t.invertX, t) )
+	// brush.move, timeScale.range().map(t.invertX, t)
+
+
+
 	//更新 timeScale
 	timeScale.domain(t.rescaleX(timeScale2).domain())   //  timeScal2 不变
+
+
+
 	//更新时间轴
 	syncAsixFunc() 
+
+	d3.select('#top-axis-container').select('svg').select('.brush')
+		.call( brushFunc.move , timeScale.range().map(t.applyX, t) )
+
+	// console.log("transform ", t.invertX )
+	// console.log("range ", timeScale.range() )
+	// console.log(  timeScale.range().map((t.applyX), t)   )
 
 	func_list.forEach((f) =>  {
 		f.func.call(f.whos)
@@ -160,7 +156,7 @@ function func_tickmove(x){
 
 }
 function setBrush(){
-	var brushFunc = d3.brushX()
+	brushFunc = d3.brushX()
 	    .extent([[0, 0], [w * 0.9,10]])
 	    // .extent([[0, 0], [w * 0.9, Config.vRectHeight]])
 	    .on("start", ()=>{
@@ -169,7 +165,6 @@ function setBrush(){
 	    })
 	    .on("brush",()=>{
 		    brushStyle()
-	    	// console.log('brush')
 	    })
 	    .on("end", debounceSelect() );
 
@@ -214,8 +209,9 @@ function brushed(){
 	console.log('start select')
 	timeSelect()
 }
+
+//添加图例
 function addLegend(){
-	//添加图例
     let container = d3.select('#topic-legend')
 
     Config.topicNames.forEach((topicType,i)=>{
@@ -289,9 +285,9 @@ function timeSelect(){
 		timeStart = timeScale.invert(rectStart),
 		timeEnd = timeScale.invert(rectEnd)
 
-	// console.log("full time:",timeRange)
-	// console.log("start time:",timeStart)
-	// console.log("end time:",timeEnd)
+	console.log("full time:",timeRange)
+	console.log("start time:",timeStart)
+	console.log("end time:",timeEnd)
 	filter(timeStart,timeEnd)
 }
 

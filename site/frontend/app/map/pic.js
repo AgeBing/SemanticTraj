@@ -401,7 +401,7 @@ function GetTrajsPicUrl(trajs,stackIndex){
 	}
 
 	ctx.lineJoin = 'round'
-	ctx.lineWidth = 1
+	ctx.lineWidth = Config.picTrajLineWidth
    
 
    	console.log("轨迹条数：",trajs.length , " 线色：",ctx.strokeStyle , "  线宽：",ctx.lineWidth )
