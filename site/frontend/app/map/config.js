@@ -15,8 +15,12 @@ export let duration = 3000
 
 export let PicUpdateFlag   = true
 export let picTrajColor = '#4575b4' 
-export let picTrajSelectColor = '#D73027' 
-export let heatMapColor = '#4575b4'
+
+// export let picTrajSelectColor = '#D73027' 
+
+export let heatMapColor = [ 'rgb(253, 212, 158)' , 'rgb(253, 187, 132)', 'rgb(252, 141, 89)' , 'rgb(179, 0, 0)']
+
+
 
 export let oneWholeTrajOuterColor = 'rgb(121, 157, 189)' 
 export let oneWholeTrajinnerColor = 'rgb(46, 117, 182)' 

@@ -163,8 +163,7 @@ function drawTrajs(url){
 	    	let  t4= new Date().getTime();
 			// console.log('draw select pic: ' + (t4-t3) + 'ms')
 		}
-
-		Config.heatMapColor = Config.picTrajSelectColor 		
+	
 		drawheatmap( url.selectData )
 
 		// 不画 origin 轨迹
@@ -193,7 +192,6 @@ function drawTrajs(url){
 			// console.log('draw origin pic: ' + (t2-t1) + 'ms')
 		}
 
-		Config.heatMapColor = Config.picTrajColor 
 		drawheatmap( url.originData )
 	}
 
@@ -399,7 +397,7 @@ function GetTrajsPicUrl(trajs,stackIndex){
 	if(stackIndex == 0){
    		ctx.strokeStyle = color2rgb(Config.picTrajColor  , Config.picTrajOpacity )
 	}else{
-   		ctx.strokeStyle = color2rgb(Config.picTrajSelectColor , Config.picTrajOpacity )
+   		ctx.strokeStyle = color2rgb(Config.picTrajColor , Config.picTrajOpacity )
 	}
 
 	ctx.lineJoin = 'round'
