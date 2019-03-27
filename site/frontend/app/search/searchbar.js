@@ -263,40 +263,14 @@ function createTabs(data) {
   let image_container=div.append('div')
     .attr('class', 'tab-image-container')
   .on('click',function(){
-let status=d3.select(this).select('.change_type').style('display')
-    d3.select(this).select('.change_type').style('display',status=='block'?'none':'block')
+let status=d3.select(this.parentNode).select('.change_type').style('display')
+    d3.select(this.parentNode).select('.change_type').style('display',status=='block'?'none':'block')
       })
   image_container.append('img')
     .attr('src', d => {
      return word_img[d[1]]
     })
-
-let change_type=image_container.append('div')
-    .classed('change_type',true)
-    .style('background','whitesmoke')
-     .style('z-index',1)
-    .style('position','absolute')
-    .style('width','24px')
-    .style('display','none')
- for(let k in word_img){
-   if(!(image_container.select('img').empty())&&word_img[k]==image_container.select('img').attr('src'))
-     continue;
-    change_type.append('img')
-        .style('display','block')
-        .style('padding','5px 0px 5px 0px')
-        .style('background','rgb(46, 117, 182)')
-        .style('width','100%')
-        .style('margin-top','5px')
-        .style('margin-left','0px')
-        .on('click',function(){
-          let target_src=d3.select(this.parentNode.parentNode).select('img').attr('src')
-          d3.select(this.parentNode.parentNode).select('img').attr('src',d3.select(this).attr('src'))
-          d3.select(this).attr('src',target_src)
-        })
-   .attr('src', word_img[k])
-  }
-
-  div.append('div')
+ div.append('div')
     .attr('class', 'tab-text-container')
       .call(d3.drag()
       .on('drag', word_tab_move)
@@ -305,6 +279,33 @@ let change_type=image_container.append('div')
     .attr('class', 'tab-text')
     .text(d => d[0].split('_').join(''))
 
+let change_type=div.append('div')
+    .classed('change_type',true)
+    .style('background','white')
+     .style('z-index',1)
+    .style('position','absolute')
+    .style('display','none')
+    for(let k in word_img){
+   if(!(image_container.select('img').empty())&&word_img[k]==image_container.select('img').attr('src'))
+     continue;
+   let word=change_type.append('div')
+       .style('border','1px solid transparent')
+  let word_image_container=word.append('div')
+    .attr('class', 'tab-image-container')
+  .on('click',function(){
+let target_src=d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src')
+          d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src',d3.select(this).select('img').attr('src'))
+          d3.select(this).select('img').attr('src',target_src)
+      })
+  word_image_container.append('img')
+    .attr('src',  word_img[k])
+ word.append('div')
+    .attr('class', 'tab-text-container')
+    .append('div')
+    .attr('class', 'tab-text')
+    .text(d => d[0].split('_').join(''))
+
+    }
   divData.exit().remove();
 
 
