@@ -115,9 +115,11 @@ if(filter_words.indexOf(d[0])!=-1)
     })
     .then(o => {
       // 只有名称才会被添加
+        let find=false;
       o.forEach((d) => {
-        if (d[0] == name && (d[1] == 'n') || (d[1] == 'ns')) {
+        if ((d[0] == name && (d[1] == 'n') || (d[1] == 'ns')) &&(!find)) {
           addPOI(name);
+          find=true;
         }
       })
     })
@@ -146,6 +148,15 @@ function removeParticle() {
 
 
 function addPOI(_name) {
+     for(var i=0; i<textData.length; i++){
+            for(var j=i+1; j<textData.length; j++){
+                if(textData[i][0]==textData[j][0]){         //第一个等同于第二个，splice方法删除第二个
+                    textData.splice(j,1);
+                    j--;
+                }
+            }
+        }
+  //数组去重//当前元素，在原始数组中的第一个索引==当前索引值，否则返回当前元素
   QueryUtil.get_poi_layer(textData)
     .then(results => {
       console.log(results)
