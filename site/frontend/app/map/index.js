@@ -48,7 +48,12 @@ function drawheatmap(trajsData){
 	heatmap.setOptions({
 		radius: 12,
 		max:  heatpoint*0.00035 ,
-		gradient: { 0.5 : Config.heatMapColor } 
+		gradient: {
+			0.25 : Config.heatMapColor[0],
+			0.55 : Config.heatMapColor[1],
+			0.75 : Config.heatMapColor[2],  
+			1 : Config.heatMapColor[3] 
+		}
 	})
 }
 

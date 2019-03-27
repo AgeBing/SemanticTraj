@@ -11,12 +11,12 @@ function colorPickHander(){
 	draw()
 }
 
-function selectColorPickHander(){
-	let color = d3.event.target.value
-	Config.picTrajSelectColor = color
-	Config.PicUpdateFlag = true
-	draw()
-}
+// function selectColorPickHander(){
+// 	let color = d3.event.target.value
+// 	Config.picTrajColor = color
+// 	Config.PicUpdateFlag = true
+// 	draw()
+// }
 function opacityChange(){
 	// console.log(d3.event.target.value)
 	let i = d3.event.target.value
@@ -30,15 +30,14 @@ function bindColorPickEvent(){
 	colorInput.on('change',colorPickHander)
 	colorInput.attr('value',Config.picTrajColor)
 }
-function bindSelectColorPickEvent(){
-	let selectColorInput = d3.select('#map-view').select('#select-area').select('.color-area-select').select('input')
-	selectColorInput.on('change',selectColorPickHander)
-	selectColorInput.attr('value',Config.picTrajSelectColor)
-					.attr('disabled',true)
-	
-	d3.select('#map-view').select('#select-area').select('.color-area-select')
-				.attr('class','color-area-select disable')
-}
+// function bindSelectColorPickEvent(){
+// 	let selectColorInput = d3.select('#map-view').select('#select-area').select('.color-area-select').select('input')
+// 	selectColorInput.on('change',selectColorPickHander)
+// 	selectColorInput.attr('value',Config.picTrajColor)
+// 					.attr('disabled',true)
+	// d3.select('#map-view').select('#select-area').select('.color-area-select')
+	// 			.attr('class','color-area-select disable')
+// }
 
 
 function bindOpacityChangeEvent(){
@@ -101,7 +100,7 @@ function bindIntensityChangeEvent(){
 export function appendWidget(){
 	bindColorPickEvent()
 	bindOpacityChangeEvent()
-	bindSelectColorPickEvent()
+	// bindSelectColorPickEvent()
 	bindIntensityChangeEvent()
 }
 
