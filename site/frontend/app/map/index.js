@@ -51,10 +51,13 @@ function drawheatmap(trajsData){
 			heatpoint++
 		}
 	}
+
+	Config.heatMapIntensity = 2 / heatpoint
 	heatmap.setLatLngs(heatmapdata)
 
-	let v = +d3.select('#intensity-num')  || 70
+	let v = +d3.select('#intensity-num').text()  || 70
 	let max =  heatpoint*Config.heatMapIntensity*v
+	if(v == 200){  max = Infinity}
 	d3.select('#heatmap-legend').select('#heatmap-legend-max')
 					.text( max.toFixed(2) )
 	heatmap.setOptions({

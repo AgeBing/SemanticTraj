@@ -49,18 +49,68 @@ function bindOpacityChangeEvent(){
 				let i = Math.floor( ui.value / 10 )
 	            	
 	            let opacity_before = Config.picTrajOpacity
-	            Config.picTrajOpacity = Config.picTrajOpacitys[ i ]
-	            if(Config.picTrajOpacity  == opacity_before ) return 
-		    	d3.select('#opacity-num').text(Config.picTrajOpacity.toFixed(3))
+	            // Config.picTrajOpacity = Config.picTrajOpacitys[ i ]
+	            // if(Config.picTrajOpacity  == opacity_before ) return 
+
+	           	switch(i){
+	           		case 0:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[0]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[0]
+	           			break;
+	           		case 1:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[1]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[0]
+	           			break;
+	           		case 2:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[2]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[0]
+	           			break;
+	           		case 3:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[0]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 4:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[1]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 5:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[2]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 6:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[3]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 7:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[4]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 8:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[5]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 9:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[6]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		default:
+         				Config.picTrajOpacity = Config.picTrajOpacitys[7]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           	}
+
+
+
+		    	d3.select('#opacity-num').text(i)
 				Config.PicUpdateFlag = true
 				draw()
 	    }) 
-	    .slider( "option", "min", 1)
+	    .slider( "option", "min", 0)
 	    .slider( "option", "max", 100)
-	    .slider( "option", "step", 1)
-	    .slider( "value", 10 )
+	    .slider( "option", "step", 10)
+	    .slider( "value", 40 )
 
-	d3.select('#opacity-num').text(Config.picTrajOpacity)
+	d3.select('#opacity-num').text(4)
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }
@@ -104,7 +154,6 @@ function initHeatMapLegend(){
 	let rects = d3.select('#heatmap-legend').selectAll('.color_bar')
 
 	rects.each(function(d,i){
-		console.log(i)
 		d3.select(this)
 			.style('background-color' ,Config.heatMapColor[i] )
 	})

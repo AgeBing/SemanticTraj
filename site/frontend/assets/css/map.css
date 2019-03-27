@@ -143,3 +143,7 @@ rect.selection {
     /*stroke : rgb(121, 157, 189);*/
     fill: none;
 }
+
+.leaflet-heatmap-layer{
+    z-index: 999
+}
