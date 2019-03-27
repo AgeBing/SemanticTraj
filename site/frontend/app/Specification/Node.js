@@ -45,7 +45,7 @@ let nodelist = {
 
   siteScore: new Map() ,
   searchSiteList : new Map(),
-    time:[{'y':2018,'m':'01','d':'10','t':'9:00'},{'y':2018,'m':'01','d':'10','t':'11:00'}]//保存时间约束的起止时间
+    time:[{'y':'','month':'','d':'','o':'','m':''},{'y':'','month':'','d':'','o':'','m':''}]//[{'y':2018,'m':'01','d':'10','t':'9:00'},{'y':2018,'m':'01','d':'10','t':'11:00'}]//保存时间约束的起止时间
 }
 export let line_data = [];
 export let is_initial_right_content = false;
@@ -146,12 +146,12 @@ export function renderingwordslist(mergenode) {
   return show_hide_div
 }
 
-export function renderingPOIlist(mergenode, max_num = 20) {//locationlistdiv
-//locationlistdiv
-  console.log(mergenode,'----------------------')
+export function renderingPOIlist(mergenode, max_num = 20) {
+    //locationlistdiv
     // by ykj
   // 列表现实的前 max_num  poi 存储在 POIS 中
   let POIS = []
+   // mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
     .data(function(d) {
       let textcolorscale = 0
@@ -191,6 +191,7 @@ export function renderingPOIlist(mergenode, max_num = 20) {//locationlistdiv
       pois.sort(function(a, b) {
         return b.poi.val - a.poi.val
       })
+        pois = pois.slice(0, max_num)
       d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
       poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
       poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
@@ -202,7 +203,7 @@ export function renderingPOIlist(mergenode, max_num = 20) {//locationlistdiv
         pois[i].color = pois[i].poi.val > textcolorscale / 2 ? "white" : "rgb(28,28,28)"
         pois[i].background = POI_colorscale(pois[i].poi.val)
       }
-      pois = pois.slice(0, max_num)
+
 
 
       // by ykj
@@ -212,10 +213,10 @@ export function renderingPOIlist(mergenode, max_num = 20) {//locationlistdiv
       nodelist.searchSiteList.set(node_name , POIS)
 
 
-      //reorder
+     /* //reorder
       pois.sort(function(a, b) {
         return a.poi.index - b.poi.index
-      })
+      })*/
       return pois
     }, function(d) {
       return d.poi.name;
@@ -227,16 +228,17 @@ export function renderingPOIlist(mergenode, max_num = 20) {//locationlistdiv
  let addPOI = allPOI.enter().append("div").classed("POIrect", true)
      addPOI.append('div').classed('POIdiv',true)
          addPOI.append('div').classed('POIname',true)
-    let POIs=addPOI.merge(allPOI)
+    let POIs=allPOI.merge(addPOI)//addPOI.merge(allPOI)
     .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
+        //.style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
+        //.style('background','red')
     .on('mouseenter', (d) => {
       drawPoiInMap( [d.poi] )
     })
     .on('mouseleave', (d) => {
       removePoiInMap()
     })
-       
       POIs.selectAll('.POIdiv')
         .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
       POIs.selectAll('.POIname')
@@ -497,9 +499,9 @@ nodelist.node_rendering = function(initial_node_data, index) {
     .on('click', function() {
       //删除这部分干啥？？？？？？？？？？？？？？？？？？？？///////////////////////??????????????????????????????????????????????????????????????????????????????????
     })
-  current_node.select(".timeconstraints").select(".starttime").property('value', "2018.01.10 9:00")
+  current_node.select(".timeconstraints").select(".starttime").property('value', "")//2018.01.10 9:00
   current_node.select(".timeconstraints").select(".conj").text("~")
-  current_node.select(".timeconstraints").select(".endtime").property('value', "2018.01.10 11:00")
+  current_node.select(".timeconstraints").select(".endtime").property('value', "")//2018.01.10 11:00
 
 
 
