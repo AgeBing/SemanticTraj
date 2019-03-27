@@ -108,6 +108,8 @@ function addParticle() {
       o.forEach((d,i)=>{
 if(filter_words.indexOf(d[0])!=-1)
   o[i][1]='o'
+          /*if(d[1]=='t')
+              change_time(d[0])*/
       })
       textData = o; // 获取词性
       createTabs(o)
@@ -117,7 +119,7 @@ if(filter_words.indexOf(d[0])!=-1)
       // 只有名称才会被添加
         let find=false;
       o.forEach((d) => {
-        if ((d[0] == name && (d[1] == 'n') || (d[1] == 'ns')) &&(!find)) {
+        if ((d[0] == name && (d[1] == 'n' || d[1] == 'ns')) &&(!find)) {
           addPOI(name);
           find=true;
         }
@@ -279,7 +281,13 @@ let status=d3.select(this.parentNode).select('.change_type').style('display')
       })
   image_container.append('img')
     .attr('src', d => {
-     return word_img[d[1]]
+        if(word_img.hasOwnProperty(d[1]))
+            return word_img[d[1]]
+        else
+            if (d[1]=='ns')
+                return word_img['n']
+        else
+            return word_img['o']
     })
  div.append('div')
     .attr('class', 'tab-text-container')

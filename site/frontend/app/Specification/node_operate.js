@@ -93,5 +93,48 @@ if(nodelist.data[i].order==node_index)
      }
 }
 
+function change_time(operate,time){//operate:add,delete
+    if(operate=='delete')
+        delete_time(time)
+    else
+        add_time(time)
+change_tag_time()
+}
+function delete_time(time){
 
+}
+function add_time(time){
+    let nodelist= require('../Specification/Node.js')
+    let word_time_map={'年':'y','月':'month','日':'d','时':'o','分':'m'}
+    let old_time=nodelist.time
+    let time_type= word_time_map[time[time.length-1]]
+        let num=time.substr(0,time.length-1)
+    if(num.length==1)
+        num='0'+num
+    if(old_time.length==0)//当前无时间约束输入
+    {
+        let this_time={}
+        this_time[time_type]=num
+        old_time.push(this_time)
+    }
+    else{
+        if(old_time[0].hasOwnProperty(time_type))//起始时间包含该时间信息
+        {
+old_time[1][time_type]=num
+        }
+        else
+            old_time[0][time_type]=num
+    }
+}
+function change_tag_time(){
+    let nodelist= require('../Specification/Node.js')
+    let starttime=nodelist.time[0]
+    let endtime=nodelist.time[1]
+    starttime=starttime['y']+'.'+starttime['month']+'.'+starttime['d']+" "+starttime['o']+':'+starttime['m']
+    endtime=endtime['y']+'.'+endtime['month']+'.'+endtime['d']+" "+endtime['o']+':'+endtime['m']
+    d3.selectAll('.starttime')
+        .property('value', starttime)
+    d3.selectAll('.endtime')
+        .property('value', endtime)
+}
 

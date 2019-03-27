@@ -44,7 +44,8 @@ let nodelist = {
   order: [],
 
   siteScore: new Map() ,
-  searchSiteList : new Map()
+  searchSiteList : new Map(),
+    time:[{'y':2018,'m':'01','d':'10','t':'9:00'},{'y':2018,'m':'01','d':'10','t':'11:00'}]//保存时间约束的起止时间
 }
 export let line_data = [];
 export let is_initial_right_content = false;
@@ -145,13 +146,12 @@ export function renderingwordslist(mergenode) {
   return show_hide_div
 }
 
-export function renderingPOIlist(mergenode, max_num = 20) {
-
-  // by ykj
+export function renderingPOIlist(mergenode, max_num = 20) {//locationlistdiv
+//locationlistdiv
+  console.log(mergenode,'----------------------')
+    // by ykj
   // 列表现实的前 max_num  poi 存储在 POIS 中
   let POIS = []
-
-
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
     .data(function(d) {
       let textcolorscale = 0
@@ -232,9 +232,6 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     .attr('val', d => d.poi.val)
     .on('mouseenter', (d) => {
       drawPoiInMap( [d.poi] )
-      
-      // drawPoiInMap([d.poi])
-      // console.log(POIS)
     })
     .on('mouseleave', (d) => {
       removePoiInMap()
@@ -244,8 +241,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
       POIs.selectAll('.POIname')
         .text(d=>d.poi.name)
-  mergenode.select('.title')
-      .on('mouseenter', function() {
+  d3.select('#'+mergenode.attr('id').replace('locationlistdiv','condition_node'))
+      .select('.title')
+      .on('mouseenter', function(d) {
       let _pois_show_in_map = POIS.map((p)=>p.poi)
       drawPoiInMap( _pois_show_in_map )
     })
@@ -615,7 +613,7 @@ spatial_cc.append("div").classed("POIback", true)
     spatial_cc.append("div").classed("POIlogo", true).text("Location List")
 
   let show_hide_div = renderingwordslist(current_node)
-  renderingPOIlist(current_node)
+  renderingPOIlist(spatial_cc.select('.locationlistdiv'))//待修改-----------------
 
 
   //semantic constraints
@@ -685,7 +683,8 @@ function normalization(initial_data) {
   })
 }
 
-function initial_siteScore(initial_data, alpha = 1,param=false) { //若alpha=1则说明基于nodelist更新sitescore，反之则是仅对当前标签的数据进行poi中val的更新(simT和alpha)，然后更新sitescore.
+function initial_siteScore(initial_data, alpha = 1,param=false) {
+    //若alpha=1则说明基于nodelist更新sitescore，反之则是仅对当前标签的数据进行poi中val的更新(simT和alpha)，然后更新sitescore.
     //param为true表示alpha来自参数面板
   let unify_data = {}
   if (param)
