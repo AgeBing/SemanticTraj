@@ -163,8 +163,10 @@ function drawTrajs(url){
 	    	let  t4= new Date().getTime();
 			// console.log('draw select pic: ' + (t4-t3) + 'ms')
 		}
-		
+
+		Config.heatMapColor = Config.picTrajSelectColor 		
 		drawheatmap( url.selectData )
+
 		// 不画 origin 轨迹
 		return
 	}
@@ -191,6 +193,7 @@ function drawTrajs(url){
 			// console.log('draw origin pic: ' + (t2-t1) + 'ms')
 		}
 
+		Config.heatMapColor = Config.picTrajColor 
 		drawheatmap( url.originData )
 	}
 

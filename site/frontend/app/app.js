@@ -18,6 +18,9 @@ import { init as timeInit }  from './timeline/time.js'
 import { draw as drawHexa } from './semantic/index.js'
 
 
+import { mock as mockList } from '../mock/setData.js'
+import { mock_sites , mock_sites_origin }  from '../mock/case1'
+
 
 export let trajs  // 全量数据 
 let orderedTrajs = []
@@ -28,8 +31,8 @@ export let availableTrajsinLimitTime = []  //在设定时间段内的轨迹
 export let trajId2Points = new Map() // id => stoppoints
 
 // 初始化
-datamanager.init().then(o => SearchBar.init())
-// mockList()
+// datamanager.init().then(o => SearchBar.init())
+mockList()
 
 
 // 在 searchbar 中将 trajs 进行设置
@@ -77,6 +80,8 @@ export function calTrajsOrder(){  //计算轨迹的分数 并进行排序
 
 	scale.domain([minScore ,maxScore])
 
+	if( minScore == maxScore ) scale.range([100,100])
+
 	orderedTrajs = trajs.sort((t1,t2)=>{
 		let s1 = t1.score , s2 = t2.score
 		return s2 - s1  // 逆序 
@@ -98,11 +103,19 @@ function getTrajScore(pid){
 	// sites 基本上为一个   有些轨迹经过的site 差不多  因此得到的分数也差不多
 	// sites 数据有bug  stoppoint 表示经过点的次数 ！！！！！！！！
 
+
+
 	if(!sites || sites.length == 0)  return 0 
-	let max = 0 , sitescores , max_id 
+	let max = 0 , sitescores , max_id , siteId 
 	sites.forEach((site)=>{
 		// sitescores 为该site周围的poi 的score ，大多为一个 
-		sitescores =  nodelist.siteScore.get(+site.siteId)
+
+		// siteId = mockTrans(site.siteId)   //case1 打开此行 
+		siteId = site.siteId
+
+		if( siteId == 0 ) return 0
+
+		sitescores =  nodelist.siteScore.get(siteId)
 		if(!sitescores)  return 0
 
 		// 取 max 
@@ -240,4 +253,18 @@ export function topicAdd(topicPids){
 	})
 	drawTopic(topicLists)
 	drawHexa(topicLists)
+}
+
+
+
+
+//  case1 mock  将poi site 隐射到指定的 site
+export function mockTrans( origin_siteId ){
+	for( let i = 0 ;i < 2 ;i++){
+		if( mock_sites[i].indexOf( +origin_siteId) != -1  ){
+			 return  mock_sites_origin[i]
+		}
+
+	}
+	return 0
 }

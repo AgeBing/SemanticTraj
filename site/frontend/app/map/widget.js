@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as Config from './config.js';
 import { draw } from './pic'
 
-import {heatmap}  from './index.js'
+import { heatmap,heatpoint }  from './index.js'
 
 function colorPickHander(){
 	let color = d3.event.target.value
@@ -45,21 +45,52 @@ function bindOpacityChangeEvent(){
 	$("#trajslider").slider()
 	    .on( "slide", function( event, ui ) {
 			// Config.picTrajOpacity = ui.value*0.001
-			let i = Math.floor( ui.value * 0.7 / 10 )
-            Config.picTrajOpacity = Config.picTrajOpacitys[ i ]
-			console.log(Config.picTrajOpacity)
-			Config.PicUpdateFlag = true
-			draw()
+
+
+				let i = Math.floor( ui.value * 0.7 / 10 )
+	            	
+	            let opacity_before = Config.picTrajOpacity
+	            Config.picTrajOpacity = Config.picTrajOpacitys[ i ]
+	            if(Config.picTrajOpacity  == opacity_before ) return 
+		    	d3.select('#opacity-num').text(Config.picTrajOpacity.toFixed(3))
+				Config.PicUpdateFlag = true
+				draw()
 	    }) 
 	    .slider( "option", "min", 1)
 	    .slider( "option", "max", 100)
 	    .slider( "option", "step", 1)
 	    .slider( "value", 10 )
 	Config.picTrajOpacity = 0.1
+	d3.select('#opacity-num').text(0.1)
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }
 
+
+function bindIntensityChangeEvent(){
+	$("#heatmapslider").slider()
+	    .on( "slide", function( event, ui ) {
+	    	let v = ui.value 
+	    	d3.select('#intensity-num').text(v)
+	        // heatmap.setOptions({radius: 10,max: heatpoint*0.00035})
+
+			if(ui.value==200){
+				heatmap.setOptions({radius: 12,max: heatpoint*5*ui.value})
+			}else{
+				heatmap.setOptions({radius: 12,max: heatpoint*0.000005*ui.value})
+			}
+	    }) 
+	    .slider( "option", "min", 1)
+	    .slider( "option", "max", 200 )
+	    .slider( "option", "step", 1 )
+	    .slider( "value", 70 )
+	
+	d3.select('#intensity-num').text(70)
+
+
+	d3.select("#heatmapslider").select("span").style("width","8px").style("margin-left", "-4px")
+    			.style("height","17px")
+}
 
 // function bindOpacityChangeEvent(){
 // 	let colorInput = d3.select('#map-view').select('#select-area').select('.range-area').select('input')
@@ -71,5 +102,6 @@ export function appendWidget(){
 	bindColorPickEvent()
 	bindOpacityChangeEvent()
 	bindSelectColorPickEvent()
+	bindIntensityChangeEvent()
 }
 
