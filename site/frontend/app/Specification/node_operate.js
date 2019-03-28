@@ -12,8 +12,11 @@ export function word_tab_start(){
 
 }
 export function word_tab_move(){
-    let left=$(this.parentNode.parentNode)[0].getBoundingClientRect().left
-    let top=$(this.parentNode.parentNode)[0].getBoundingClientRect().top
+    let left=$(this.parentNode.parentNode)[0].getBoundingClientRect().left+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().left
+    let top=$(this.parentNode.parentNode)[0].getBoundingClientRect().top+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().top
+    /*let left=$(this.parentNode).find('.tab-image-container')[0].getBoundingClientRect().left
+    let top=$(this.parentNode).find('.tab-image-container')[0].getBoundingClientRect().top*/
+
 d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').style('top',(d3.event.sourceEvent.pageY-top)+'px')
    }
 
