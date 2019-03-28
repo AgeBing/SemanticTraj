@@ -162,7 +162,7 @@ break;
     }
 }
 right_nodes.map((x,y)=>{
-    let right_nodename=d3.select(x).text();
+    let right_nodename=d3.select(x).select('.POIname').text();
     for(let n=0;n<forth_data.length;n++)
     {
         if(right_nodename==forth_data[n].name)

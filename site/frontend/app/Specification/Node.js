@@ -227,6 +227,7 @@ export function renderingPOIlist(mergenode, max_num = 20) {
   allPOI.exit().remove()
  let addPOI = allPOI.enter().append("div").classed("POIrect", true)
      addPOI.append('div').classed('POIdiv',true)
+    addPOI.append('div').classed('POIval',true)
          addPOI.append('div').classed('POIname',true)
     let POIs=allPOI.merge(addPOI)//addPOI.merge(allPOI)
     .style("top", d => `${d.order*27}px`)
@@ -240,7 +241,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       removePoiInMap()
     })
       POIs.selectAll('.POIdiv')
-        .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
+        .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*70+'px')
+    POIs.selectAll('.POIval')
+        .text(d=> (parseFloat(d.poi.val)).toFixed(2))
       POIs.selectAll('.POIname')
         .text(d=>d.poi.name)
   d3.select('#'+mergenode.attr('id').replace('locationlistdiv','condition_node'))
@@ -562,7 +565,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
   let spatialwordcontainer = spatial_cc.append("div")
     .attr('id', function(d) {
       return 'spatial_left' + d.order
-    }).style("width", "182px")
+    }).style("width","150px")// "182px")
     .style("height", "calc(100% - 5px)")
     .style("margin", "3px")
       .style('overflow-y','auto')
@@ -598,7 +601,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
   spatial_cc.append("svg").style("width", "64px")
     .style("position", "absolute")
     .style("height", "calc(100% - 6px)")
-    .style("left", "173px")
+    .style("left", "143px")
     .style("margin", "3px 0")
     .style("z-index", "3").classed("spatial_lines", true)
 
