@@ -106,7 +106,7 @@ function bindOpacityChangeEvent(){
 				draw()
 	    }) 
 	    .slider( "option", "min", 0)
-	    .slider( "option", "max", 100)
+	    .slider( "option", "max", 200)
 	    .slider( "option", "step", 10)
 	    .slider( "value", 40 )
 

@@ -7,7 +7,8 @@ import * as DataManager from './datamanager.js';
 
 import {
   setGlobalTrajData ,
-  MockSearchSite
+  MockSearchSite,
+  CaseMockFlag
 } from '../app.js'
 import {
     word_tab_start,
@@ -131,6 +132,20 @@ if(filter_words.indexOf(d[0])!=-1)
           }
       })
       textData = o; // 获取词性
+
+
+
+
+      if( CaseMockFlag ){
+            o.forEach( (name)=>{
+              if(name[0] =='物华天宝')
+                name[1] = 'n'
+            })
+            console.log(o)
+      }
+
+
+
       createTabs(o)
       return o
     })
@@ -197,11 +212,25 @@ function addPOI(_name,param=[]) {//append or insert:
   QueryUtil.get_poi_layer(textData)
     .then(results => {
       console.log(results)
+
+
       results.forEach((poi) => {
         let {
           name,
           data
         } = poi
+      
+
+        CaseMockFlag && data.forEach((_poi)=>{
+          _poi.data.forEach((a)=>{
+              a.data.forEach((b)=>{
+              if(b.name =='舍利塔')
+                 b.name = "江心屿"
+              })
+          })
+        })
+
+
         if (_name == name) {
           let nodelist = require('../Specification/Node.js')
             nodelist.append_node({

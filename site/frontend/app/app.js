@@ -31,12 +31,13 @@ export let availableTrajsinLimitTime = []  //在设定时间段内的轨迹
 export let trajId2Points = new Map() // id => stoppoints
 
 
-let CaseMockFlag = false
+export let CaseMockFlag = false
 let CaseMockSiteHintFlag = false
 
 // 初始化
-datamanager.init().then(o => SearchBar.init())
 CaseMockFlag = true
+datamanager.init().then(o => SearchBar.init())
+
 
 // mockList()
 
