@@ -11,14 +11,14 @@ export function drag_start(){
 export function newdrag() {
     let nodelist = require('../Specification/Node.js')
     let condition_node=this.parentNode
-     let dx = d3.event.dx//, dy = d3.event.dy;
-    let prex = parseInt(d3.select(condition_node).style('left'));
-    if(((dx + prex)<=0))
+     let dx = d3.event.sourceEvent.movementX
+   let prex = parseInt(d3.select(condition_node).style('left'));
+    if(((dx+prex)<=0))
     {
         d3.select(condition_node).style('left', prex);
     }
     else{
-        d3.select(condition_node).style('left', (dx + prex) + 'px');
+        d3.select(condition_node).style('left', (dx+prex) + 'px');
         let current_id=d3.select(condition_node).attr('id'),
             current_location= nodelist.order.indexOf(current_id)
 

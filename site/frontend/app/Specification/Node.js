@@ -55,7 +55,6 @@ export let poi_colordomain = {
   max: 0,
   min: 0
 }
-
 export function renderingwordslist(mergenode) {
   let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
     .data(function(d) {
@@ -140,8 +139,8 @@ export function renderingwordslist(mergenode) {
       addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.style("top", (d, i) => `${i*24}px`)
-  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*105}px`)
-  mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*100+'px')
+  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*70}px`)
+  mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*72+'px')
 
   return show_hide_div
 }
