@@ -6,7 +6,8 @@ import * as DataManager from './datamanager.js';
 
 
 import {
-  setGlobalTrajData
+  setGlobalTrajData ,
+  MockSearchSite
 } from '../app.js'
 import {
     word_tab_start,
@@ -125,7 +126,7 @@ if(filter_words.indexOf(d[0])!=-1)
       // 只有名称才会被添加
         let find=false;
       o.forEach((d) => {
-        if ((d[0] == name && (d[1] == 'n' || d[1] == 'ns')) &&(!find)) {
+        if ((d[0] == name && (d[1].indexOf('n')!= -1  || d[1] =='id')) &&(!find)) {
           addPOI(name);
           find=true;
         }
@@ -203,20 +204,27 @@ function addSearchListener(object) {
         nodelist = require('../Specification/Node.js'),
         sites_arr = []
     // 按照顺序 插入
+    let names = []
     nodelist.order.forEach((d) => {
       //  d = >  condition_node1 、condition_node2
       let name = d3.select('#' + d).select('.title').select('.text').text()
-
+      names.push(name)
       let pois = nodelist.searchSiteList.get(name)
-      console.log(pois)
       let sites = pois.map((p) => {
         return p.poi.site_id
       })
-      console.log(sites)
+
 
       sites_arr.push(sites)
     })
 
+
+    // 将 sites_arr 进行 人为替换
+    MockSearchSite( sites_arr , names  )
+    console.log(sites_arr)
+
+
+    // return
 
     QueryUtil.get_trajs_new(sites_arr)
       .then(results => {

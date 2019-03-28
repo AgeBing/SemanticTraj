@@ -51,8 +51,8 @@ function highlightPoisInTrajs(pid){
 			a.data.forEach((b)=>{
 				b.data.forEach((c)=>{
 					c.data.forEach((_site)=>{
-						// let mockId = mockTrans(site.siteId)  //case1 打开此行 
-						let mockId = site.siteId
+						let mockId = mockTrans(+site.siteId)  //case1 打开此行 
+						// let mockId = site.siteId
 						// console.log( site.siteId , "  => " , mockId)
 						if(_site.site_id == mockId){
 							pois.push(_site)

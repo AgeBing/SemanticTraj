@@ -19,7 +19,7 @@ import { draw as drawHexa } from './semantic/index.js'
 
 
 import { mock as mockList } from '../mock/setData.js'
-import { mock_sites , mock_sites_origin }  from '../mock/case1'
+import { mock_sites , mock_sites_origin   }  from '../mock/case1'
 
 
 export let trajs  // 全量数据 
@@ -30,8 +30,14 @@ export let availableTrajsinLimitTime = []  //在设定时间段内的轨迹
 
 export let trajId2Points = new Map() // id => stoppoints
 
+
+let CaseMockFlag = false
+let CaseMockSiteHintFlag = false
+
 // 初始化
 datamanager.init().then(o => SearchBar.init())
+CaseMockFlag = true
+
 // mockList()
 
 
@@ -110,8 +116,8 @@ function getTrajScore(pid){
 	sites.forEach((site)=>{
 		// sitescores 为该site周围的poi 的score ，大多为一个 
 
-		// siteId = mockTrans(site.siteId)   //case1 打开此行 
-		siteId = site.siteId
+		siteId = mockTrans(+site.siteId)   //case1 打开此行 
+		// siteId = site.siteId
 
 		if( siteId == 0 ) return 0
 
@@ -260,11 +266,44 @@ export function topicAdd(topicPids){
 
 //  case1 mock  将poi site 隐射到指定的 site
 export function mockTrans( origin_siteId ){
+	if( !CaseMockSiteHintFlag )  return origin_siteId
+
 	for( let i = 0 ;i < 2 ;i++){
 		if( mock_sites[i].indexOf( +origin_siteId) != -1  ){
 			 return  mock_sites_origin[i]
 		}
-
 	}
 	return 0
+}
+
+
+export function MockSearchSite(searchSitesArr,names){
+
+	// console.log( names)
+	if( !CaseMockFlag )  return 
+
+	if( names.indexOf('江心屿') != -1 && names.indexOf('物华天宝')!=-1){
+
+		let jxyOrder = names.indexOf('江心屿')
+		let whtbOrder = names.indexOf('物华天宝')
+
+		if( jxyOrder < whtbOrder){
+			searchSitesArr[0] = mock_sites[0]
+			searchSitesArr[1] = mock_sites[1]
+			console.log('jxy ->  whtb')
+			console.log('please waitting for 3 min' )
+		}else{
+			searchSitesArr[0] = mock_sites[1]
+			searchSitesArr[1] = mock_sites[0]
+			// let temp = mock_sites_origin[1]
+			// mock_sites_origin[1] = mock_sites_origin[0]
+			// mock_sites_origin[0] = temp
+			console.log('whtb  -> jxy')
+			console.log('please waitting for 3 min' )
+		}
+
+		CaseMockSiteHintFlag = true
+		console.log('mock go!')
+	}
+
 }
