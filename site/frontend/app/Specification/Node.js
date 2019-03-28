@@ -24,7 +24,8 @@ import {
   increase_locationlist
 } from './node_interaction.js'
 import {
-  add_condition_node
+  add_condition_node,
+    change_time_div,
 } from './node_operate.js'
 import {
   getMerge_data,
@@ -35,6 +36,7 @@ import {
   draw as drawPoiInMap,
   remove as removePoiInMap
 } from '../map/poi.js'
+import $ from "jquery";
 
 
 
@@ -452,10 +454,6 @@ nodelist.node_rendering = function(initial_node_data, index) {
           right: []
         };
       })
-    /*.call(d3.get_left_nodes()
-         .on("start", drag_start)
-          .on("drag", newdrag)
-          .on('end',drag_end));*/
     current_node.style("left", d => `${652*(index-1)}px`)
   }
 
@@ -485,18 +483,62 @@ nodelist.node_rendering = function(initial_node_data, index) {
   timeconstraings.append("div").classed("node_subtitle", true)
   let timecontainer = timeconstraings.append("div")
   let temp = timecontainer.append("div").classed("text", true).classed("textcon", true)
-    .style("margin", "0px 20px 0 40px")
+    .style("margin", "0px 10px 0px 10px")
     .style("color", "#2e75b6")
     .style("text-align", "center")
     .style("font-size", "15px")
     .style("line-height", "38px")
     .style('display', 'inline-block')
   timecontainer.append("input").classed("starttime", true).classed("textinput", true)
+      .each(function(){
+          $(this).bind('input propertychange', function(){
+let nodelist= require('../Specification/Node.js')
+    let time = d3.select(this).property('value').split(' ')[0].split('.')
+    if(time[0])
+        nodelist.time[0]['y']=time[0]
+    if(time[1])
+        nodelist.time[0]['month']=time[1]
+    if(time[2])
+        nodelist.time[0]['d']=time[2]
+            let time_w=''
+            if(nodelist.time[0]['y']!='')
+                time_w+=(nodelist.time[0]['y']+"年")
+             if(nodelist.time[0]['month']!='')
+                time_w+=(nodelist.time[0]['month']+"月")
+                if(nodelist.time[0]['d']!='')
+                time_w+=(nodelist.time[0]['d']+"日")
+              d3.select(this.parentNode)
+    .select('.textcon')
+    .text(time_w)
+          })
+      })
   timecontainer.append("div").classed("conj", true).classed("textcon", true)
   timecontainer.append("input").classed("endtime", true).classed("textinput", true)
+    .each(function(){
+          $(this).bind('input propertychange', function(){
+let nodelist= require('../Specification/Node.js')
+    let time = d3.select(this).property('value').split(' ')[0].split('.')
+    if(time[0])
+        nodelist.time[1]['y']=time[0]
+    if(time[1])
+        nodelist.time[1]['month']=time[1]
+    if(time[2])
+        nodelist.time[1]['d']=time[2]
+            let time_w=''
+            if(nodelist.time[1]['y']!='')
+                time_w+=(nodelist.time[1]['y']+"年")
+             if(nodelist.time[1]['month']!='')
+                time_w+=(nodelist.time[1]['month']+"月")
+                if(nodelist.time[1]['d']!='')
+                time_w+=(nodelist.time[1]['d']+"日")
+              d3.select(this.parentNode)
+    .select('.textcon')
+    .text(time_w)
+          })
+      })
 
   current_node.select(".timeconstraints").select(".node_subtitle").text("Temporal Constraints")
-  current_node.select(".timeconstraints").select(".text").text("周日上午")
+  current_node.select(".timeconstraints").select(".text").text("")
     .append('div').classed('delete', true).style('margin-top', '0px').style('margin-right', '10px').style('font-size', '15px').text('X')
     .on('click', function() {
       //删除这部分干啥？？？？？？？？？？？？？？？？？？？？///////////////////////??????????????????????????????????????????????????????????????????????????????????

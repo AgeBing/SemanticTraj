@@ -1,4 +1,5 @@
 import {textData,getMerge_data,get_data,addParticle} from "../search/searchbar";
+import $ from "jquery";
 
 
 
@@ -172,10 +173,93 @@ function change_tag_time(){
     })
     d3.selectAll('.starttime')
         .property('value', str_time[0])
+        .each(function(){
+            let nodelist= require('../Specification/Node.js')
+            let time_w=''
+            if(nodelist.time[0]['y']!='')
+                time_w+=(nodelist.time[0]['y']+"年")
+             if(nodelist.time[0]['month']!='')
+                time_w+=(nodelist.time[0]['month']+"月")
+                if(nodelist.time[0]['d']!='')
+                time_w+=(nodelist.time[0]['d']+"日")
+d3.select(this.parentNode)
+    .select('.textcon')
+    .text(time_w)
+        })
     d3.selectAll('.endtime')
         .property('value', str_time[1])
+    /*.each(function(){
+            let nodelist= require('../Specification/Node.js')
+
+d3.select(this.parentNode)
+    .select('.textcon')
+    .text(time_w)
+        })*/
 }
 
+export function merge_time_tab(){
+    let order=['年','月','日']
+    let key=['y','month','d']
+    let time_value=''
+     let nodelist= require('../Specification/Node.js')
+      key.forEach((d,index)=>{
+        if(nodelist.time[0].hasOwnProperty(d)&&(nodelist.time[0][d]!=''))
+            time_value+=(nodelist.time[0][d]+order[index])
+     })
+let merge=false
+         d3.select('.search-container').selectAll('.word-tab')
+         .each(function(){
+             let word_type = d3.select(this).select('.tab-image-container').select('img').attr('word_type')
+              let v= d3.select(this).select('.tab-text-container').select('input').attr('value')
+             if(word_type=='t'){
+                 if(!merge)
+             {
+d3.select(this).select('.tab-text-container').select('input').attr('value',time_value).style('width',function(){
+   return time_value.length*10+"px"
+})
+                 textData.forEach((d)=>{
+                if(d[0]==v)
+                    d[0]=time_value
+                 })
+                 merge=true
+             }
+             else
+             {
+                  d3.select(this).remove()
+             textData.forEach((d,index)=>{
+                if(d[0]==v)
+                    textData.splice(index,1)
+            })
+             }
+             }
+         })
+/*if(time_tabs.length>1)
+{
+    time_tabs.forEach((d,index)=>{
+        let v=d.select('.tab-text-container').select('input')
+                .attr('value')
+        if(index==0)
+        {
+            d.select('.tab-text-container').select('input')
+                .attr('value',time_value)
+                .attr('old_value',time_value)
+            textData.forEach((d)=>{
+                if(d[0]==v)
+                    d[0]=time_value
+            })
+        }
+        else
+        {
+           textData.forEach((d,index)=>{
+                if(d[0]==v)
+                    textData.splice(index,1)
+            })
+            d.remove()
+        }
+    })
+}*/
+
+}
 export function change_tab(old_name,new_name){
     //let name=d3.select(this).text()
          let find=false
@@ -214,4 +298,26 @@ export function change_tab(old_name,new_name){
              }
          })
 
+}
+
+export function change_time_div(index){
+    let time = d3.select(this).property('value').split(' ')[0].split('.')
+    let nodelist= require('../Specification/Node.js')
+    if(time[0])
+        nodelist.time[index]['y']=time[0]
+    if(time[1])
+        nodelist.time[index]['month']=time[1]
+    if(time[2])
+        nodelist.time[index]['d']=time[2]
+
+            let time_w=''
+            if(nodelist.time[index]['y']!='')
+                time_w+=(nodelist.time[0]['y']+"年")
+             if(nodelist.time[index]['month']!='')
+                time_w+=(nodelist.time[0]['month']+"月")
+                if(nodelist.time[index]['d']!='')
+                time_w+=(nodelist.time[0]['d']+"日")
+    d3.select(this.parentNode)
+    .select('.textcon')
+    .text(time_w)
 }

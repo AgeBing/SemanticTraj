@@ -5,6 +5,10 @@ import * as DataManager from './datamanager.js';
 
 
 
+
+
+
+
 import {
   setGlobalTrajData ,
   MockSearchSite,
@@ -16,6 +20,7 @@ import {
   word_tab_end,
     change_time,
     change_tab,
+    merge_time_tab,
 } from "../Specification/node_operate";
 import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
@@ -147,6 +152,7 @@ if(filter_words.indexOf(d[0])!=-1)
 
 
       createTabs(o)
+        merge_time_tab()
       return o
     })
     .then(o => {
@@ -364,6 +370,7 @@ let status=d3.select(this.parentNode).select('.change_type').style('display')
         else
             return word_img['o']
     })
+      .attr('word_type',d=>d[1])
  let delete_change = div.append('div')
     .attr('class', 'tab-text-container')
       .call(d3.drag()
