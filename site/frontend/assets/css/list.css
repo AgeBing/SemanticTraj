@@ -1,6 +1,6 @@
 #resultlist{
     overflow-y: auto;
-    height: calc(100% - 75px);
+    height: calc(100% -120px);
     overflow-x: hidden;
     position: relative;
 }
