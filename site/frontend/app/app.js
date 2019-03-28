@@ -129,6 +129,10 @@ export function calTrajsOrder(){  //计算轨迹的分数 并进行排序
 				}
 			return traj
 		})
+	orderedTrajs = orderedTrajs.filter((traj)=>{
+		if(traj) return true
+		else  return false
+	})
 	orderedTrajs = putInListFormor.concat(orderedTrajs)
 
 	drawList(orderedTrajs)
