@@ -89,11 +89,11 @@
 }
 
 .traj-id{
-    width: 115px;
+        width: 125px;
     float: left;
     font-size: 12px;
     line-height: 27px;
-    margin-left: 10px;
+    margin-left: 6px;
 }
 .topic-rect .left-box{
     display: flex;

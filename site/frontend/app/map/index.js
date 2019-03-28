@@ -35,7 +35,6 @@ let heatmap = L.heatLayer([]);
 let heatpoint = 0;
 heatmap.addTo(map)
 
-
 appendWidget()
 
 
