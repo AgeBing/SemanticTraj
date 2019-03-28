@@ -209,7 +209,6 @@ function clearCanvas(){
 }
 
 function processTrajsData(data) {    //处理原始数据在 boundry 内的轨迹，未涉及到框选
-	let  t1 = new Date().getTime();
 	
 	let trajs_pixelpoints = [] ,
 		trajs_in_tile_boundry = [] ,
@@ -217,7 +216,8 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 		trajdataInTileBoundry ,
 		tileBox = [t_boundry.bottom_left.lng , t_boundry.bottom_left.lat , t_boundry.top_right.lng , t_boundry.top_right.lat ],
 		filteredPids = []
-		
+	
+	
 	data.forEach((t)=>{      //  t 代表一条轨迹
 		let withinTraj = false
 		let pixel_points = [] , latlng_points_in_tile = [] 
@@ -234,22 +234,22 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 
 			if( res ){
 				if(a[0] == da[0] && a[1] == da[1] && i != 1){
-					latlng_points_in_tile.push({
-						longitude : db[0],
-						latitude  : db[1]	
-					})
+					// latlng_points_in_tile.push({
+					// 	longitude : db[0],
+					// 	latitude  : db[1]	
+					// })
 					pixel_points.push( _l2p(db[1] , db[0]) )
 				}else{
-					latlng_points_in_tile.push({
-						longitude : da[0],
-						latitude  : da[1]	
-					})
-					latlng_points_in_tile.push({
-						longitude : db[0],
-						latitude  : db[1]	
-					})
+					// latlng_points_in_tile.push({
+					// 	longitude : da[0],
+					// 	latitude  : da[1]	
+					// })
+					// latlng_points_in_tile.push({
+					// 	longitude : db[0],
+					// 	latitude  : db[1]	
+					// })
 
-					pixel_points.push( _l2p(da[1] , da[0]) )
+					// pixel_points.push( _l2p(da[1] , da[0]) )
 					pixel_points.push( _l2p(db[1] , db[0]) )
 				}
 			}
@@ -257,29 +257,26 @@ function processTrajsData(data) {    //处理原始数据在 boundry 内的轨�
 
 
 		if( pixel_points.length ){
-			trajs_in_tile_boundry.push({
-				pid :  t.pid,
-				traj : latlng_points_in_tile
-			})
+			// trajs_in_tile_boundry.push({
+			// 	pid :  t.pid,
+			// 	traj : latlng_points_in_tile
+			// })
 			trajs_pixelpoints.push({
 				pid : t.pid,
 				traj : pixel_points,
 			})
 		}else{
-			filteredPids.push(t.pid)
+			// filteredPids.push(t.pid)
 		}
 
-		trajdataInTileBoundry = trajs_in_tile_boundry
+		// trajdataInTileBoundry = trajs_in_tile_boundry
 	})
-
-
-	let  t2 = new Date().getTime();
-	// console.log('process : ' + (t2-t1) + 'ms')
+	
 
 	stack.push({
-		latlng : trajdataInTileBoundry,
+		latlng : data,
 		pixel  : trajs_pixelpoints,
-		filter : filteredPids
+		filter : []
 	})
 }
 
