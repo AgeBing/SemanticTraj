@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import { topicAdd  as drawTopic } from '../app.js'
 import { hl_listItem,uhl_listItem }  from '../highlight/index.js' 
 import { highlightHexa , unHighlightHexa } from '../semantic/index.js'
+import * as Config from '../timeline/config'
 
 
 
@@ -21,7 +22,7 @@ let resultlist = {
 
 let  visBox = document.getElementById("resultlist");
 let  width = visBox.offsetWidth; //宽度
-let  rectWidth = width - 230
+let  rectWidth = width - 260
 
 export function draw( data ){
 	let { showNum,hide } = resultlist
@@ -47,7 +48,10 @@ export function highLightOneItem(id){
 		let curItem = d3.select(this),
 			curId = curItem.attr('id')
 		if(curId == id){
-			curItem.style('background-color','rgb(158, 158, 158)')
+			curItem
+				.transition()
+				.duration(Config.duration)
+				.style('background-color','rgb(158, 158, 158)')
 		}
 	})
 }
@@ -57,7 +61,10 @@ export function unhighLightOneItem(id){
 		let curItem = d3.select(this),
 			curId = curItem.attr('id')
 		if(curId == id){
-			curItem.style('background-color','#FFFFFF')
+			curItem
+				.transition()
+				.duration(Config.duration)
+				.style('background-color','#FFFFFF')
 		}
 	})
 }
@@ -99,9 +106,13 @@ resultlist.draw = function(){
 		.style("width", d=> d.per * 0.01 * rectWidth + 'px')
 
 	// value
-	// addtraj.append('div').attr('class','percent-word')
-	// mergetraj.select('.percent-word')
-	// 	.text(d=> d.per+'%')
+	addtraj.append('div').attr('class','percent-word')
+	mergetraj.select('.percent-word')
+		.text(d=> {
+			let num = d.score
+			if(Math.round(num) === num) return num   // 整数
+			else{ return num.toFixed(2) }  //小数
+		} )
 
 
 	mergetraj.on('mouseenter',enterEventHandler).on('mouseleave',leaveEventHander)
@@ -207,7 +218,6 @@ resultlist.handleInput = function(){
 				self.removeCheckPid(pid)
 			}
 			drawTopic( self.checkPids )
-			updateCheckNum()
 		})
 
 
@@ -291,11 +301,9 @@ function updatePerNum(){
 	let allNum = orderTrasjs.length
 	let selectNum = allNum - filterPids.length
 	// let text =  avaNum + '/' + orderTrasjs.length
-	let numContan = d3.select("#list-contain").select('.per-num')
+	let numContan = d3.select("#list-contain").select('.num-contain')
 		numContan.select('.select-num').text(selectNum)
 		numContan.select('.all-num').text(allNum)		
-
-	updateCheckNum()
 }
 
 bindCheckAllBtn()
@@ -309,7 +317,6 @@ function bindCheckAllBtn(){
 				}else{	   
 					unCheckAll()
 				}
-			updateCheckNum()
 			drawTopic( resultlist.checkPids )
 		})
 }

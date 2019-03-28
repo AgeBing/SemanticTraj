@@ -101,7 +101,7 @@ function bindOpacityChangeEvent(){
 
 
 
-		    	d3.select('#opacity-num').text(i)
+		    	d3.select('#opacity-num').text(i/10)
 				Config.PicUpdateFlag = true
 				draw()
 	    }) 
@@ -110,7 +110,7 @@ function bindOpacityChangeEvent(){
 	    .slider( "option", "step", 10)
 	    .slider( "value", 40 )
 
-	d3.select('#opacity-num').text(4)
+	d3.select('#opacity-num').text(0.4)
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }
@@ -123,17 +123,20 @@ function bindIntensityChangeEvent(){
 	    	d3.select('#intensity-num').text(v)
 	        // heatmap.setOptions({radius: 10,max: heatpoint*0.00035})
 
-	        let max 
+	        let max,maxtext 
 			if(ui.value==200){
 				heatmap.setOptions({radius: 12,max: heatpoint*5*ui.value})
-				max = 'Infinity'
+				max = Infinity
+				maxtext = Infinity
+
 			}else{
 				max = heatpoint*Config.heatMapIntensity*ui.value
 				max = max.toFixed(2)
 				heatmap.setOptions({radius: 12,max: max })
+				maxtext = Math.floor(heatpoint/200*v )
 			}
 			d3.select('#heatmap-legend').select('#heatmap-legend-max')
-					.text(max)
+					.text( maxtext )
 
 	    }) 
 	    .slider( "option", "min", 1)

@@ -62,21 +62,19 @@
 
 
 .sample-area{
-	  position: absolute;
+    position: absolute;
     right: 10px;
     z-index: 2;
-    height: 20px;
-    width: 100px;
+    height: 16px;
+    width: 122px;
     top: 40px;
-   /*border: 2px solid rgba(0,0,0,0.2);*/
-   /*cursor: pointer*/
 }
 .sample-area span{
     display: inline-block;
     font-size: 13px;
-    line-height: 27px;
+    line-height: 16px;
     float: left;
-    margin-right: 8px;
+    font-family: times new roman;
 }
 
 

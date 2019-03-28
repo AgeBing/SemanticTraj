@@ -68,7 +68,7 @@
           <div class="subtitle">The Semantic View</div>
           <div class="sample-area">
             <!-- <img src="../assets/icons/sample.png"> -->
-            <!-- <span> Sample </span> -->
+            <span> Show stop point </span>
             <input class="switch-btn switch-btn-animbg" type="checkbox">
           </div>  
   </div>
@@ -83,7 +83,8 @@
           The Map View
       </div>
 
-  <div style="position: absolute;z-index: 5;width: 225px;bottom: 0;margin: 6px;height: 110px;background: #ffffffd6;border: 1px dashed #cacaca;">
+  <div style="position: absolute;z-index: 5;width: 225px;bottom: 0;margin: 6px;height: 110px;background: #ffffffd6;border: 1px dashed #cacaca;
+    font-family: times new roman;">
 
       
         <div id="select-area">
@@ -101,19 +102,19 @@
         </div>
 
         <div style="position: absolute;bottom: 47px;left: 5px;font-size: 12px;"> Trajectory Opacity</div>
-        <span style="position: absolute;bottom: 47px;left: 108px;font-size: 11px;" id="opacity-num"> </span>
-        <div id="trajslider" style="right:0; position: absolute;z-index: 5;width: 70px;bottom: 40px;margin: 9px;height: 6px;"></div>
+        <span style="position: absolute;bottom: 47px;left: 101px;font-size: 11px;" id="opacity-num"> </span>
+        <div id="trajslider" style="right:0; position: absolute;z-index: 5;width: 95px;bottom: 40px;margin: 9px;height: 6px;"></div>
         
-        <div style="position: absolute;bottom: 27px;left: 5px;font-size: 12px;"> Heatmap Intensity</div>
-        <span style="position: absolute;bottom: 27px;left: 108px;font-size: 11px;" id="intensity-num"> </span>
-        <div id="heatmapslider" style="right:0; position: absolute;z-index: 5;width:70px;bottom: 20px;margin: 9px;height: 6px;"></div>
+<!--         <div style="position: absolute;bottom: 27px;left: 5px;font-size: 12px;"> Heatmap Intensity</div> -->
+        <span style="position: absolute;bottom: 27px;left: 108px;font-size: 11px;display: none" id="intensity-num"> </span>
+        <div id="heatmapslider" style="right:0; position: absolute;z-index: 5;width:95px;bottom: 20px;margin: 9px;height: 6px;"></div>
 
 
-        <div style="position: absolute;bottom: 5px;left: 5px;font-size: 12px;">Heatmap Legend</div>
+        <div style="position: absolute;bottom: 16px;left: 5px;font-size: 12px;">Heatmap Legend</div>
         <div class="legend" id="heatmap-legend" 
             style="right:0; position: absolute;z-index: 5;width:117px;bottom: 15px;;height: 6px;">
             <div class="content">
-                <div class="max" id="heatmap-legend-min" style="font-size:11px;margin-right: -7px"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="min"  id="heatmap-legend-max" style="font-size:11px;margin-left: 3px "></div>
+                <div class="max" id="heatmap-legend-min" style="font-size:11px;margin-right: -7px"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="color_bar" style="background: rgb(179, 0, 0);"></div><div class="min"  id="heatmap-legend-max" style="font-size:11px;margin-left: 3px ">0</div>
           </div>
         </div>
 
@@ -147,17 +148,42 @@
           The Result List
       </div>
       <div class="btn-container" >
-        <div class="check-contain"><input type="checkbox" id="addSelectCheck"><label for="addSelectCheck"></label></div>
 
-        <div class="per-num">
-          <div class="display-num">SelectNum</div>
-          |
-          <div class="select-num">AvaliableNum</div>
-          |
-          <div class="all-num">AllNum</div>
+        <div class="btn-sub-container">
+              <div class="label-text">
+                  Number of filtered/all-queried trajectories
+              </div>
+              <div class="num-contain label-text">
+                    <div class="select-num label-text">0</div>
+                      /
+                    <div class="all-num label-text">0</div>
+              </div>
+        </div>
+        <div class="btn-sub-container">
+          <div class="check-container">
+            <div class="check-contain">
+              <input type="checkbox" id="addSelectCheck"><label for="addSelectCheck"></label>
+            </div>
+            <div class="label-text">
+                Select all
+            </div>
+          </div>
+          <div class="filter-container">
+              <div class="label-text">
+                  Show queried trajectories
+              </div>
+              <input id='filter-btn' class="switch-btn switch-btn-animbg" type="checkbox">
+          </div>
         </div>
 
-        <input id='filter-btn' class="switch-btn switch-btn-animbg" type="checkbox">
+        <div>
+            <div class="label-text label-id">
+                Trajectory ID
+            </div>
+            <div class="label-text label-score">
+                Relevance score
+            </div>
+        </div>
       </div>
       <div id="resultlist" />
   </div>

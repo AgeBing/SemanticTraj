@@ -230,15 +230,15 @@ export function highLightTrajInMap(traj , outer){
 		.attr('class', 'high-light-line')
 		.attr('d', function(d) { return curveLine(draw_points);	})
 		.style('stroke',Config.oneWholeTrajOuterColor)
-		.style('stroke-width',2)
-		.style('opacity',0.5)
+		.style('stroke-width',Config.oneWholeTrajOuterWidth)
+		.style('opacity',Config.oneWholeTrajOuterOpacity)
 
 	d3.select('#svg-poi').select('#traj')
 		.append('path')
 		.attr('class', 'high-light-line')
 		.attr('d', function(d) { return curveLine(draw_points);	})
 		.style('stroke',Config.oneWholeTrajinnerColor)
-		.style('stroke-width',1)
+		.style('stroke-width',Config.oneWholeTrajinnerWidth)
 
 
 }

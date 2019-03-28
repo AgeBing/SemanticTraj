@@ -115,7 +115,7 @@ function getTrajScore(pid){
 
 		if( siteId == 0 ) return 0
 
-		sitescores =  nodelist.siteScore.get(siteId)
+		sitescores =  nodelist.siteScore.get(+siteId)
 		if(!sitescores)  return 0
 
 		// 取 max 

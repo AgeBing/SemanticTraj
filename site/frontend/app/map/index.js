@@ -55,9 +55,13 @@ function drawheatmap(trajsData){
 
 	let v = +d3.select('#intensity-num').text()  || 70
 	let max =  heatpoint*Config.heatMapIntensity*v
-	if(v == 200){  max = Infinity}
+
+	let maxtext =  Math.floor( heatpoint*v/200)
+	if(v == 200){  max = Infinity;maxtext=Infinity}
+	
 	d3.select('#heatmap-legend').select('#heatmap-legend-max')
-					.text( max.toFixed(2) )
+					.text( maxtext )
+
 	heatmap.setOptions({
 		radius: 12,
 		max:  max ,

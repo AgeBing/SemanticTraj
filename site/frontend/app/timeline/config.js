@@ -9,6 +9,8 @@ export let topicNameList = ["Beauty","Food","Shop","Uptown","Education",
 // 				'#80b1d3','#F40076','#b3de69','#fccde5']
 
 
+export let duration = 400
+
 
 export let colorList  = ['#8dd3c7'  , '#fb8072' , '#fdb462',   '#28B78D','#bebada','#f8b739']
 export let iconSrcUrl = '../icon/'

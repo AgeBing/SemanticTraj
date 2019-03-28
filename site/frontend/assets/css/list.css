@@ -28,7 +28,8 @@
     width: 20px;
     margin: 2px;
     position: relative;
-    height: 35px;
+    height: 25px;
+    display: inline-block;
 }
 .check-contain input[type=checkbox]{
     visibility: hidden;
@@ -75,7 +76,7 @@
 .id-word{
 	line-height: 35px;
     float: left;
-    font-size: 12px;
+    font-size: 13px;
     padding: 0 6px;
     color: #595959;
     width: 120px;
@@ -89,7 +90,7 @@
     width: calc(100% - 220px);
 }
 .percent-word{
-	    font-size: 12px;
+	font-size: 13px;
     line-height: 35px;
     padding: 0 6px;
     color: #595959;
@@ -110,14 +111,15 @@
 }
 .btn-container{
     padding: 5px;
-    height: 65px;
+    height: 105px;
     top: 35px;
     position: relative;
     width: calc(100% - 10px);
+}
+.btn-sub-container{
     justify-content: space-between;
     display: flex;
 }
-
 .per-num{
     font-size: 14px;
     line-height: 38px;
@@ -131,6 +133,36 @@
     color: #e8e8e8
 }
 #list-contain #filter-btn{
-    margin-top: 10px; 
+    margin-top: 9px; 
 
+}
+
+
+
+.check-container{
+    width: 180px;
+}
+.filter-container{
+    width: 225px;
+}
+.label-text{
+    font-size: 13px;
+    display: inline-block;
+    line-height: 25px;
+
+    font-family: times new roman;
+}
+.num-contain{
+    /*width: 80px;*/
+}
+
+.label-id{
+    position: absolute;
+    left: 47px;
+        font-weight: 700;
+}
+.label-score{
+    position: absolute;
+    left: 190px;
+        font-weight: 700;
 }

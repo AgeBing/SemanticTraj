@@ -89,7 +89,7 @@
 }
 
 .traj-id{
-    width: 100px;
+    width: 115px;
     float: left;
     font-size: 12px;
     line-height: 27px;
@@ -204,4 +204,21 @@
 	pointer-events: none;
 	fill: rgb(46, 117, 182);
 	opacity: 0.2
+}
+
+
+.traj-circle{
+	stroke: rgb(46, 117, 182);
+	fill: rgb(46, 117, 182);
+}
+#label-trajectory{
+    position: absolute;
+    left: 40px;
+    top: 22px;
+    font-size: 14px;
+    font-family: times new roman;
+}
+.traj-text{
+	display: inline-block;
+	margin-left: 3px
 }
