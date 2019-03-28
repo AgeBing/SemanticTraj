@@ -137,6 +137,11 @@ if(filter_words.indexOf(d[0])!=-1)
       // 只有名称才会被添加
         let find=false;
       o.forEach((d) => {
+          if(d[0]==change_name&&(d[1] != 'n' && d[1] != 'ns'))
+          {
+              let nodelist= require('../Specification/Node.js')
+              nodelist.delete_node_byOrder(param[1])
+          }
         if ((d[0] == name && (d[1] == 'n' || d[1] == 'ns')) &&(!find)) {
             if(change_name=='')
                 addPOI(name);

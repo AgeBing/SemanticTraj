@@ -22,7 +22,7 @@ d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').
 export function word_tab_end(){
     let x=parseInt(d3.select(this.parentNode).style('left'))
     let y=parseInt(d3.select(this.parentNode).style('top'))
-    let word=d3.select(this).select('.tab-text').text()
+    let word=d3.select(this).select('.tab-text').attr('value')
     let left_length=$('#Specification_view').scrollLeft();
     d3.selectAll('.condition_node').each(function(){
         let current_left=parseInt(d3.select(this).style('left'))-left_length
@@ -145,12 +145,16 @@ function change_tag_time(){
     nodelist.time.forEach(function(time,index){
         year_order.forEach((t)=>{
         if(time.hasOwnProperty(t)&&(time[t]!=''))
-        str_time[index]+=time[t]
+        {
+            str_time[index]+=time[t]
         if(t=='d')
             str_time[index]+=' '
         else
             str_time[index]+='.'
+        }
     })
+        if(str_time[1]=='')
+            str_time[1]=str_time[0].split(' ')[0]+' '
     if(time.hasOwnProperty('o')&&(time['o']!=''))
     {
         str_time[index]+=(time['o']+':')
@@ -158,6 +162,12 @@ function change_tag_time(){
              str_time[index]+=time['m']
         else
              str_time[index]+='00'
+    }
+    else{
+        if(index==0)
+            str_time[index]+='00:00'
+        else
+            str_time[index]+='23:59'
     }
     })
     d3.selectAll('.starttime')
