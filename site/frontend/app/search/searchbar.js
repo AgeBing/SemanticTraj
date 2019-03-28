@@ -6,7 +6,9 @@ import * as DataManager from './datamanager.js';
 
 
 import {
-  setGlobalTrajData
+  setGlobalTrajData ,
+  MockSearchSite,
+  CaseMockFlag
 } from '../app.js'
 import {
     word_tab_start,
@@ -130,6 +132,20 @@ if(filter_words.indexOf(d[0])!=-1)
           }
       })
       textData = o; // 获取词性
+
+
+
+
+      if( CaseMockFlag ){
+            o.forEach( (name)=>{
+              if(name[0] =='物华天宝')
+                name[1] = 'n'
+            })
+            console.log(o)
+      }
+
+
+
       createTabs(o)
       return o
     })
@@ -137,12 +153,13 @@ if(filter_words.indexOf(d[0])!=-1)
       // 只有名称才会被添加
         let find=false;
       o.forEach((d) => {
-          if(d[0]==change_name&&(d[1] != 'n' && d[1] != 'ns'))
+          if(d[0]==change_name&&(d[1].indexOf('n')!= -1  || d[1] =='id'))
           {
               let nodelist= require('../Specification/Node.js')
               nodelist.delete_node_byOrder(param[1])
           }
-        if ((d[0] == name && (d[1] == 'n' || d[1] == 'ns')) &&(!find)) {
+          if ((d[0] == name && (d[1].indexOf('n')!= -1  || d[1] =='id')) &&(!find)) {
+
             if(change_name=='')
                 addPOI(name);
             else
@@ -199,11 +216,25 @@ function addPOI(_name,param=[]) {//append or insert:
   QueryUtil.get_poi_layer(textData)
     .then(results => {
       console.log(results)
+
+
       results.forEach((poi) => {
         let {
           name,
           data
         } = poi
+      
+
+        CaseMockFlag && data.forEach((_poi)=>{
+          _poi.data.forEach((a)=>{
+              a.data.forEach((b)=>{
+              if(b.name =='舍利塔')
+                 b.name = "江心屿"
+              })
+          })
+        })
+
+
         if (_name == name) {
           let nodelist = require('../Specification/Node.js')
             nodelist.append_node({
@@ -231,20 +262,27 @@ function addSearchListener(object) {
         nodelist = require('../Specification/Node.js'),
         sites_arr = []
     // 按照顺序 插入
+    let names = []
     nodelist.order.forEach((d) => {
       //  d = >  condition_node1 、condition_node2
       let name = d3.select('#' + d).select('.title').select('.text').text()
-
+      names.push(name)
       let pois = nodelist.searchSiteList.get(name)
-      console.log(pois)
       let sites = pois.map((p) => {
         return p.poi.site_id
       })
-      console.log(sites)
+
 
       sites_arr.push(sites)
     })
 
+
+    // 将 sites_arr 进行 人为替换
+    MockSearchSite( sites_arr , names  )
+    console.log(sites_arr)
+
+
+    // return
 
     QueryUtil.get_trajs_new(sites_arr)
       .then(results => {

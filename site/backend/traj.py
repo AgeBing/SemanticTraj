@@ -34,8 +34,8 @@ class returnType(Structure):
 
 class Traj(object):
   def __init__(self, stop_num, sites, site_cover, 
-      start_time_str = '2014-01-14 12:03:00.00', 
-      end_time_str = '2014-01-14 16:04:00.00'):
+      start_time_str = '2014-01-14 00:01:00.00', 
+      end_time_str = '2014-01-14 23:59:00.00'):
     self.__stop_num = stop_num
     self.__sites = sites
     self.__site_cover = site_cover

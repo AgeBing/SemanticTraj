@@ -26,7 +26,7 @@ class Mysql(object):
             passwd="123456",db="mobiledata",
             cursorclass = SSDictCursor, charset = 'utf8', use_unicode = True)
         connection2 = MySQLdb.connect( host="10.76.0.184",user="root",
-            passwd="123456",db="mb10w",
+            passwd="123456",db="mobiledata",
             cursorclass = SSDictCursor, charset = 'utf8', use_unicode = True)
         # if Mysql.__pool is None:
         #     __pool = PooledDB(creator = MySQLdb, mincached = 1, maxcached = 20,
