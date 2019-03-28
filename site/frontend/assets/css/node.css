@@ -201,6 +201,7 @@ input{
     margin-top: 2px;
     display:inline-block;
     font-weight:600;
+    font-family: Arial;
 }
 .condition_node .timeconstraints .textcon{
 	        float: left;
@@ -400,7 +401,7 @@ display: none;
     top: calc(50% - 16px);
     width: 176px;
     right:-71px;
-    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Times New Roman";
     color: #1d1d1d;
     text-align: center;
     position: absolute;
