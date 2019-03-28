@@ -43,6 +43,7 @@
 	    margin-bottom: 5px;
 }
 .rect-container{
+	height: 27px;
 	display: inline-block;
 	margin: 2px 0;
 	position: relative;
