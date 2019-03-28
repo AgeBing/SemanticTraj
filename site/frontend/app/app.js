@@ -94,9 +94,42 @@ export function calTrajsOrder(){  //计算轨迹的分数 并进行排序
 		return s2 - s1  // 逆序 
 	})
 
-	orderedTrajs.forEach((traj)=>{
-		traj.per = scale(traj.score).toFixed(2)
-	})
+
+	let mockTrajIds = [
+		'460006160659022',
+
+
+		'460078588218660',
+		'460006110668457',
+		'460006302329011',
+		'460006639024734',
+		'460007530855270',
+		'460021577731990',
+
+		'460021577731990',
+		'460002042353407',
+		'460007753549773',
+		'460008523666216',
+		'460002072341110',
+		'460005410764652',
+		'460006677057373',
+		'460005871160409',
+		'460006270651477',
+		'460007723535774',
+		'460006525030570',
+	]
+	let putInListFormor = []
+	orderedTrajs = orderedTrajs.map((traj)=>{
+			
+			traj.per = scale(traj.score).toFixed(2)
+
+				if(CaseMockFlag && mockTrajIds.indexOf(traj.pid+'') != -1){
+					putInListFormor.push(traj)
+					return null
+				}
+			return traj
+		})
+	orderedTrajs = putInListFormor.concat(orderedTrajs)
 
 	drawList(orderedTrajs)
 }
