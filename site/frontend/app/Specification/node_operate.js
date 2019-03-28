@@ -12,8 +12,9 @@ export function word_tab_start(){
 
 }
 export function word_tab_move(){
-console.log(d3.event.sourceEvent.pageX,'----------------')
-d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-50)+'px').style('top',(d3.event.sourceEvent.pageY)+'px')
+    let left=$(this.parentNode.parentNode)[0].getBoundingClientRect().left
+    let top=$(this.parentNode.parentNode)[0].getBoundingClientRect().top
+d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').style('top',(d3.event.sourceEvent.pageY-top)+'px')
    }
 
 export function word_tab_end(){
