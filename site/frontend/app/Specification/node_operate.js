@@ -7,9 +7,17 @@ export function add_condition_node(){
     nodelist.append_node({name:'',data:[]})
     //nodelist.node_rendering(nodelist.data.length)
 }
+export function word_tab_start(){
+    d3.select(this.parentNode).style('position','absolute').style('z-index',10000)
 
+}
 export function word_tab_move(){
-d3.select(this.parentNode).style('position','absolute').style('left',d3.event.x+'px').style('top',d3.event.y+'px').style('z-index',10000)
+    let left=$(this.parentNode.parentNode)[0].getBoundingClientRect().left+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().left
+    let top=$(this.parentNode.parentNode)[0].getBoundingClientRect().top+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().top
+    /*let left=$(this.parentNode).find('.tab-image-container')[0].getBoundingClientRect().left
+    let top=$(this.parentNode).find('.tab-image-container')[0].getBoundingClientRect().top*/
+
+d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').style('top',(d3.event.sourceEvent.pageY-top)+'px')
    }
 
 export function word_tab_end(){
@@ -26,7 +34,7 @@ export function word_tab_end(){
         }
 
     })
-    d3.select(this.parentNode).style('position','static')
+    d3.select(this.parentNode).style('position','static').style('z-index',0)
 }
 
 function Add_word(node_id,word){
@@ -93,7 +101,7 @@ if(nodelist.data[i].order==node_index)
      }
 }
 
-function change_time(operate,time){//operate:add,delete
+export function change_time(operate,time){//operate:add,delete
     if(operate=='delete')
         delete_time(time)
     else
@@ -102,7 +110,17 @@ change_tag_time()
 }
 function delete_time(time){
 
-}
+    let nodelist= require('../Specification/Node.js')
+    let word_time_map={'年':'y','月':'month','日':'d','时':'o','分':'m'}
+    let old_time=nodelist.time
+    let time_type= word_time_map[time[time.length-1]]
+        if(old_time[1].hasOwnProperty(time_type)&&(old_time[1][time_type]==''))//终止的时间包含该时间信息
+        {
+            delete old_time[1][time_type]
+        }
+        else
+            delete old_time[0][time_type]
+    }
 function add_time(time){
     let nodelist= require('../Specification/Node.js')
     let word_time_map={'年':'y','月':'month','日':'d','时':'o','分':'m'}
@@ -111,30 +129,40 @@ function add_time(time){
         let num=time.substr(0,time.length-1)
     if(num.length==1)
         num='0'+num
-    if(old_time.length==0)//当前无时间约束输入
-    {
-        let this_time={}
-        this_time[time_type]=num
-        old_time.push(this_time)
-    }
-    else{
-        if(old_time[0].hasOwnProperty(time_type))//起始时间包含该时间信息
+
+        if(old_time[0].hasOwnProperty(time_type)&&(old_time[0][time_type]==''))//起始时间不包含该时间信息
         {
-old_time[1][time_type]=num
+old_time[0][time_type]=num
         }
         else
-            old_time[0][time_type]=num
+            old_time[1][time_type]=num
     }
-}
 function change_tag_time(){
     let nodelist= require('../Specification/Node.js')
-    let starttime=nodelist.time[0]
-    let endtime=nodelist.time[1]
-    starttime=starttime['y']+'.'+starttime['month']+'.'+starttime['d']+" "+starttime['o']+':'+starttime['m']
-    endtime=endtime['y']+'.'+endtime['month']+'.'+endtime['d']+" "+endtime['o']+':'+endtime['m']
+    let str_time=['','']
+    let year_order=['y','month','d']
+
+    nodelist.time.forEach(function(time,index){
+        year_order.forEach((t)=>{
+        if(time.hasOwnProperty(t)&&(time[t]!=''))
+        str_time[index]+=time[t]
+        if(t=='d')
+            str_time[index]+=' '
+        else
+            str_time[index]+='.'
+    })
+    if(time.hasOwnProperty('o')&&(time['o']!=''))
+    {
+        str_time[index]+=(time['o']+':')
+        if(time.hasOwnProperty('m')&&(time['m']!=''))
+             str_time[index]+=time['m']
+        else
+             str_time[index]+='00'
+    }
+    })
     d3.selectAll('.starttime')
-        .property('value', starttime)
+        .property('value', str_time[0])
     d3.selectAll('.endtime')
-        .property('value', endtime)
+        .property('value', str_time[1])
 }
 

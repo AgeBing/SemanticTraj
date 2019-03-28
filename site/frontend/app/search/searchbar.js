@@ -9,8 +9,10 @@ import {
   setGlobalTrajData
 } from '../app.js'
 import {
+    word_tab_start,
   word_tab_move,
-  word_tab_end
+  word_tab_end,
+    change_time,
 } from "../Specification/node_operate";
 import {remove as removePoiInMap} from "../map/poi";
 
@@ -22,7 +24,7 @@ let tag_diff_data = {}
 
 let filter_words=['查询','经过','的','轨迹','后']
 
-let word_img={'n':'../assets/icons/POI.svg','t':'../assets/icons/time.svg','o':'../assets/icons/others.svg'}
+let word_img={'n':'../assets/icons/POI.svg','t':'../assets/icons/time.svg','o':'../assets/icons/prep.svg'}
 export function getMerge_data(_name) {
   console.log(_name)
   let _textData = textData.slice()
@@ -105,11 +107,15 @@ function addParticle() {
   QueryUtil.get_participle(rawText)
     .then(o => {
       o = o.filter(d => d[0].trim().length > 0)//&&(filter_words.indexOf(d[0])==-1))
+         let nodelist= require('../Specification/Node.js')
+              nodelist.time=[{'y':'','month':'','d':'','o':'','m':''},{'y':'','month':'','d':'','o':'','m':''}]
       o.forEach((d,i)=>{
 if(filter_words.indexOf(d[0])!=-1)
   o[i][1]='o'
-          /*if(d[1]=='t')
-              change_time(d[0])*/
+          if(d[1]=='t')
+          {
+              change_time('add',d[0])
+          }
       })
       textData = o; // 获取词性
       createTabs(o)
@@ -133,7 +139,10 @@ if(filter_words.indexOf(d[0])!=-1)
 
 function removeParticle() {
   console.log('rm')
-  let name = textData.pop()[0]
+    let remove_wod=textData.pop()
+  let name = remove_wod[0]
+    if(remove_wod[1]=='t')
+        change_time('delete',remove_wod)
   const rawText = textData.map(d => d[0]).join('');
   QueryUtil.get_participle(rawText) // 获取词性
     .then(o => {
@@ -292,6 +301,7 @@ let status=d3.select(this.parentNode).select('.change_type').style('display')
  div.append('div')
     .attr('class', 'tab-text-container')
       .call(d3.drag()
+          .on('start',word_tab_start)
       .on('drag', word_tab_move)
       .on('end', word_tab_end))
     .append('div')

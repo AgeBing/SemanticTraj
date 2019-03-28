@@ -254,7 +254,7 @@ input{
 display: none;
 }
 .condition_node .spatial_constraints .POIrect{
-	//position:absolute;
+	position:absolute;
 	width: 125px;
     line-height: 20px;
     /*text-align: center;*/
