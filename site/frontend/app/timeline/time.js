@@ -56,6 +56,13 @@ function setTopAxis(){
 
 		axisFunc.ticks(5)  //显示的个数
 			.tickFormat(  d3.timeFormat("%x %H:%M")  )
+	
+
+	let TrajLabel =  d3.select('#topic-container')
+						.append('div')
+						.attr('id','label-trajectory')
+						.text('Trajectories')
+
 
 	let topAxis =  d3.select('#topic-container')
 						.append('div')

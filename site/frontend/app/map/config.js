@@ -26,6 +26,9 @@ export let heatMapIntensity = 0.00005
 export let oneWholeTrajOuterColor = 'rgb(121, 157, 189)' 
 export let oneWholeTrajinnerColor = 'rgb(46, 117, 182)' 
 
+export let oneWholeTrajOuterWidth =  6
+export let oneWholeTrajOuterOpacity = 0.5    
+export let oneWholeTrajinnerWidth = 1
 
 // export let picTrajOpacitys = [0.004, 0.5 ,0.1 , 0.171,0.357,0.386,0.42, 0.461,0.569,0.643,0.735,0.843,0.945,0.994]
 export let picTrajOpacitys = [0.004, 0.02 , 0.04,  0.1, 0.171 , 0.26,0.54 , 0.7 ,0.9 , 1]
@@ -33,5 +36,3 @@ export let picTrajLineWidths = [0.5 , 1 , 2 ]
 
 export let picTrajOpacity = picTrajOpacitys[1]
 export let picTrajLineWidth = picTrajLineWidths[1]
-
-

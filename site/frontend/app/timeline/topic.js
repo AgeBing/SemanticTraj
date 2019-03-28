@@ -58,7 +58,20 @@ export class topicZoomRect {
 		let idDiv = d3.select('#topic-container').select('.th'+index)  //选择有隐患
 				.append('div')
 				.attr('class','traj-id')
-				.text(data.id)
+
+		let circleR = 8 
+		idDiv.append('svg')
+				.attr('width',circleR)
+				.attr('height',circleR)
+				.append('rect')
+				.attr('class','traj-circle')
+				.attr('width',circleR)
+				.attr('height',circleR)
+				.attr('rx',circleR)
+				.attr('ry',circleR)
+
+
+		idDiv.append('div').attr('class','traj-text').text(data.id)
 	}
 	// 需要当 rootEl 挂载后再 append
 	_appenSVG(){
@@ -277,7 +290,10 @@ export class topicZoomRect {
 		let { index } = this
 
 		if(fromOuter){
-			d3.selectAll('.topic-rect').style('opacity',0.2)
+			d3.selectAll('.topic-rect')
+				.transition()
+				.duration(Config.duration)
+				.style('opacity',0.2)
 			d3.select('.rect-group-container').select('.th'+index).select('.topic-rect-container')
 				.selectAll('.topic-rect')
 				.style('opacity',1)
@@ -286,7 +302,8 @@ export class topicZoomRect {
 	}
 	un_select(fromOuter = true){
 		let { index } = this
-		d3.selectAll('.topic-rect').style('opacity',1)
+		d3.selectAll('.topic-rect')
+		.style('opacity',1)
 	}
 	high_light_rect(t){    //t 如 Tue Jan 14 2014 05:37:06 GMT+0800 (China Standard Time)
 		let { index,data,dates }  = this 
@@ -296,7 +313,8 @@ export class topicZoomRect {
 	}
 	unhigh_light_rect(){  //所有亮的变亮
 		let { index }  = this
-		d3.selectAll('.topic-rect').style('opacity',1)
+		d3.selectAll('.topic-rect')
+			.style('opacity',1)
 		uhl_timeline(index)
 	}
 	high_light_whole(){  // 整个高亮 => 当整条轨迹被选中
