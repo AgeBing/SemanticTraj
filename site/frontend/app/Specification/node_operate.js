@@ -1,11 +1,10 @@
-import {getMerge_data,get_data} from "../search/searchbar";
+import {textData,getMerge_data,get_data,addParticle} from "../search/searchbar";
 
 
 
 export function add_condition_node(){
    let nodelist= require('../Specification/Node.js')
     nodelist.append_node({name:'',data:[]})
-    //nodelist.node_rendering(nodelist.data.length)
 }
 export function word_tab_start(){
     d3.select(this.parentNode).style('position','absolute').style('z-index',10000)
@@ -22,13 +21,14 @@ d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').
 
 export function word_tab_end(){
     let x=parseInt(d3.select(this.parentNode).style('left'))
-    let y=d3.select(this.parentNode).style('top')
+    let y=parseInt(d3.select(this.parentNode).style('top'))
     let word=d3.select(this).select('.tab-text').text()
     let left_length=$('#Specification_view').scrollLeft();
     d3.selectAll('.condition_node').each(function(){
         let current_left=parseInt(d3.select(this).style('left'))-left_length
         let current_right=current_left+parseInt(d3.select(this).style('width'));
-        if(x>=current_left &&(x<=current_right))
+        let current_top=$(this)[0].getBoundingClientRect().top
+        if(x>=current_left &&(x<=current_right)&&(y>=current_top))
         {
             Add_word(d3.select(this).attr('id'),word)
         }
@@ -166,3 +166,42 @@ function change_tag_time(){
         .property('value', str_time[1])
 }
 
+export function change_tab(old_name,new_name){
+    //let name=d3.select(this).text()
+         let find=false
+         textData.forEach((d,index)=>{
+             if(d[0]==old_name &&!find)
+             {
+                 let nodelist = require('../Specification/Node.js')
+                 if(new_name=='')//删除该搜索词并删除标签
+                 {
+                     textData.splice(index,1)
+                     addParticle(new_name)
+                     nodelist.delete_node_byName(old_name);
+                 }
+                else{//更新标签
+                     d[0]=new_name
+                     let find=false
+                     nodelist.data.forEach((d,index)=>{
+                        if(d.name==old_name &&(!find))
+                        {
+                            d.name=new_name
+                         addParticle(new_name,[index,d.order])
+                            find=true
+                        }
+
+               })
+                     if(!find)
+                        {
+                            nodelist.delete_node_byName(old_name);
+                            addParticle(new_name)
+
+                        }
+                     find=true;
+                    //为新word创建标签卡
+                 }
+
+             }
+         })
+
+}

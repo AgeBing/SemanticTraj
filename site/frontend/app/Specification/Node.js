@@ -650,10 +650,19 @@ spatial_cc.append("div").classed("POIback", true)
 
 
 
-nodelist.append_node = function(data) {
-  data.order = nodelist.data.length + 1
+nodelist.append_node = function(data,param=[]) {
+    if(param.length==0)
+    {
+        data.order = nodelist.data.length + 1
   nodelist.data.push(data);
   nodelist.node_rendering(data, nodelist.data.length)
+    }
+    else
+    {
+        data.order=param[1]
+        nodelist.data[param[0]]=data
+       nodelist.node_rendering(data, param[1])
+    }
 }
 nodelist.delete_node_byName = function(name) {
   for (let i = 0; i < nodelist.data.length; i++) {

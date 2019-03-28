@@ -39,6 +39,7 @@ export  function draw(pois) {
 }
 
 export function remove(){
+    if(iconLayers!=null)
   iconLayers.forEach((iconLayer)=>{
       iconLayer.remove()
   })

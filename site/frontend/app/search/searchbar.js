@@ -14,10 +14,11 @@ import {
   word_tab_move,
   word_tab_end,
     change_time,
+    change_tab,
 } from "../Specification/node_operate";
-import {remove as removePoiInMap} from "../map/poi";
+import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
-let textData = []
+export let textData = []
 
 let name2POIMap = new Map()
 
@@ -101,10 +102,21 @@ function addInputListener(o) {
 
 
 
-function addParticle() {
+export function addParticle(change_name='',param=[]) {
   // console.log('add')
-  let name = $('#search-input-text').val()
-  const rawText = textData.map(d => d[0]).join('') + name;
+    let name = ''
+    let rawText = ''
+    if(change_name=='')
+    {
+         name = $('#search-input-text').val()
+        rawText = textData.map(d => d[0]).join('') + name;
+    }
+    else
+    {
+        name=change_name
+        rawText = textData.map(d => d[0]).join('')
+    }
+
   QueryUtil.get_participle(rawText)
     .then(o => {
       o = o.filter(d => d[0].trim().length > 0)//&&(filter_words.indexOf(d[0])==-1))
@@ -126,8 +138,15 @@ if(filter_words.indexOf(d[0])!=-1)
       // 只有名称才会被添加
         let find=false;
       o.forEach((d) => {
+
         if ((d[0] == name && (d[1].indexOf('n')!= -1  || d[1] =='id')) &&(!find)) {
-          addPOI(name);
+
+            if(change_name=='')
+                addPOI(name);
+            else
+            {
+                addPOI(name,param)
+            }
           find=true;
         }
       })
@@ -159,7 +178,12 @@ function removeParticle() {
 
 
 
-function addPOI(_name) {
+function addPOI(_name,param=[]) {//append or insert:
+    let nodelist= require('../Specification/Node.js')
+                nodelist.data.forEach((d,index)=>{
+                    if(d.name==name)
+                        addPOI(name,index,d.order)
+                })
      for(var i=0; i<textData.length; i++){
             for(var j=i+1; j<textData.length; j++){
                 if(textData[i][0]==textData[j][0]){         //第一个等同于第二个，splice方法删除第二个
@@ -168,6 +192,7 @@ function addPOI(_name) {
                 }
             }
         }
+
   //数组去重//当前元素，在原始数组中的第一个索引==当前索引值，否则返回当前元素
   QueryUtil.get_poi_layer(textData)
     .then(results => {
@@ -179,10 +204,10 @@ function addPOI(_name) {
         } = poi
         if (_name == name) {
           let nodelist = require('../Specification/Node.js')
-          nodelist.append_node({
-            name,
-            data
-          })
+            nodelist.append_node({
+                    name,
+                    data
+                  },param)
         }
 
         name2POIMap.set(name, {
@@ -306,16 +331,56 @@ let status=d3.select(this.parentNode).select('.change_type').style('display')
         else
             return word_img['o']
     })
- div.append('div')
+ let delete_change = div.append('div')
     .attr('class', 'tab-text-container')
       .call(d3.drag()
           .on('start',word_tab_start)
       .on('drag', word_tab_move)
       .on('end', word_tab_end))
-    .append('div')
+    .append('input')
     .attr('class', 'tab-text')
-    .text(d => d[0].split('_').join(''))
+     .attr('readonly',true)
+    .attr('old_value',d => d[0].split('_').join(''))
+     .attr('value',d => d[0].split('_').join(''))
+     .style('width',function(){
+         return $(this).val().length*16+"px"
+     })
+     .on('dblclick',function(){
+         $(this).removeAttr('readonly')
+     })
+     .on('mouseleave',function(){
+if(d3.select(this).attr('old_value')!=$(this).val())
+    change_tab(d3.select(this).attr('old_value'),$(this).val());
+d3.select(this).attr('old_value',$(this).val())
+         $(this).attr('readonly','readonly')
+     })
+     .each(function() {
+         $(this).bind('input propertychange', function () {
+             var $this = $(this);
+             var text_length = $this.val().length;//获取当前文本框的长度
+             var current_width = parseInt(text_length) * 16;//该16是改变前的宽度除以当前字符串的长度,算出每个字符的长度
+             $this.css("width", current_width + "px");
 
+         })
+     })
+     /*.each(function(){
+         $(this).bind("contextmenu", function(){
+    return false;
+})
+         $(this).mousedown(function(e) {
+    console.log(e.which);
+    //右键为3
+    if (3 == e.which) {
+        $(this.parentNode.parentNode).remove()
+    }
+})
+     })*/
+  /*   .append('div')
+     .classed('delete_change',true)
+delete_change.append('div')
+    .classed('delete_change_div',true)
+    .on('click')
+*/
 let change_type=div.append('div')
     .classed('change_type',true)
     .style('background','white')
