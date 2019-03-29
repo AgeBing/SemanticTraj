@@ -142,7 +142,7 @@ export function renderingwordslist(mergenode) {
       addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.style("top", (d, i) => `${i*24}px`)
-  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*70}px`)
+  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*120}px`)
   mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*72+'px')
 
   return show_hide_div
@@ -497,7 +497,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
           right: []
         };
       })
-    current_node.style("left", d => `${652*(index-1)}px`)
+    current_node.style("left", d => `${692*(index-1)}px`)
   }
 
   //title
@@ -668,7 +668,7 @@ current_node.select(".timeconstraints").each(change_cur_time)
   let spatialwordcontainer = spatial_cc.append("div")
     .attr('id', function(d) {
       return 'spatial_left' + d.order
-    }).style("width","150px")// "182px")
+    }).style("width","197px")// "182px")
     .style("height", "calc(100% - 5px)")
     .style("margin", "3px")
       .style('overflow-y','auto')
@@ -704,7 +704,7 @@ current_node.select(".timeconstraints").each(change_cur_time)
   spatial_cc.append("svg").style("width", "64px")
     .style("position", "absolute")
     .style("height", "calc(100% - 6px)")
-    .style("left", "143px")
+    .style("left", "189px")
     .style("margin", "3px 0")
     .style("z-index", "3").classed("spatial_lines", true)
 
