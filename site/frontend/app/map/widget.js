@@ -48,7 +48,10 @@ function bindOpacityChangeEvent(){
 	    .slider( "option", "step", 1)
 	    .slider( "value", 4 )
 
-	d3.select('#opacity-num').text(Config.picTrajOpacity.toFixed(2))
+        let opa = Config.picTrajOpacity
+        let opacityText =   ( opa===Math.floor(opa) ? opa : opa.toFixed(2))
+    	d3.select('#opacity-num').text(opacityText)
+
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }
@@ -130,7 +133,10 @@ function debounceOpacityChange( delay ){
 
 		let i =  ui.value
         Config.picTrajOpacity = Config.picTrajOpacitys[i]
-    	d3.select('#opacity-num').text(Config.picTrajOpacity.toFixed(2))
+
+        let opa = Config.picTrajOpacity
+        let opacityText =   ( opa===Math.floor(opa) ? opa : opa.toFixed(2))
+    	d3.select('#opacity-num').text(opacityText)
 		Config.PicUpdateFlag = true
 		debounceTimer = setTimeout( function(){
 			console.log('draw opacity')
