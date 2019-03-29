@@ -19,7 +19,7 @@ import { draw as drawHexa } from './semantic/index.js'
 
 
 import { mock as mockList } from '../mock/setData.js'
-import { mock_sites , mock_sites_origin ,mock_traj_ids   }  from '../mock/case1'
+import { mock_sites , mock_sites_origin ,mock_traj_ids   }  from '../mock/case2'
 
 
 export let trajs  // 全量数据 
@@ -298,6 +298,9 @@ export function MockSearchSite(searchSitesArr,names){
 	// console.log( names)
 	if( !CaseMockFlag )  return 
 
+
+
+	/*
 	if( names.indexOf('江心屿') != -1 && names.indexOf('物华天宝')!=-1){
 
 		let jxyOrder = names.indexOf('江心屿')
@@ -323,12 +326,15 @@ export function MockSearchSite(searchSitesArr,names){
 		CaseMockSiteHintFlag = true
 		console.log('mock go!')
 	}
-
-
 	if(names.indexOf('景点')!= -1) {
 		mockTrajIds = mock_traj_ids[0]
 	}
+	*/
 
 
+	if( names.indexOf('温州_医科_大学_药学院') != -1 ){
+		console.log(names)
+		searchSitesArr[0] = mock_sites[0]
+	}
 
 }

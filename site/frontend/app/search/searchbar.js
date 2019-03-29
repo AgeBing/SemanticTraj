@@ -291,6 +291,8 @@ function addSearchListener(object) {
 
     // return
 
+    // sites_arr = [[21938]]
+    
     QueryUtil.get_trajs_new(sites_arr)
       .then(results => {
         DataManager.drawTraj = results;
