@@ -165,19 +165,31 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       
       for (let i = 0; i < d.data.length; i++) {
         for (let j = 0; j < d.data[i].data.length; j++) {
-
-          for (let m = 0; m < d.data[i].data[j].data.length; m++) {
-            let poi_name = d.data[i].data[j].data[m].name
+            let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
+            for (let m = 0; m < d.data[i].data[j].data.length; m++) {
+                let poi=d.data[i].data[j].data[m]
+                if(cur_max_map.hasOwnProperty(poi.name))
+                {
+                    if(cur_max_map[poi.name].val<poi.val)
+                    cur_max_map[poi.name]=poi
+                }
+                else
+                {
+                    cur_max_map[poi.name]=poi
+                }
+            }
+          for(let k in cur_max_map) {
+            let poi_name = cur_max_map[k].name
             if (poi_map.hasOwnProperty(poi_name)) {
               let index = poi_map[poi_name]
-              pois[index].val += d.data[i].data[j].data[m].val
+              pois[index].val += cur_max_map[k].val
             } else {
-                if(d.data[i].data[j].data[m].latitude>27.9248561995 &&d.data[i].data[j].data[m].latitude<28.0769120675 &&d.data[i].data[j].data[m].longitude>120.5833650410&&d.data[i].data[j].data[m].longitude<120.7579719628)
+                if(cur_max_map[k].latitude>27.9248561995 &&cur_max_map[k].latitude<28.0769120675 &&cur_max_map[k].longitude>120.5833650410&&cur_max_map[k].longitude<120.7579719628)
                 {
                     poi_map[poi_name] = pois.length
               pois.push({
                 index: pois.length,
-                poi: d.data[i].data[j].data[m],
+                poi: cur_max_map[k],
                 words: {
                   F: (i, d.data[i].name),
                   S: (j, d.data[i].data[j].name)
