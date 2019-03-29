@@ -345,6 +345,7 @@ let preClickedIndex = null
 function createTabs(data) {
 
   const container = d3.select('.search-container')
+    container.selectAll('.word-tab').remove()
   const divData = container.selectAll('.word-tab')
     .data(data, (d, i) => d[0] + '_' + d[i])
   divData.classed('word-tab-clicked', (d, i) => i == preClickedIndex)
@@ -366,7 +367,7 @@ let status=d3.select(this.parentNode).select('.change_type').style('display')
         if(word_img.hasOwnProperty(d[1]))
             return word_img[d[1]]
         else
-            if (d[1]=='ns')
+            if (d[1].indexOf('n')!= -1)
                 return word_img['n']
         else
             return word_img['o']
@@ -422,6 +423,7 @@ delete_change.append('div')
     .classed('delete_change_div',true)
     .on('click')
 */
+  let word_map = {'t':'Temporal','o':'Conjunction','n':'Spatial'}
 let change_type=div.append('div')
     .classed('change_type',true)
     .style('background','white')
@@ -437,16 +439,20 @@ let change_type=div.append('div')
     .attr('class', 'tab-image-container')
   .on('click',function(){
 let target_src=d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src')
-          d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src',d3.select(this).select('img').attr('src'))
-          d3.select(this).select('img').attr('src',target_src)
+      let target_word_type=d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('word_type')
+          d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src',d3.select(this).select('img').attr('src')).attr('word_type',d3.select(this).select('img').attr('word_type'))
+          d3.select(this).select('img').attr('src',target_src).attr('word_type',target_word_type)
+      d3.select(this.parentNode).select('.tab-text-container').select('.tab-text').text(word_map[target_word_type])
+
       })
   word_image_container.append('img')
     .attr('src',  word_img[k])
+      .attr('word_type',k)
  word.append('div')
     .attr('class', 'tab-text-container')
     .append('div')
     .attr('class', 'tab-text')
-    .text(d => d[0].split('_').join(''))
+    .text(word_map[k])
 
     }
   divData.exit().remove();
