@@ -387,7 +387,10 @@ export function initial_right_content() {
   let legend_list = [{
     id: 'Relevance_Information',
     name: 'Relevance Information:',
-   color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
+   //color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
+      //color:['#a50f15','#de2d26','#fb6a4a','#fc9272','#fcbba1','#fee5d9']
+      // color:['#810f7c','#88419d','#8c6bb1','#8c96c6','#9ebcda','#bfd3e6']
+      color:['#7a0177','#c51b8a','#f768a1','#fa9fb5','#fcc5c0','#feebe2']
   }]
   // let height = parseInt($('#Specification_view').css('height'))
   let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);

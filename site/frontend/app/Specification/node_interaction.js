@@ -2,8 +2,15 @@ import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Sp
 import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
 export let path_colorscale=d3.scaleQuantize()
-    .range(['#fef0d9','#fdd49e','#fdbb84','#fc8d59','#e34a33','#b30000'])
-                                // .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
+    // .range(['#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c'])
+    // .range(['#fee5d9','#fcbba1','#fc9272','#fb6a4a','#de2d26','#a50f15'])
+    // .range(['#f1eef6','#d0d1e6','#a6bddb','#74a9cf','#2b8cbe','#045a8d'])
+    // .range(['#feedde','#fdd0a2','#fdae6b','#fd8d3c','#e6550d','#a63603'])
+    .range(['#feebe2','#fcc5c0','#fa9fb5','#f768a1','#c51b8a','#7a0177'])
+    // .range(['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'])
+    // .range(['#f0f9e8','#ccebc5','#a8ddb5','#7bccc4','#43a2ca','#0868ac'])
+    // .range(['#fef0d9','#fdd49e','#fdbb84','#fc8d59','#e34a33','#b30000'])
+    //                             .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
     d3.select(this.parentNode).style("z-index",10000)
