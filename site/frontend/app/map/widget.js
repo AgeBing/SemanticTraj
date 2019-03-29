@@ -59,58 +59,54 @@ function bindOpacityChangeEvent(){
 	           			break;
 	           		case 1:
 	           			Config.picTrajOpacity = Config.picTrajOpacitys[1]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[0]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
 	           		case 2:
 	           			Config.picTrajOpacity = Config.picTrajOpacitys[2]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[0]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
 	           		case 3:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[0]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 4:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[1]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 5:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[2]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 6:
 	           			Config.picTrajOpacity = Config.picTrajOpacitys[3]
 	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
-	           		case 7:
+	           		case 4:
 	           			Config.picTrajOpacity = Config.picTrajOpacitys[4]
 	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
-	           		case 8:
+	           		case 5:
 	           			Config.picTrajOpacity = Config.picTrajOpacitys[5]
 	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
-	           		case 9:
+	           		case 6:
 	           			Config.picTrajOpacity = Config.picTrajOpacitys[6]
 	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
+	           		case 7:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[7]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
+	           		case 8:
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[8]
+	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
+	           			break;
 	           		default:
-         				Config.picTrajOpacity = Config.picTrajOpacitys[7]
+	           			Config.picTrajOpacity = Config.picTrajOpacitys[9]
 	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
 	           			break;
 	           	}
 
 
 
-		    	d3.select('#opacity-num').text(i/10)
+		    	d3.select('#opacity-num').text(Config.picTrajOpacity)
 				Config.PicUpdateFlag = true
 				draw()
 	    }) 
 	    .slider( "option", "min", 0)
-	    .slider( "option", "max", 200)
+	    .slider( "option", "max", 90)
 	    .slider( "option", "step", 10)
 	    .slider( "value", 40 )
 
-	d3.select('#opacity-num').text(0.4)
+	d3.select('#opacity-num').text(Config.picTrajOpacity)
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }

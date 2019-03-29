@@ -87,13 +87,13 @@ function addTopicContains(){
 }
 function setZoom(){
 	let zoomFunc = d3.zoom()
-		.scaleExtent([1, 100]) 	//缩放比例
+		.scaleExtent([0.5, 100]) 	//缩放比例
 		// .translateExtent([[-w * 0.9, 0], [2 *w * 0.9,10] ])
 		.on('zoom',()=>{
 			// console.log('zoom')
 			func_zoomed()
 		})
-		.on('end', debounceSelect() )
+		// .on('end', debounceSelect() )
 	// 底部的 zoom 监听svg
 	let listenerRect = 
 		d3.select('#topic-container').append('svg')
@@ -110,6 +110,7 @@ function setZoom(){
 
 	d3.select('#top-axis-container').select('svg').call(zoomFunc)
 }
+let s = []
 function func_zoomed(){
 	let t = d3.event.transform
 
@@ -121,16 +122,22 @@ function func_zoomed(){
 
 
 
+	// console.log(s)
+
+	let s_t = [ timeScale.invert(s[0]),timeScale.invert(s[1]) ]
+	// console.log(s_t)
 	//更新 timeScale
 	timeScale.domain(t.rescaleX(timeScale2).domain())   //  timeScal2 不变
 
 
+	let s_ = [ timeScale(s_t[0]) , timeScale(s_t[1]) ]
 
+	// console.log(s_)
 	//更新时间轴
 	syncAsixFunc() 
 
 	d3.select('#top-axis-container').select('svg').select('.brush')
-		.call( brushFunc.move , timeScale.range().map(t.applyX, t) )
+		.call( brushFunc.move , s_ )
 
 	// console.log("transform ", t.invertX )
 	// console.log("range ", timeScale.range() )
@@ -171,6 +178,7 @@ function setBrush(){
 	    	brushStyle()
 	    })
 	    .on("brush",()=>{
+	    	s = d3.event.selection
 		    brushStyle()
 	    })
 	    .on("end", debounceSelect() );
@@ -292,6 +300,8 @@ function timeSelect(){
 		timeStart = timeScale.invert(rectStart),
 		timeEnd = timeScale.invert(rectEnd)
 
+
+		console.log('brush', rectStart , rectEnd)
 	console.log("full time:",timeRange)
 	console.log("start time:",timeStart)
 	console.log("end time:",timeEnd)
