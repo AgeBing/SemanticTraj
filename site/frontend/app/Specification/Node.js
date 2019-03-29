@@ -155,7 +155,11 @@ export function renderingPOIlist(mergenode, max_num = 20) {
   let POIS = []
     let poi_max=0
     let poi_min=0;
-   // mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
+  if(max_num==0)
+  {
+      mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
+      return
+  }
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
     .data(function(d) {
       let textcolorscale = 0
@@ -276,7 +280,7 @@ d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('mi
       POIs.selectAll('.POIdiv')
         .style('width',d=> (parseFloat((parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)))*70+'px')
     POIs.selectAll('.POIval')
-        .text(d=> parseFloat((parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)).toFixed(2))
+        .text(d=> parseFloat(d.poi.val).toFixed(2))//(parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)
       POIs.selectAll('.POIname')
         .text(d=>d.poi.name)
   d3.select('#'+mergenode.attr('id').replace('locationlistdiv','condition_node'))
@@ -301,7 +305,7 @@ nodelist.reOrder = function refresh_list(a, current_node_id) {
     }
   }
   initial_siteScore(current_data, alpha,true);
-  normalization(current_data)
+  //normalization(current_data)
   renderingPOIlist(d3.select('#locationlistdiv' + current_conditionnode_order).data([current_data]), parseInt($('#' + current_node_id).find('.node_num').prop('value')));
   initial_line('condition_node' + current_conditionnode_order)
   refresh_line(current_conditionnode_order)
@@ -457,10 +461,11 @@ export function fresh_list_width() { //condition_node_list的宽度
 }
 
 nodelist.node_rendering = function(initial_node_data, index) {
+    removePoiInMap()
   if (initial_node_data.data.length != 0)
   {
     max_value_POI(initial_node_data)
-      normalization(initial_node_data)
+      //normalization(initial_node_data)
   }
   initial_siteScore(nodelist); //用于轨迹list的相似度计算
   initial_node_data.order = index;
