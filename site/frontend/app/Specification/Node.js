@@ -497,7 +497,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
           right: []
         };
       })
-    current_node.style("left", d => `${652*(index-1)}px`)
+    current_node.style("left", d => `${692*(index-1)}px`)
   }
 
   //title
