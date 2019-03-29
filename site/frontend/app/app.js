@@ -19,7 +19,7 @@ import { draw as drawHexa } from './semantic/index.js'
 
 
 import { mock as mockList } from '../mock/setData.js'
-import { mock_sites , mock_sites_origin   }  from '../mock/case1'
+import { mock_sites , mock_sites_origin ,mock_traj_ids   }  from '../mock/case1'
 
 
 export let trajs  // 全量数据 
@@ -33,6 +33,7 @@ export let trajId2Points = new Map() // id => stoppoints
 
 export let CaseMockFlag = false
 let CaseMockSiteHintFlag = false
+let mockTrajIds = []
 
 // 初始化
 CaseMockFlag = true
@@ -95,44 +96,7 @@ export function calTrajsOrder(){  //计算轨迹的分数 并进行排序
 	})
 
 
-	let mockTrajIds = [
-		'460006160659022',	//  景点
-		'460006677057373',
-		'460027677127300',
-		'460023682412633',
-		'460002391352207',
-		'460021586734981',
-		'460008954530918',
-		'460021677818454',
-		'460007730635860',
-		'460006751754249',
-		'460006838066276',
 
-
-		'460078588218660',   // 正向
-		'460006110668457',
-		'460006302329011',
-		'460006639024734',
-		'460007530855270',
-		'460021577731990',
-		'460006649035014',
-		'460005777028039',
-		'460005787069710',
-		'460006649035065',
-
-
-		'460021577731990',	// 反向
-		'460002042353407',
-		'460007753549773',
-		'460008523666216',
-		'460002072341110',
-		'460005410764652',
-		'460006677057373',
-		'460005871160409',
-		'460006270651477',
-		'460007723535774',
-		'460006525030570',
-	]
 	let putInListFormor = []
 	orderedTrajs = orderedTrajs.map((traj)=>{
 			
@@ -183,7 +147,6 @@ function getTrajScore(pid){
 		    	max = s 
 		    }
 		}
-
 	})
 
 	return max
@@ -345,6 +308,7 @@ export function MockSearchSite(searchSitesArr,names){
 			searchSitesArr[1] = mock_sites[1]
 			console.log('jxy ->  whtb')
 			console.log('please waitting for 3 min' )
+			mockTrajIds = mock_traj_ids[1]
 		}else{
 			searchSitesArr[0] = mock_sites[1]
 			searchSitesArr[1] = mock_sites[0]
@@ -353,10 +317,18 @@ export function MockSearchSite(searchSitesArr,names){
 			// mock_sites_origin[0] = temp
 			console.log('whtb  -> jxy')
 			console.log('please waitting for 3 min' )
+			mockTrajIds = mock_traj_ids[2]
 		}
 
 		CaseMockSiteHintFlag = true
 		console.log('mock go!')
 	}
+
+
+	if(names.indexOf('景点')!= -1) {
+		mockTrajIds = mock_traj_ids[0]
+	}
+
+
 
 }
