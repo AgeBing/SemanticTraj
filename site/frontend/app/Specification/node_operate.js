@@ -112,7 +112,11 @@ change_tag_time()
 function delete_time(time){
 
     let nodelist= require('../Specification/Node.js')
-    let word_time_map={'年':'y','月':'month','日':'d','时':'o','分':'m'}
+    if(nodelist.time[1]['y']!='' ||(nodelist.time[1]['month']!='')||(nodelist.time[1]['d']!=''))
+        nodelist.time[1]={'y':'','month':'','d':'','o':'','m':''}
+        else
+            nodelist.time[0]={'y':'','month':'','d':'','o':'','m':''}
+    /*let word_time_map={'年':'y','月':'month','日':'d'}//,'时':'o','分':'m'}
     let old_time=nodelist.time
     let time_type= word_time_map[time[time.length-1]]
         if(old_time[1].hasOwnProperty(time_type)&&(old_time[1][time_type]==''))//终止的时间包含该时间信息
@@ -120,7 +124,7 @@ function delete_time(time){
             delete old_time[1][time_type]
         }
         else
-            delete old_time[0][time_type]
+            delete old_time[0][time_type]*/
     }
 function add_time(time){
     let nodelist= require('../Specification/Node.js')
@@ -148,12 +152,11 @@ function change_tag_time(){
         if(time.hasOwnProperty(t)&&(time[t]!=''))
         {
             str_time[index]+=time[t]
-        if(t=='d')
-            str_time[index]+=' '
-        else
+        if(t!='d')
             str_time[index]+='.'
         }
     })
+        str_time[index]+=' '
         if(str_time[1]=='')
             str_time[1]=str_time[0].split(' ')[0]+' '
     if(time.hasOwnProperty('o')&&(time['o']!=''))
@@ -165,10 +168,11 @@ function change_tag_time(){
              str_time[index]+='00'
     }
     else{
-        if(index==0)
+        if(str_time[0].split(' ')[0]!='')
+        {if(index==0)
             str_time[index]+='00:00'
         else
-            str_time[index]+='23:59'
+            str_time[index]+='23:59'}
     }
     })
     d3.selectAll('.starttime')
@@ -184,6 +188,7 @@ function change_tag_time(){
                 time_w+=(nodelist.time[0]['d']+"日")
 d3.select(this.parentNode)
     .select('.textcon')
+    .select('.text')
     .text(time_w)
         })
     d3.selectAll('.endtime')
@@ -197,6 +202,70 @@ d3.select(this.parentNode)
         })*/
 }
 
+export function change_cur_time(){
+    let nodelist= require('../Specification/Node.js')
+    let str_time=['','']
+    let year_order=['y','month','d']
+
+    nodelist.time.forEach(function(time,index){
+        year_order.forEach((t)=>{
+        if(time.hasOwnProperty(t)&&(time[t]!=''))
+        {
+            str_time[index]+=time[t]
+        if(t=='d')
+            str_time[index]+=' '
+        else
+            str_time[index]+='.'
+        }
+    })
+        if(str_time[1]=='')
+            str_time[1]=str_time[0].split(' ')[0]
+
+    if(str_time[index]!='')
+    {
+         str_time[index]+=' '
+        if(time.hasOwnProperty('o')&&(time['o']!=''))
+    {
+        str_time[index]+=(time['o']+':')
+        if(time.hasOwnProperty('m')&&(time['m']!=''))
+             str_time[index]+=time['m']
+        else
+             str_time[index]+='00'
+    }
+    else{
+        if(index==0)
+            str_time[index]+='00:00'
+        else
+            str_time[index]+='23:59'
+    }
+    }
+    })
+    d3.select(this).select('.starttime')
+        .property('value', str_time[0])
+        .each(function(){
+            let nodelist= require('../Specification/Node.js')
+            let time_w=''
+            if(nodelist.time[0]['y']!='')
+                time_w+=(nodelist.time[0]['y']+"年")
+             if(nodelist.time[0]['month']!='')
+                time_w+=(nodelist.time[0]['month']+"月")
+                if(nodelist.time[0]['d']!='')
+                time_w+=(nodelist.time[0]['d']+"日")
+d3.select(this.parentNode)
+    .select('.textcon')
+    .select('.text')
+    .text(time_w)
+        })
+    d3.select(this).select('.endtime')
+        .property('value', str_time[1])
+    /*.each(function(){
+            let nodelist= require('../Specification/Node.js')
+
+d3.select(this.parentNode)
+    .select('.textcon')
+    .text(time_w)
+        })*/
+}
 export function merge_time_tab(){
     let order=['年','月','日']
     let key=['y','month','d']
@@ -320,4 +389,8 @@ export function change_time_div(index){
     d3.select(this.parentNode)
     .select('.textcon')
     .text(time_w)
+}
+
+export function add_delete(){
+
 }

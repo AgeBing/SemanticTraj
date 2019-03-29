@@ -25,7 +25,8 @@ import {
 } from './node_interaction.js'
 import {
   add_condition_node,
-    change_time_div,
+   // change_time_div,
+    change_cur_time,
 } from './node_operate.js'
 import {
   getMerge_data,
@@ -482,13 +483,30 @@ nodelist.node_rendering = function(initial_node_data, index) {
 
   timeconstraings.append("div").classed("node_subtitle", true)
   let timecontainer = timeconstraings.append("div")
-  let temp = timecontainer.append("div").classed("text", true).classed("textcon", true)
-    .style("margin", "0px 10px 0px 10px")
+  let temp = timecontainer.append("div").classed("textcon", true)//.classed("text", true)
+      .style('width','130px')
+      .append('div')
+       .classed('text',true)
+    .style("margin", "0px 10px 0px 5px")
     .style("color", "#2e75b6")
     .style("text-align", "center")
     .style("font-size", "15px")
     .style("line-height", "38px")
     .style('display', 'inline-block')
+      .style('width','110px')
+   timecontainer.select('.textcon').append('div')
+       .classed('delete', true)
+       .style('margin-top', '0px')
+       .style('margin-right', '10px')
+       .style('font-size', '15px')
+       .text('X')
+       .style('position','absolute')
+    .on('click', function() {
+      d3.select(this.parentNode.parentNode).selectAll('input').property('value','')
+        d3.select(this.parentNode).select('.text').text('')
+         nodelist.time=[{'y':'','month':'','d':'','o':'','m':''},{'y':'','month':'','d':'','o':'','m':''}]
+            //.append(this)
+    })
   timecontainer.append("input").classed("starttime", true).classed("textinput", true)
       .each(function(){
           $(this).bind('input propertychange', function(){
@@ -508,8 +526,9 @@ let nodelist= require('../Specification/Node.js')
                 if(nodelist.time[0]['d']!='')
                 time_w+=(nodelist.time[0]['d']+"日")
               d3.select(this.parentNode)
-    .select('.textcon')
-    .text(time_w)
+                .select('.textcon')
+                  .select('.text')
+                .text(time_w)
           })
       })
   timecontainer.append("div").classed("conj", true).classed("textcon", true)
@@ -533,20 +552,18 @@ let nodelist= require('../Specification/Node.js')
                 time_w+=(nodelist.time[1]['d']+"日")
               d3.select(this.parentNode)
     .select('.textcon')
+                  .select('.text')
     .text(time_w)
           })
       })
 
   current_node.select(".timeconstraints").select(".node_subtitle").text("Temporal Constraints")
-  current_node.select(".timeconstraints").select(".text").text("")
-    .append('div').classed('delete', true).style('margin-top', '0px').style('margin-right', '10px').style('font-size', '15px').text('X')
-    .on('click', function() {
-      //删除这部分干啥？？？？？？？？？？？？？？？？？？？？///////////////////////??????????????????????????????????????????????????????????????????????????????????
-    })
+ // current_node.select(".timeconstraints").select(".text").text("")
+
   current_node.select(".timeconstraints").select(".starttime").property('value', "")//2018.01.10 9:00
   current_node.select(".timeconstraints").select(".conj").text("~")
   current_node.select(".timeconstraints").select(".endtime").property('value', "")//2018.01.10 11:00
-
+current_node.select(".timeconstraints").each(change_cur_time)
 
 
   //spatial constraints

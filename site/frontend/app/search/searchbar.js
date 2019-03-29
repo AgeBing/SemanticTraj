@@ -194,6 +194,7 @@ function removeParticle() {
       o = o.filter(d => d[0].trim().length > 0)
       textData = o;
       createTabs(o)
+         merge_time_tab()
     })
     .then(o => {
       let nodelist = require('../Specification/Node.js')
