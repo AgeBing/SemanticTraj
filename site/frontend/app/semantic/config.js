@@ -58,6 +58,39 @@ export let coorHexagon = [
 // 用于表示 拖拽点的坐标
 export let coorHexagonCopy =  JSON.parse(JSON.stringify(coorHexagon))  
 
+let _r = 0.7  * r
+export let coorHexagonStrength  = [
+    // 最左
+    {
+      x  : coorCenter.x - 2 * _r,
+      y  : coorCenter.y 
+    },
+    // 左上
+    {
+      x  : coorCenter.x - _r,
+      y  : coorCenter.y - sqrt3 * _r
+    },
+    // 右上
+    {
+      x  : coorCenter.x + _r,
+      y  : coorCenter.y - sqrt3 * _r
+    },
+    // 最右
+    {
+      x  : coorCenter.x + 2 * _r,
+      y  : coorCenter.y  
+    },
+    // 右下
+    {
+      x  : coorCenter.x + _r,
+      y  : coorCenter.y + sqrt3 * _r
+    },
+    // 左下
+    {
+      x  : coorCenter.x - _r,
+      y  : coorCenter.y + sqrt3 * _r
+    }
+]
 
 // 通过 index 与 coorHexagon 对应
 export let namesHexagon = topicNames.map((n)=>{return n.name})

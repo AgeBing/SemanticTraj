@@ -55,6 +55,7 @@ function highlightPoisInTrajs(pid){
 						// let mockId = site.siteId
 						// console.log( site.siteId , "  => " , mockId)
 						if(_site.site_id == mockId){
+							if( mockId == 25655 && _site.name != '江心屿')  return
 							pois.push(_site)
 						}
 					})

@@ -1,4 +1,4 @@
-import { coorCenter,coorHexagon,namesHexagon,stepLen } from './config.js'
+import { coorCenter,coorHexagonStrength,namesHexagon,stepLen } from './config.js'
 
 
 class Particle{
@@ -21,7 +21,7 @@ class Particle{
 	}
 	getForceComp(){   // 计算合力
 	  	// 注意 力大小 需要和 力位置 对应
-	  	let coor = coorHexagon  //此时按照 index 对应
+	  	let coor = coorHexagonStrength  //此时按照 index 对应
 	  	let forces = this.forces
 
 		let c , 
