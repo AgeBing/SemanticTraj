@@ -1,4 +1,5 @@
 import { line_data ,renderingPOIlist,POI_colorscale,poi_colordomain} from '../Specification/Node.js'
+import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
 export let path_colorscale=d3.scaleQuantize()
     .range(['#fef0d9','#fdd49e','#fdbb84','#fc8d59','#e34a33','#b30000'])
@@ -171,7 +172,7 @@ right_nodes.map((x,y)=>{
                 max_val=forth_data[n].relation_val
             if(min_val==0||min_val>forth_data[n].relation_val)
                 min_val=forth_data[n].relation_val
-            current_line_dta.push({left:left_nodes[i],right:x,relation_val:forth_data[n].relation_val});
+            current_line_dta.push({left:left_nodes[i],right:x,relation_val:forth_data[n].relation_val,poi:forth_data[n]});
         }
     }
 
@@ -209,10 +210,56 @@ right_nodes.map((x,y)=>{
                 .attr('fill','white')
             //.attr('z-index',1000)
                   refresh_path_color();//对已存在的线进行重新刷新颜色比例尺
-        } else {
+        left_nodes.forEach((left,index1)=>{
+            let hover_nodes=[]
+            let hover_POIs=[]
+            current_line_dta.forEach((item,index2)=>{
+if(item.left==left)
+{
+    hover_nodes.push(item.right)
+                hover_POIs.push(item.poi)
+}
+        })
+            d3.select(left)
+                .on('mouseenter', function() {
+right_nodes.forEach((right)=>d3.select(right).style('filter','opacity(40%)'))
+    hover_nodes.forEach((node)=>d3.select(node).style('filter','opacity(100%)'))
+                    drawPoiInMap( hover_POIs)})
+            .on('mouseleave', function (){
+      removePoiInMap()
+       right_nodes.forEach((right)=>d3.select(right).style('filter','opacity(100%)'))
+    })
+
+    })
+  right_nodes.forEach((right,index1)=>{
+            let hover_nodes=[]
+            let hover_POIs=''
+            current_line_dta.forEach((item,index2)=>{
+if(item.right==right)
+{
+    hover_nodes.push(item.left)
+                hover_POIs=item.poi
+}
+        })
+            d3.select(right)
+                .on('mouseenter', function() {
+left_nodes.forEach((left)=>d3.select(left).select('.neiwordsdiv_word').style('filter','opacity(40%)'))
+    hover_nodes.forEach((node)=>d3.select(node).select('.neiwordsdiv_word').style('filter','opacity(100%)'))
+                    drawPoiInMap( [hover_POIs])})
+            .on('mouseleave', function (){
+      removePoiInMap()
+       left_nodes.forEach((left)=>d3.select(left).select('.neiwordsdiv_word').style('filter','opacity(100%)'))
+    })
+
+    })
+        }
+        else {
             d3.select('#' + index).select('.spatial_lines').selectAll('path').remove();
              d3.select('#' + index).select('.spatial_lines').selectAll('circle').remove();
         }
+
+
+
     }
 
     export function refresh_line(order){//locationlistdiv1

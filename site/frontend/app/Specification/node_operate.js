@@ -390,7 +390,3 @@ export function change_time_div(index){
     .select('.textcon')
     .text(time_w)
 }
-
-export function add_delete(){
-
-}
