@@ -174,6 +174,8 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         for (let j = 0; j < d.data[i].data.length; j++) {
             for (let m = 0; m < d.data[i].data[j].data.length; m++) {
                 let poi=d.data[i].data[j].data[m]
+                if(poi.name=='温州大学医务室')
+                    console.log(poi,'poi------------')
                 if(cur_max_map.hasOwnProperty(poi.name))
                 {
                     if(cur_max_map[poi.name].val<poi.val)
@@ -229,7 +231,7 @@ item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
         }
       else
           pois = pois.slice(0, max_num)
-d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
+        d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
       //poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
       //poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
       //refresh_POI_length()
@@ -269,8 +271,6 @@ d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('mi
     let POIs=allPOI.merge(addPOI)//addPOI.merge(allPOI)
     .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
-        //.style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
-        //.style('background','red')
     .on('mouseenter', (d) => {
       drawPoiInMap( [d.poi] )
     })
@@ -816,7 +816,7 @@ function initial_siteScore(initial_data, alpha = 1,param=false) {
       second_word.data.forEach(third_word => {
         third_word.data.forEach(poi => {
           if (param)
-            poi.val = poi.relation_val * alpha + poi.simT
+            poi.val = poi.max_val * alpha + poi.simT
           let scores = nodelist.siteScore.get(poi.site_id)
           if (!scores) {
             scores = new Map()
@@ -834,6 +834,7 @@ function initial_siteScore(initial_data, alpha = 1,param=false) {
       })
     })
   })
+    //max_value_POI(initial_data)
 }
 
 
@@ -845,6 +846,7 @@ export function max_value_POI(d){
         for (let j = 0; j < d.data[i].data.length; j++) {
             for (let m = 0; m < d.data[i].data[j].data.length; m++) {
                 let poi=d.data[i].data[j].data[m]
+                poi['max_val']=poi.val
                 if(cur_max_map.hasOwnProperty(poi.name))
                 {
                     if(cur_max_map[poi.name].val<poi.val)
@@ -862,6 +864,7 @@ export function max_value_POI(d){
             if (poi_map.hasOwnProperty(poi_name)) {
               let index = poi_map[poi_name]
               pois[index].poi.val += cur_max_map[k].poi.val
+                pois[index].poi.max_val=pois[index].poi.val
             } else {
                 if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
                 {
