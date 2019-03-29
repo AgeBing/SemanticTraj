@@ -101,8 +101,7 @@ export function show_hide() {
     index=index.substr(index.length-1,1)
     if (d3.select(this).attr("isshow") =="false")//show
     {
-        /*nei_words.style('visibility', 'visible');
-        wordsubtitle.style('visibility', 'visible');*/
+
         nei_words.style('display', 'block');
         wordsubtitle.style('display', 'block');
         d3.select(this).style("background-image","url(../icon/tri.png)").attr("isshow",true);
@@ -356,8 +355,8 @@ export function get_left_nodes(index) {//index:1,2,3...
 top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height///.outerHeight(true)//包括margin
                 }
                    top_length =top_length-parseInt($(this).find('.nei_words')[0].getBoundingClientRect().height)//+$(this).attr('top');
-                let show_hide = $(this).find('.hide_nei_words').text()//.innerHTML;
-                if (show_hide == '-') {
+                let show_hide = $(this).find('.hide_nei_words').attr('isshow')//.innerHTML;
+                if (show_hide == 'true') {
                     $(this).find('.neiwordsdiv').each(function () {
                         let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
                         let element_height = $(this)[0].getBoundingClientRect().height;

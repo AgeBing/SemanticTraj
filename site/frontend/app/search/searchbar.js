@@ -21,7 +21,7 @@ import {
     change_time,
     change_tab,
     merge_time_tab,
-} from "../Specification/node_operate";
+} from "../Specification/word_tabs.js";
 import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
 export let textData = []

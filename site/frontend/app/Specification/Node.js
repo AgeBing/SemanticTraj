@@ -26,8 +26,10 @@ import {
 import {
   add_condition_node,
    // change_time_div,
-    change_cur_time,
 } from './node_operate.js'
+import {
+     change_cur_time,
+} from "./word_tabs.js"
 import {
   getMerge_data,
   get_data
@@ -153,8 +155,10 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     // by ykj
   // 列表现实的前 max_num  poi 存储在 POIS 中
   let POIS = []
+//当前标签中POI列表的最大值和最小值，用于归一化来显示POI的div长度
     let poi_max=0
     let poi_min=0;
+
   if(max_num==0)
   {
       mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
@@ -174,8 +178,6 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         for (let j = 0; j < d.data[i].data.length; j++) {
             for (let m = 0; m < d.data[i].data[j].data.length; m++) {
                 let poi=d.data[i].data[j].data[m]
-                if(poi.name=='温州大学医务室')
-                    console.log(poi,'poi------------')
                 if(cur_max_map.hasOwnProperty(poi.name))
                 {
                     if(cur_max_map[poi.name].val<poi.val)
@@ -218,10 +220,6 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       })
         poi_max=pois[0].poi.val
         poi_min=pois[pois.length-1].poi.val
-       /* let dis=pois[0].poi.val-pois[pois.length-1].poi.val
-        pois.forEach((item)=>{
-item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
-      })*/
 
         if(pois.length<max_num)
         {
@@ -232,15 +230,11 @@ item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
       else
           pois = pois.slice(0, max_num)
         d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
-      //poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
-      //poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
-      //refresh_POI_length()
       textcolorscale = pois[0].poi.val
       //update data index and color
       for (let i = 0; i < pois.length; i++) {
         pois[i].order = i
         pois[i].color = pois[i].poi.val > textcolorscale / 2 ? "white" : "rgb(28,28,28)"
-        pois[i].background = POI_colorscale(pois[i].poi.val)
       }
 
 
@@ -252,10 +246,6 @@ item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
       nodelist.searchSiteList.set(node_name , POIS)
 
 
-     /* //reorder
-      pois.sort(function(a, b) {
-        return a.poi.index - b.poi.index
-      })*/
       return pois
     }, function(d) {
       return d.poi.name;
@@ -268,7 +258,7 @@ item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
      addPOI.append('div').classed('POIdiv',true)
     addPOI.append('div').classed('POIval',true)
          addPOI.append('div').classed('POIname',true)
-    let POIs=allPOI.merge(addPOI)//addPOI.merge(allPOI)
+    let POIs=allPOI.merge(addPOI)
     .style("top", d => `${d.order*27}px`)
     .attr('val', d => d.poi.val)
     .on('mouseenter', (d) => {
@@ -335,7 +325,6 @@ function addslide(container, containername, mergecontainer) {
 
 }
 
-// <svg width="130" height="25"></svg>
 function init_slider(svg, text) {
   let margin = {
       right: 10,
@@ -391,14 +380,10 @@ export function initial_right_content() {
   let legend_list = [{
     id: 'Relevance_Information',
     name: 'Relevance Information:',
-   //color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
-      //color:['#a50f15','#de2d26','#fb6a4a','#fc9272','#fcbba1','#fee5d9']
-      // color:['#810f7c','#88419d','#8c6bb1','#8c96c6','#9ebcda','#bfd3e6']
       color:['#7a0177','#c51b8a','#f768a1','#fa9fb5','#fcc5c0','#feebe2']
   }]
-  // let height = parseInt($('#Specification_view').css('height'))
-  let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
-  right_content.append('div').classed('add_condition_node', true).text('+').on('click', add_condition_node) //./style('height',height-100+'px');
+  let right_content = nodelist.container.append('div').classed('right_content', true)
+  right_content.append('div').classed('add_condition_node', true).text('+').on('click', add_condition_node)
   legend_list.map((x, y) => {
     let legend = d3.select('#Specification_view').append('div').classed('legend', true).attr('id', x.id)
         .style('position','fixed')
@@ -417,9 +402,7 @@ export function initial_right_content() {
 }
 
 nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1则index为1
-
-  d3.select('#condition_node' + index).remove();
-
+    d3.select('#condition_node' + index).remove();
   for (let i = 0; i < nodelist.data.length; i++) {
     if (nodelist.data[i].order == index) {
 
@@ -431,10 +414,6 @@ nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1�
         let target_index = nodelist.order.indexOf("condition_node" + nodelist.data[j].order)
         nodelist.order[target_index] = 'condition_node' + (nodelist.data[j].order - 1)
         nodelist.data[j].order = nodelist.data[j].order - 1;
-        //line_data['condition_node'+nodelist.data[j].order]=line_data['condition_node'+(nodelist.data[j].order+1)]
-        /*if(nodelist.data[j].order==nodelist.data.length){
-            line_data.splice(line_data.indexOf('condition_node'+nodelist.data[j].order))
-        }*/
       }
       break;
     }
@@ -448,7 +427,7 @@ nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1�
   nodelist.order.pop(); //最后一个没用，删掉
   fresh_list_width();
   refresh_path_color()
-    refresh_POI_length()
+    //refresh_POI_length()
   initial_siteScore(nodelist) //更新sitescore
     removePoiInMap()//清空map中的POI
 }
