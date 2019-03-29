@@ -42,71 +42,16 @@ function bindColorPickEvent(){
 
 function bindOpacityChangeEvent(){
 	$("#trajslider").slider()
-	    .on( "slide", function( event, ui ) {
-			// Config.picTrajOpacity = ui.value*0.001
-
-
-				let i = Math.floor( ui.value / 10 )
-	            	
-	            let opacity_before = Config.picTrajOpacity
-	            // Config.picTrajOpacity = Config.picTrajOpacitys[ i ]
-	            // if(Config.picTrajOpacity  == opacity_before ) return 
-
-	           	switch(i){
-	           		case 0:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[0]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[0]
-	           			break;
-	           		case 1:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[1]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 2:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[2]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 3:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[3]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 4:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[4]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 5:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[5]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 6:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[6]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 7:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[7]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		case 8:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[8]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           		default:
-	           			Config.picTrajOpacity = Config.picTrajOpacitys[9]
-	           			Config.picTrajLineWidth = Config.picTrajLineWidths[1]
-	           			break;
-	           	}
-
-
-
-		    	d3.select('#opacity-num').text(Config.picTrajOpacity)
-				Config.PicUpdateFlag = true
-				draw()
-	    }) 
+	    .on( "slide", debounceOpacityChange(500)) 
 	    .slider( "option", "min", 0)
-	    .slider( "option", "max", 90)
-	    .slider( "option", "step", 10)
-	    .slider( "value", 40 )
+	    .slider( "option", "max", 20)
+	    .slider( "option", "step", 1)
+	    .slider( "value", 4 )
 
-	d3.select('#opacity-num').text(Config.picTrajOpacity)
+        let opa = Config.picTrajOpacity
+        let opacityText =   ( opa===Math.floor(opa) ? opa : opa.toFixed(2))
+    	d3.select('#opacity-num').text(opacityText)
+
 	d3.select("#trajslider").select("span").style("width","8px").style("margin-left", "-4px")
 	    			.style("height","17px")
 }
@@ -173,5 +118,30 @@ export function appendWidget(){
 	// bindSelectColorPickEvent()
 	bindIntensityChangeEvent()
 	initHeatMapLegend()
+}
+
+
+// 防止短时内 频繁调用 耗时函数
+let debounceTimer
+function debounceOpacityChange( delay ){
+
+	let delaySecond = delay || 2000
+	return function(event, ui){
+		// console.log('debounce')
+		let context = this
+		clearTimeout( debounceTimer )
+
+		let i =  ui.value
+        Config.picTrajOpacity = Config.picTrajOpacitys[i]
+
+        let opa = Config.picTrajOpacity
+        let opacityText =   ( opa===Math.floor(opa) ? opa : opa.toFixed(2))
+    	d3.select('#opacity-num').text(opacityText)
+		Config.PicUpdateFlag = true
+		debounceTimer = setTimeout( function(){
+			console.log('draw opacity')
+			draw()
+		} , delaySecond )
+	}
 }
 
