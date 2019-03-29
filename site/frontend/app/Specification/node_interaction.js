@@ -334,10 +334,10 @@ export function get_left_nodes(index) {//index:1,2,3...
                  $(this).find('.real_wordtitle').each(function(){
                  let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
                         let element_height = $(this)[0].getBoundingClientRect().height;
-                        if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
+                        //if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
                             d3.select(this).attr('current_top', current_element_top - top_height);
                             line_data['condition_node'+index].left.push(this);
-                        }
+                        //}
                 })
 
 
@@ -354,10 +354,10 @@ top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height///.outer
                     $(this).find('.neiwordsdiv').each(function () {
                         let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
                         let element_height = $(this)[0].getBoundingClientRect().height;
-                        if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
+                        //if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
                             d3.select(this).attr('current_top', current_element_top - top_height);
                             line_data['condition_node'+index].left.push(this);
-                        }
+                        //}
                     })
                 }
             })
@@ -365,7 +365,6 @@ top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height///.outer
         initial_line('condition_node'+index);
         refresh_line(index);
     }
-
 
 export function decrease_locationlist(){
     let nodelist = require('../Specification/Node.js')
