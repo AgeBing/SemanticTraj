@@ -164,32 +164,35 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       
       
       for (let i = 0; i < d.data.length; i++) {
+          let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
         for (let j = 0; j < d.data[i].data.length; j++) {
-            let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
             for (let m = 0; m < d.data[i].data[j].data.length; m++) {
                 let poi=d.data[i].data[j].data[m]
                 if(cur_max_map.hasOwnProperty(poi.name))
                 {
                     if(cur_max_map[poi.name].val<poi.val)
-                    cur_max_map[poi.name]=poi
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
                 else
                 {
-                    cur_max_map[poi.name]=poi
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
             }
-          for(let k in cur_max_map) {
-            let poi_name = cur_max_map[k].name
+
+        }
+        for(let k in cur_max_map) {
+            let poi_name = cur_max_map[k].poi.name
             if (poi_map.hasOwnProperty(poi_name)) {
               let index = poi_map[poi_name]
-              pois[index].val += cur_max_map[k].val
+              pois[index].val += cur_max_map[k].poi.val
             } else {
-                if(cur_max_map[k].latitude>27.9248561995 &&cur_max_map[k].latitude<28.0769120675 &&cur_max_map[k].longitude>120.5833650410&&cur_max_map[k].longitude<120.7579719628)
+                if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
                 {
                     poi_map[poi_name] = pois.length
+                    let j=parseInt(cur_max_map[k]['S'])
               pois.push({
                 index: pois.length,
-                poi: cur_max_map[k],
+                poi: cur_max_map[k].poi,
                 words: {
                   F: (i, d.data[i].name),
                   S: (j, d.data[i].data[j].name)
@@ -198,7 +201,6 @@ export function renderingPOIlist(mergenode, max_num = 20) {
                 }
             }
           }
-        }
       }
 
       //sort by val
