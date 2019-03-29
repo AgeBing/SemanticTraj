@@ -59,7 +59,9 @@
     heifht:10px;
     display:inline-block;
 }
-.condition_node{       height: calc(100% - 2px);
+.condition_node{       
+        background: white;
+    height: calc(100% - 2px);
     width: 630px;
     position: absolute;
     border-radius: 0;
