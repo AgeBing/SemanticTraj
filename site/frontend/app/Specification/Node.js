@@ -193,7 +193,14 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       pois.sort(function(a, b) {
         return b.poi.val - a.poi.val
       })
-        pois = pois.slice(0, max_num)
+        if(pois.length<max_num)
+        {
+        mergenode.each(function(){
+            d3.select(this.parentNode.parentNode.parentNode).select('.max_node_num').select('.node_num').property('value',pois.length)
+        })
+        }
+      else
+          pois = pois.slice(0, max_num)
       d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
       poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
       poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
@@ -596,7 +603,8 @@ current_node.select(".timeconstraints").each(change_cur_time)
         d3.select(this).property('value', 20)
       return parseInt(sum_location);
 
-    }).on('change', function() {
+    })
+      .on('change', function() {
       if (d3.select(this).property('value') > d3.select(this).attr('max'))
         d3.select(this).property('value', d3.select(this).attr('max'))
       if (d3.select(this).property('value') < d3.select(this).attr('min'))
@@ -614,7 +622,9 @@ current_node.select(".timeconstraints").each(change_cur_time)
         refresh_line(current_conditionnode_order);
       }
     })
-  spatial_constraints.select('.max_node_num').append('div').classed('increase', true).text('+').on('click', increase_locationlist)
+  spatial_constraints.select('.max_node_num').append('div')
+      .classed('increase', true).text('+')
+      .on('click', increase_locationlist)
     .style("background-image", "url(../icon/circleblue.png)")
   let spatial_cc = spatial_constraints.append("div").style("height", "calc(100% - 33px)")
     .style("position", "absolute")
