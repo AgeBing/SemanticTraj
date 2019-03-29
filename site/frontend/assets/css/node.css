@@ -62,7 +62,7 @@
 .condition_node{       
         background: white;
     height: calc(100% - 2px);
-    width: 630px;
+    width: 670px;
     position: absolute;
     border-radius: 0;
     z-index: 0;
@@ -233,7 +233,7 @@ input{
 }
 .condition_node .spatial_constraints{
 	    float: left;
-    width: calc(65% - 10px);
+    width: calc(68% - 10px);
     margin: 5px;
     height: calc(100% - 96px);
     position: absolute;
@@ -243,7 +243,7 @@ input{
 
 .condition_node .semantic_constraints{
 	    float: left;
-    width: calc(36% - 13px);
+    width: calc(32% - 5px);
     margin: 4px;
     height: calc(100% - 96px);
     border: 1px dashed rgb(232, 232, 232);

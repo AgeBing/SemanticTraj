@@ -142,7 +142,7 @@ export function renderingwordslist(mergenode) {
       addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.style("top", (d, i) => `${i*24}px`)
-  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*70}px`)
+  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*120}px`)
   mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*72+'px')
 
   return show_hide_div
@@ -153,7 +153,13 @@ export function renderingPOIlist(mergenode, max_num = 20) {
     // by ykj
   // 列表现实的前 max_num  poi 存储在 POIS 中
   let POIS = []
-   // mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
+    let poi_max=0
+    let poi_min=0;
+  if(max_num==0)
+  {
+      mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
+      return
+  }
   let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
     .data(function(d) {
       let textcolorscale = 0
@@ -164,32 +170,36 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       
       
       for (let i = 0; i < d.data.length; i++) {
+          let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
         for (let j = 0; j < d.data[i].data.length; j++) {
-            let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
             for (let m = 0; m < d.data[i].data[j].data.length; m++) {
                 let poi=d.data[i].data[j].data[m]
                 if(cur_max_map.hasOwnProperty(poi.name))
                 {
                     if(cur_max_map[poi.name].val<poi.val)
-                    cur_max_map[poi.name]=poi
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
                 else
                 {
-                    cur_max_map[poi.name]=poi
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
             }
-          for(let k in cur_max_map) {
-            let poi_name = cur_max_map[k].name
+
+        }
+        for(let k in cur_max_map) {
+            let poi_name = cur_max_map[k].poi.name
             if (poi_map.hasOwnProperty(poi_name)) {
               let index = poi_map[poi_name]
-              pois[index].val += cur_max_map[k].val
+              if(pois[index].poi.val < cur_max_map[k].poi.val)
+                  pois[index].poi.val = cur_max_map[k].poi.val
             } else {
-                if(cur_max_map[k].latitude>27.9248561995 &&cur_max_map[k].latitude<28.0769120675 &&cur_max_map[k].longitude>120.5833650410&&cur_max_map[k].longitude<120.7579719628)
+                if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
                 {
                     poi_map[poi_name] = pois.length
+                    let j=parseInt(cur_max_map[k]['S'])
               pois.push({
                 index: pois.length,
-                poi: cur_max_map[k],
+                poi: cur_max_map[k].poi,
                 words: {
                   F: (i, d.data[i].name),
                   S: (j, d.data[i].data[j].name)
@@ -198,13 +208,19 @@ export function renderingPOIlist(mergenode, max_num = 20) {
                 }
             }
           }
-        }
       }
 
       //sort by val
       pois.sort(function(a, b) {
         return b.poi.val - a.poi.val
       })
+        poi_max=pois[0].poi.val
+        poi_min=pois[pois.length-1].poi.val
+       /* let dis=pois[0].poi.val-pois[pois.length-1].poi.val
+        pois.forEach((item)=>{
+item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
+      })*/
+
         if(pois.length<max_num)
         {
         mergenode.each(function(){
@@ -213,10 +229,10 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         }
       else
           pois = pois.slice(0, max_num)
-      d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
-      poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
-      poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
-      refresh_POI_length()
+d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
+      //poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
+      //poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
+      //refresh_POI_length()
       textcolorscale = pois[0].poi.val
       //update data index and color
       for (let i = 0; i < pois.length; i++) {
@@ -262,9 +278,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       removePoiInMap()
     })
       POIs.selectAll('.POIdiv')
-        .style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*70+'px')
+        .style('width',d=> (parseFloat((parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)))*70+'px')
     POIs.selectAll('.POIval')
-        .text(d=> (parseFloat(d.poi.val)).toFixed(2))
+        .text(d=> parseFloat(d.poi.val).toFixed(2))//(parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)
       POIs.selectAll('.POIname')
         .text(d=>d.poi.name)
   d3.select('#'+mergenode.attr('id').replace('locationlistdiv','condition_node'))
@@ -289,7 +305,7 @@ nodelist.reOrder = function refresh_list(a, current_node_id) {
     }
   }
   initial_siteScore(current_data, alpha,true);
-  normalization(current_data)
+  //normalization(current_data)
   renderingPOIlist(d3.select('#locationlistdiv' + current_conditionnode_order).data([current_data]), parseInt($('#' + current_node_id).find('.node_num').prop('value')));
   initial_line('condition_node' + current_conditionnode_order)
   refresh_line(current_conditionnode_order)
@@ -375,7 +391,10 @@ export function initial_right_content() {
   let legend_list = [{
     id: 'Relevance_Information',
     name: 'Relevance Information:',
-   color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
+   //color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
+      //color:['#a50f15','#de2d26','#fb6a4a','#fc9272','#fcbba1','#fee5d9']
+      // color:['#810f7c','#88419d','#8c6bb1','#8c96c6','#9ebcda','#bfd3e6']
+      color:['#7a0177','#c51b8a','#f768a1','#fa9fb5','#fcc5c0','#feebe2']
   }]
   // let height = parseInt($('#Specification_view').css('height'))
   let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
@@ -442,8 +461,12 @@ export function fresh_list_width() { //condition_node_list的宽度
 }
 
 nodelist.node_rendering = function(initial_node_data, index) {
+    removePoiInMap()
   if (initial_node_data.data.length != 0)
-    normalization(initial_node_data)
+  {
+    max_value_POI(initial_node_data)
+      //normalization(initial_node_data)
+  }
   initial_siteScore(nodelist); //用于轨迹list的相似度计算
   initial_node_data.order = index;
   let node_data = []
@@ -645,7 +668,7 @@ current_node.select(".timeconstraints").each(change_cur_time)
   let spatialwordcontainer = spatial_cc.append("div")
     .attr('id', function(d) {
       return 'spatial_left' + d.order
-    }).style("width","150px")// "182px")
+    }).style("width","197px")// "182px")
     .style("height", "calc(100% - 5px)")
     .style("margin", "3px")
       .style('overflow-y','auto')
@@ -681,7 +704,7 @@ current_node.select(".timeconstraints").each(change_cur_time)
   spatial_cc.append("svg").style("width", "64px")
     .style("position", "absolute")
     .style("height", "calc(100% - 6px)")
-    .style("left", "143px")
+    .style("left", "189px")
     .style("margin", "3px 0")
     .style("z-index", "3").classed("spatial_lines", true)
 
@@ -811,4 +834,49 @@ function initial_siteScore(initial_data, alpha = 1,param=false) {
       })
     })
   })
+}
+
+
+export function max_value_POI(d){
+    let poi_map={}
+    let pois=[]
+     for (let i = 0; i < d.data.length; i++) {
+          let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
+        for (let j = 0; j < d.data[i].data.length; j++) {
+            for (let m = 0; m < d.data[i].data[j].data.length; m++) {
+                let poi=d.data[i].data[j].data[m]
+                if(cur_max_map.hasOwnProperty(poi.name))
+                {
+                    if(cur_max_map[poi.name].val<poi.val)
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
+                }
+                else
+                {
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
+                }
+            }
+
+        }
+        for(let k in cur_max_map) {
+            let poi_name = cur_max_map[k].poi.name
+            if (poi_map.hasOwnProperty(poi_name)) {
+              let index = poi_map[poi_name]
+              pois[index].poi.val += cur_max_map[k].poi.val
+            } else {
+                if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
+                {
+                    poi_map[poi_name] = pois.length
+                    let j=parseInt(cur_max_map[k]['S'])
+              pois.push({
+                index: pois.length,
+                poi: cur_max_map[k].poi,
+                words: {
+                  F: (i, d.data[i].name),
+                  S: (j, d.data[i].data[j].name)
+                },
+              })
+                }
+            }
+          }
+      }
 }
