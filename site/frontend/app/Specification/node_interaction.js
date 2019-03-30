@@ -4,15 +4,8 @@ import {
     renderingPOIlist
 } from "./node_operate.js"
 export let path_colorscale=d3.scaleQuantize()
-    // .range(['#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c'])
-    // .range(['#fee5d9','#fcbba1','#fc9272','#fb6a4a','#de2d26','#a50f15'])
-    // .range(['#f1eef6','#d0d1e6','#a6bddb','#74a9cf','#2b8cbe','#045a8d'])
-    // .range(['#feedde','#fdd0a2','#fdae6b','#fd8d3c','#e6550d','#a63603'])
     .range(['#feebe2','#fcc5c0','#fa9fb5','#f768a1','#c51b8a','#7a0177'])
-    // .range(['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'])
-    // .range(['#f0f9e8','#ccebc5','#a8ddb5','#7bccc4','#43a2ca','#0868ac'])
-    // .range(['#fef0d9','#fdd49e','#fdbb84','#fc8d59','#e34a33','#b30000'])
-    //                             .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
+    // .range(['#fc4e2a','#fd8d3c','#feb24c','#fed976','#ffeda0','#ffffcc']);
 export let path_colorsdomain={max:0,min:0}
 export function drag_start(){
     d3.select(this.parentNode).style("z-index",10000)
@@ -96,30 +89,25 @@ d3.select('#'+nodelist.order[current_location]).style('left', current_location*(
 
 
 export function show_hide() {
-    //let real_word=d3.select(this.parentNode).select('.real_wordtitle')//搜索词本身
     let nei_words= d3.select(this.parentNode.parentNode).select('.nei_words')
     let wordsubtitle=d3.select(this.parentNode.parentNode).select('.wordsubtitle')
     let index = d3.select(this.parentNode.parentNode.parentNode.parentNode).attr('id').replace('spatial_left', 'condition_node');
     index=index.substr(index.length-1,1)
     if (d3.select(this).attr("isshow") =="false")//show
     {
-
         nei_words.style('display', 'block');
         wordsubtitle.style('display', 'block');
         d3.select(this).style("background-image","url(../icon/tri.png)").attr("isshow",true);
-
-        get_left_nodes(index);//create line
     }
     else {
         nei_words.style('display', 'none');
         wordsubtitle.style('display', 'none');
         d3.select(this).style("background-image","url(../icon/trijian.png)").attr("isshow",false);
-        get_left_nodes(index);
-        //initial_line(index);
     }
+     get_left_nodes(index);
 }
-//每次滚动都要调用该方法
 
+//每次滚动都要调用该方法
 export function initial_line(index) {//condition_node1
     let locationlistdiv_id=index.replace('condition_node','locationlistdiv');
     let nodelist = require('../Specification/Node.js')
@@ -270,7 +258,7 @@ left_nodes.forEach((left)=>d3.select(left).select('.neiwordsdiv_word').style('fi
 
     }
 
-    export function refresh_line(order){//locationlistdiv1
+export function refresh_line(order){//locationlistdiv1
     let top_height=$('#locationlistdiv'+order).scrollTop();
     $('#locationlistdiv'+order).parent().find('path').each(function(index,e){
 let d=$(e).attr('d').trim().split(' ');//["M", "-0", "56.5", "C", "30", "199.5","30", "199.5", "90", "542"]
@@ -281,7 +269,7 @@ let d=$(e).attr('d').trim().split(' ');//["M", "-0", "56.5", "C", "30", "199.5",
 
     }
 
- export function refresh_path_color(){
+export function refresh_path_color(){
     let max_ralation_vals=[];
     d3.selectAll('.condition_node').each(function(){
         max_ralation_vals.push(d3.select(this).attr('max_relation_val'));
@@ -334,62 +322,50 @@ export function refresh_POI_length(){
      }
 }
 export function get_left_nodes(index) {//index:1,2,3...
-        line_data['condition_node'+index].left = [];
-        let top_height = $('#spatial_left' + index).scrollTop();
-        let bottom_height = top_height + parseInt($('#spatial_left' + index)[0].getBoundingClientRect().height);
-        d3.select('#spatial_left' + index).select('.spatial_words').selectAll('.Worddiv')//主题词div集合
+    line_data['condition_node'+index].left = [];
+    let top_height = $('#spatial_left' + index).scrollTop();
+    d3.select('#spatial_left' + index).select('.spatial_words').selectAll('.Worddiv')//主题词div集合
             .each(function (d,i) {
                  $(this).find('.real_wordtitle').each(function(){
-                 let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
-                        let element_height = $(this)[0].getBoundingClientRect().height;
-                        //if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
-                            d3.select(this).attr('current_top', current_element_top - top_height);
-                            line_data['condition_node'+index].left.push(this);
-                        //}
+                        let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top
+                        d3.select(this).attr('current_top', current_element_top - top_height);
+                        line_data['condition_node'+index].left.push(this);
                 })
-
 
                 let order=$(this).attr('id')
                 order=parseInt(order.substr(order.length-1,1))
                 let top_length=0;
                 for(let i=1;i<=order;i++)
-                {
-top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height///.outerHeight(true)//包括margin
-                }
-                   top_length =top_length-parseInt($(this).find('.nei_words')[0].getBoundingClientRect().height)//+$(this).attr('top');
-                let show_hide = $(this).find('.hide_nei_words').attr('isshow')//.innerHTML;
+                    top_length=top_length+$("#Worddiv"+i)[0].getBoundingClientRect().height//包括margin
+                let show_hide = $(this).find('.hide_nei_words').attr('isshow')
                 if (show_hide == 'true') {
                     $(this).find('.neiwordsdiv').each(function () {
                         let current_element_top = $(this).offset().top-$(this.parentNode.parentNode.parentNode).offset().top//parseInt(d3.select(this).style('top')) + top_length;
-                        let element_height = $(this)[0].getBoundingClientRect().height;
-                        //if ((current_element_top >= top_height && (current_element_top + element_height / 2) <= bottom_height) || (current_element_top < top_height && ((top_height - current_element_top) < element_height / 2))) {
-                            d3.select(this).attr('current_top', current_element_top - top_height);
-                            line_data['condition_node'+index].left.push(this);
-                        //}
+                        d3.select(this).attr('current_top', current_element_top - top_height);
+                        line_data['condition_node'+index].left.push(this);
                     })
                 }
             })
-        //console.log(top_height,bottom_height,line_data[index].left,'scroll move_height---------------------')
         initial_line('condition_node'+index);
         refresh_line(index);
     }
 
 export function decrease_locationlist(){
     let nodelist = require('../Specification/Node.js')
-let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
-if(current_max-1>=d3.select(this.parentNode).select('.node_num').attr('min'))
-{
-    d3.select(this.parentNode).select('.node_num').property('value',current_max-1)
-let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode).attr('id');
-let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
+    let current_max=parseInt(d3.select(this.parentNode).select('.node_num').property('value'));
+    if(current_max-1>=d3.select(this.parentNode).select('.node_num').attr('min'))
+    {
+        d3.select(this.parentNode).select('.node_num').property('value',current_max-1)
+        let condition_nodeid=d3.select(this.parentNode.parentNode.parentNode).attr('id');
+        let current_conditionnode_order = condition_nodeid.substr(condition_nodeid.length-1,1)
         let current_data=[]
         for(let i=0;i<nodelist.data.length;i++)
             if(nodelist.data[i].order==current_conditionnode_order)
                 current_data=nodelist.data[i]
-renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max-1);
-       initial_line('condition_node'+current_conditionnode_order);
-       refresh_line(current_conditionnode_order);
-}
+        renderingPOIlist(d3.select('#locationlistdiv'+current_conditionnode_order).data([current_data]),current_max-1);
+        initial_line('condition_node'+current_conditionnode_order);
+        refresh_line(current_conditionnode_order);
+    }
     }
 export function increase_locationlist(){
     let nodelist = require('../Specification/Node.js')
