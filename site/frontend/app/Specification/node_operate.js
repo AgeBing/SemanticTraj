@@ -1,4 +1,4 @@
-import {textData,getMerge_data,get_data,addParticle} from "../search/searchbar";
+import {getMerge_data,get_data} from "../search/searchbar";
 import $ from "jquery";
 import {show_hide} from "./node_interaction";
 import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
@@ -17,7 +17,7 @@ export function initial_right_content() {
         id: 'Relevance_Information',
         name: 'Relevance Information:',
         color:['#7a0177','#c51b8a','#f768a1','#fa9fb5','#fcc5c0','#feebe2']
-  }]
+    }]
     let right_content = nodelist.container.append('div').classed('right_content', true)
     right_content.append('div').classed('add_condition_node', true).text('+').on('click', add_condition_node)
     legend_list.map((x, y) => {
@@ -33,8 +33,7 @@ export function initial_right_content() {
     let content = legend.append('div').classed('content', true)
     content.append('div').classed('max', true).text(0)
     x.color.map((color, i) => {
-        content.append('div').classed('color_bar', true)
-                .style('background', color)
+        content.append('div').classed('color_bar', true).style('background', color)
     })
     content.append('div').classed('min', true).text(0)
   })
@@ -112,7 +111,6 @@ export function renderingwordslist(mergenode) {
       d.data.sort(function(a, b) {
         return b.val - a.val
       })
-
       return 'Worddiv' + (i + 1)
     })
     .style("border", "1px dashed rgb(232, 232, 232)")
@@ -151,7 +149,6 @@ export function renderingwordslist(mergenode) {
           nodelist.data[node_order - 1] = merge_data
           nodelist.node_rendering(merge_data, node_order)
         })
-        //nodelist.node_rendering(),node_order)
       }
     });
   let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d) {
@@ -168,8 +165,8 @@ export function renderingwordslist(mergenode) {
               $(this).remove();
           }
       })
-  addneiwords.append('div').classed('wordsval',true)
-      addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
+    addneiwords.append('div').classed('wordsval',true)
+    addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
   let mergeneiwords = addneiwords.merge(allneiwords)
   mergeneiwords.style("top", (d, i) => `${i*24}px`)
   mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*120}px`)
@@ -221,11 +218,14 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         }
         for(let k in cur_max_map) {
             let poi_name = cur_max_map[k].poi.name
-            if (poi_map.hasOwnProperty(poi_name)) {
+            if (poi_map.hasOwnProperty(poi_name))
+            {
               let index = poi_map[poi_name]
               if(pois[index].poi.val < cur_max_map[k].poi.val)
                   pois[index].poi.val = cur_max_map[k].poi.val
-            } else {
+            }
+            else
+             {
                 if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
                 {
                     poi_map[poi_name] = pois.length
@@ -252,9 +252,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
 
         if(pois.length<max_num)
         {
-        mergenode.each(function(){
-            d3.select(this.parentNode.parentNode.parentNode).select('.max_node_num').select('.node_num').property('value',pois.length)
-        })
+            mergenode.each(function(){
+                d3.select(this.parentNode.parentNode.parentNode).select('.max_node_num').select('.node_num').property('value',pois.length)
+            })
         }
       else
           pois = pois.slice(0, max_num)
@@ -275,7 +275,6 @@ export function renderingPOIlist(mergenode, max_num = 20) {
         let nodelist= require('../Specification/Node.js')
       nodelist.searchSiteList.set(node_name , POIS)
 
-
       return pois
     }, function(d) {
       return d.poi.name;
@@ -283,9 +282,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
 
 
 
-  allPOI.exit().remove()
- let addPOI = allPOI.enter().append("div").classed("POIrect", true)
-     addPOI.append('div').classed('POIdiv',true)
+    allPOI.exit().remove()
+    let addPOI = allPOI.enter().append("div").classed("POIrect", true)
+    addPOI.append('div').classed('POIdiv',true)
     addPOI.append('div').classed('POIval',true)
          addPOI.append('div').classed('POIname',true)
     let POIs=allPOI.merge(addPOI)
@@ -315,9 +314,9 @@ export function renderingPOIlist(mergenode, max_num = 20) {
 }
 
 export function fresh_list_width() { //condition_node_list的宽度
-     let nodelist= require('../Specification/Node.js')
-  let current_width = nodelist.data.length * 652 + 50;
-  let spe_width = parseInt(document.getElementById('Specification_view').offsetWidth)
-  let width = current_width > spe_width ? current_width : spe_width
-  nodelist.container.style('width', width + 'px');
+      let nodelist= require('../Specification/Node.js')
+      let current_width = nodelist.data.length * 652 + 50;
+      let spe_width = parseInt(document.getElementById('Specification_view').offsetWidth)
+      let width = current_width > spe_width ? current_width : spe_width
+      nodelist.container.style('width', width + 'px');
 }

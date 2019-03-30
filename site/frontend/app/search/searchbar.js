@@ -2,13 +2,6 @@
 import * as QueryUtil from './queryutil'
 import $ from 'jquery';
 import * as DataManager from './datamanager.js';
-
-
-
-
-
-
-
 import {
   setGlobalTrajData ,
   MockSearchSite,
@@ -22,7 +15,7 @@ import {
     change_tab,
     merge_time_tab,
 } from "../Specification/word_tabs.js";
-import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
+
 
 export let textData = []
 
@@ -33,6 +26,8 @@ let tag_diff_data = {}
 let filter_words=['查询','经过','的','轨迹','后']
 
 let word_img={'n':'../assets/icons/POI.svg','t':'../assets/icons/time.svg','o':'../assets/icons/prep.svg'}
+
+
 export function getMerge_data(_name) {
   console.log(_name)
   let _textData = textData.slice()
@@ -349,143 +344,108 @@ function createTabs(data) {
 
   const container = d3.select('.search-container')
     container.selectAll('.word-tab').remove()
-  const divData = container.selectAll('.word-tab')
-    .data(data, (d, i) => d[0] + '_' + d[i])
+  const divData = container.selectAll('.word-tab').data(data, (d, i) => d[0] + '_' + d[i])
   divData.classed('word-tab-clicked', (d, i) => i == preClickedIndex)
   divData.select('.tab-text-container .tab-text')
-    .text(d => d[0].split('_').join(''))
+            .text(d => d[0].split('_').join(''))
   const div = divData.enter()
-    .insert('div', '#input-wrapper')
-    .attr('class', 'word-tab')
-
-
+                    .insert('div', '#input-wrapper')
+                    .attr('class', 'word-tab')
   let image_container=div.append('div')
-    .attr('class', 'tab-image-container')
-  .on('click',function(){
-let status=d3.select(this.parentNode).select('.change_type').style('display')
-    d3.select(this.parentNode).select('.change_type').style('display',status=='block'?'none':'block')
-      })
+                        .attr('class', 'tab-image-container')
+                          .on('click',function(){
+                              let status=d3.select(this.parentNode).select('.change_type').style('display')
+                              d3.select(this.parentNode).select('.change_type').style('display',status=='block'?'none':'block')
+                              })
   image_container.append('img')
-    .attr('src', d => {
-        if(word_img.hasOwnProperty(d[1]))
-            return word_img[d[1]]
-        else
-            if (d[1].indexOf('n')!= -1)
-                return word_img['n']
-        else
-            return word_img['o']
-    })
-      .attr('word_type',d=>d[1])
- let delete_change = div.append('div')
-    .attr('class', 'tab-text-container')
-      .call(d3.drag()
-          .on('start',word_tab_start)
-      .on('drag', word_tab_move)
-      .on('end', word_tab_end))
-    .append('input')
-    .attr('class', 'tab-text')
-     .attr('readonly',true)
-    .attr('old_value',d => d[0].split('_').join(''))
-     .attr('value',d => d[0].split('_').join(''))
-     .style('width',function(){
-         return $(this).val().length*16+"px"
-     })
-     .on('dblclick',function(){
-         $(this).removeAttr('readonly')
-     })
-     .on('mouseleave',function(){
-if(d3.select(this).attr('old_value')!=$(this).val())
-    change_tab(d3.select(this).attr('old_value'),$(this).val());
-d3.select(this).attr('old_value',$(this).val())
-         $(this).attr('readonly','readonly')
-     })
-     .each(function() {
-         $(this).bind('input propertychange', function () {
-             var $this = $(this);
-             var text_length = $this.val().length;//获取当前文本框的长度
-             var current_width = parseInt(text_length) * 16;//该16是改变前的宽度除以当前字符串的长度,算出每个字符的长度
-             $this.css("width", current_width + "px");
-
-         })
-     })
-     /*.each(function(){
-         $(this).bind("contextmenu", function(){
-    return false;
-})
-         $(this).mousedown(function(e) {
-    console.log(e.which);
-    //右键为3
-    if (3 == e.which) {
-        $(this.parentNode.parentNode).remove()
-    }
-})
-     })*/
-  /*   .append('div')
-     .classed('delete_change',true)
-delete_change.append('div')
-    .classed('delete_change_div',true)
-    .on('click')
-*/
-  let word_map = {'t':'Temporal','o':'Conjunction','n':'Spatial'}
-let change_type=div.append('div')
-    .classed('change_type',true)
-    .style('background','white')
-     .style('z-index',1)
-    .style('position','absolute')
-    .style('display','none')
-    for(let k in word_img){
-   if(!(image_container.select('img').empty())&&word_img[k]==image_container.select('img').attr('src'))
-     continue;
-   let word=change_type.append('div')
-       .style('border','1px solid transparent')
-  let word_image_container=word.append('div')
-    .attr('class', 'tab-image-container')
-  .on('click',function(){
-let target_src=d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src')
-      let target_word_type=d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('word_type')
-          d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src',d3.select(this).select('img').attr('src')).attr('word_type',d3.select(this).select('img').attr('word_type'))
-          d3.select(this).select('img').attr('src',target_src).attr('word_type',target_word_type)
-      d3.select(this.parentNode).select('.tab-text-container').select('.tab-text').text(word_map[target_word_type])
-
+        .attr('src', d => {
+            if(word_img.hasOwnProperty(d[1]))
+                return word_img[d[1]]
+            else
+                if (d[1].indexOf('n')!= -1)
+                    return word_img['n']
+                else
+                    return word_img['o']
+        })
+      .attr('word_type',d=>{
+          if(d[1].indexOf('n')!=-1)
+              return 'n'
+          else
+              return d[1]
       })
-  word_image_container.append('img')
-    .attr('src',  word_img[k])
-      .attr('word_type',k)
- word.append('div')
-    .attr('class', 'tab-text-container')
-    .append('div')
-    .attr('class', 'tab-text')
-    .text(word_map[k])
+    div.append('div')
+        .attr('class', 'tab-text-container')
+        .call(d3.drag()
+                .on('start',word_tab_start)
+                .on('drag', word_tab_move)
+                .on('end', word_tab_end))
+        .append('input')
+        .attr('class', 'tab-text')
+        .attr('readonly',true)
+        .attr('old_value',d => d[0].split('_').join(''))
+        .attr('value',d => d[0].split('_').join(''))
+        .style('width',function(){
+            return $(this).val().length*16+"px"
+            })
+         .on('dblclick',function(){
+             $(this).removeAttr('readonly')
+         })
+         .on('mouseleave',function(){
+            if(d3.select(this).attr('old_value')!=$(this).val())
+                change_tab(d3.select(this).attr('old_value'),$(this).val());
+             d3.select(this).attr('old_value',$(this).val())
+             $(this).attr('readonly','readonly')
+         })
+         .each(function() {
+             $(this).bind('input propertychange', function () {
+                 let $this = $(this);
+                 let text_length = $this.val().length;//获取当前文本框的长度
+                 let current_width = parseInt(text_length) * 16;//该16是改变前的宽度除以当前字符串的长度,算出每个字符的长度
+                 $this.css("width", current_width + "px");
+
+             })
+         })
+    let word_map = {'t':'Temporal','o':'Conjunction','n':'Spatial'}
+    let change_type=div.append('div')
+                        .classed('change_type',true)
+                        .style('background','white')
+                        .style('z-index',1)
+                        .style('position','absolute')
+                        .style('display','none')
+    for(let k in word_img){
+       if(!(image_container.select('img').empty())&&word_img[k]==image_container.select('img').attr('src'))
+         continue;
+       let word=change_type.append('div')
+           .style('border','1px solid transparent')
+        let word_image_container=word.append('div')
+                                      .attr('class', 'tab-image-container')
+                                      .on('click',function(){
+                                            let target_src=d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img').attr('src')
+                                            let target_word_type=d3.select(this.parentNode.parentNode.parentNode)
+                                                .select('.tab-image-container')
+                                                .select('img')
+                                                .attr('word_type')
+                                            d3.select(this.parentNode.parentNode.parentNode).select('.tab-image-container').select('img')
+                                                .attr('src',d3.select(this).select('img').attr('src'))
+                                                .attr('word_type',d3.select(this).select('img').attr('word_type'))
+                                            d3.select(this).select('img')
+                                                .attr('src',target_src)
+                                                .attr('word_type',target_word_type)
+                                            d3.select(this.parentNode).select('.tab-text-container')
+                                                .select('.tab-text')
+                                                .text(word_map[target_word_type])
+                                          })
+     word_image_container.append('img')
+                         .attr('src',  word_img[k])
+                         .attr('word_type',k)
+     word.append('div')
+        .attr('class', 'tab-text-container')
+        .append('div')
+        .attr('class', 'tab-text')
+        .text(word_map[k])
 
     }
   divData.exit().remove();
-
-
-  // div.on('click', function(clickedData) {
-  //   let flag = d3.select(this).classed('word-tab-clicked');
-  //   flag = !flag;
-  //   d3.select(this).classed('word-tab-clicked', flag);
-  //   // 此处需要重新获取下标，这是由于原始数据导致原始下标可能会发生变化
-  //   const nowIdx = textData.indexOf(clickedData);
-  //   if (flag) {
-  //     if (preClickedIndex && Math.abs(preClickedIndex - nowIdx) == 1) {
-  //       const minIdx = Math.min(preClickedIndex, nowIdx),
-  //           maxIdx = Math.max(preClickedIndex, nowIdx);
-  //       textData[minIdx][0] += '_' + textData[maxIdx][0];
-  //       textData[minIdx][1] = 'cc'
-  //       textData.splice(maxIdx, 1);
-  //       preClickedIndex = minIdx;
-  //     } else {
-  //       preClickedIndex = nowIdx;
-  //     }
-  //     createNewTab(textData)
-  //     updatePOILayer();
-  //   } else {
-  //     preClickedIndex = null;
-  //   }
-  // })
-
-
   syncInputWrapperLength()
 
 }

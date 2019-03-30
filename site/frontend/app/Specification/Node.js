@@ -14,9 +14,7 @@ import {
   drag_start,
   newdrag,
   drag_end,
-  show_hide,
   refresh_path_color,
-    refresh_POI_length,
   get_left_nodes,
   initial_line,
   refresh_line,
@@ -24,9 +22,7 @@ import {
   increase_locationlist
 } from './node_interaction.js'
 import {
-  add_condition_node,
    initial_right_content,
-    init_slider,
     renderingwordslist,
     renderingPOIlist,
     fresh_list_width,
@@ -34,10 +30,6 @@ import {
 import {
      change_cur_time,
 } from "./word_tabs.js"
-import {
-  getMerge_data,
-  get_data
-} from "../search/searchbar";
 import {
     initial_siteScore,
     max_value_POI,
@@ -92,13 +84,6 @@ nodelist.reOrder = function refresh_list(a, current_node_id) {
 
   calTrajsOrder() //重新调整轨迹的order
 }
-
-
-
-module.exports = nodelist;
-
-
-
 nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1则index为1
     d3.select('#condition_node' + index).remove();
   for (let i = 0; i < nodelist.data.length; i++) {
@@ -445,24 +430,5 @@ nodelist.delete_node_byName = function(name) {
   }
 }
 
+module.exports = nodelist;
 
-function addslide(container, containername, mergecontainer) {
-  container.append("div").attr("id", `${containername}_name`)
-    .style("font-size", "13px")
-    .style("text-align", "center").text(containername)
-
-  let slider = container.append("div").style("height", "20px")
-  let svg = slider.append("svg").attr("id", `${containername}_slider`).classed("slide", true)
-    .attr("width", "130").attr("height", "20")
-    .style("color", "#545454")
-    .style("float", "left")
-  let text = slider.append("div").attr("id", `${containername}_text`).text("1")
-    .style("float", "left")
-    .style("font-size", "12px")
-    .style("line-height", "20px")
-    .style("padding", "0 5px")
-    .style("width", "30px")
-  init_slider(svg, text)
-
-
-}
