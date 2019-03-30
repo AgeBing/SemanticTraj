@@ -338,4 +338,8 @@ export function MockSearchSite(searchSitesArr,names){
 		mockTrajIds = mock_traj_ids[0]
 	}
 
+	if( names.indexOf('温州_医科_大学') != -1  && names.indexOf('医院') != -1 ){
+		console.log(names)
+		mockTrajIds = mock_traj_ids[1]
+	}
 }
