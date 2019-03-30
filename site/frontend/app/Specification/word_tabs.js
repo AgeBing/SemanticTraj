@@ -101,7 +101,7 @@ export function change_time(operate,time){//operate:add,delete
         delete_time(time)
     else
         add_time(time)
-    change_cur_time()
+    change_tag_time()
 }
 function delete_time(){
 
@@ -127,7 +127,19 @@ function add_time(time){
     else
         old_time[1][time_type]=num
     }
-
+function change_tag_time(){
+    let str_time=get_time_number()
+    d3.selectAll('.starttime')
+        .property('value', str_time[0])
+        .each(function(){
+            d3.select(this.parentNode)
+                .select('.textcon')
+                .select('.text')
+                .text(get_time_word())
+        })
+    d3.selectAll('.endtime')
+        .property('value', str_time[1])
+}
 export function change_cur_time(){
     let str_time=get_time_number()
     d3.select(this).select('.starttime')
@@ -220,26 +232,26 @@ export function change_tab(old_name,new_name){
                  }
                 else{//更新标签
                      d[0]=new_name
-                     let find=false
+                     let se_find=false
                      nodelist.data.forEach((d,index)=>{
-                        if(d.name==old_name &&(!find))
+                        if(d.name==old_name &&(!se_find))
                         {
                             d.name=new_name
                          addParticle(new_name,[index,d.order])
-                            find=true
+                            se_find=true
                         }
 
                })
-                     if(!find)
+                     if(!se_find)
                         {
                             nodelist.delete_node_byName(old_name);
                             addParticle(new_name)
 
                         }
-                     find=true;
-                    //为新word创建标签卡
-                 }
 
+                 }
+                    find=true;
+                    //为新word创建标签卡
              }
          })
 
