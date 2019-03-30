@@ -1,392 +1,322 @@
 import {textData,getMerge_data,get_data,addParticle} from "../search/searchbar";
 import $ from "jquery";
+import {show_hide} from "./node_interaction";
+import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
 
 
 export function add_condition_node(){
-   let nodelist= require('../Specification/Node.js')
+let nodelist= require('../Specification/Node.js')
     nodelist.append_node({name:'',data:[]})
 }
-export function word_tab_start(){
-    d3.select(this.parentNode).style('position','absolute').style('z-index',10000)
 
-}
-export function word_tab_move(){
-    let left=$(this.parentNode.parentNode)[0].getBoundingClientRect().left+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().left
-    let top=$(this.parentNode.parentNode)[0].getBoundingClientRect().top+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().top
-    /*let left=$(this.parentNode).find('.tab-image-container')[0].getBoundingClientRect().left
-    let top=$(this.parentNode).find('.tab-image-container')[0].getBoundingClientRect().top*/
-
-d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').style('top',(d3.event.sourceEvent.pageY-top)+'px')
-   }
-
-export function word_tab_end(){
-    let x=parseInt(d3.select(this.parentNode).style('left'))
-    let y=parseInt(d3.select(this.parentNode).style('top'))
-    let word=d3.select(this).select('.tab-text').attr('value')
-    let left_length=$('#Specification_view').scrollLeft();
-    d3.selectAll('.condition_node').each(function(){
-        let current_left=parseInt(d3.select(this).style('left'))-left_length
-        let current_right=current_left+parseInt(d3.select(this).style('width'));
-        let current_top=$(this)[0].getBoundingClientRect().top
-        if(x>=current_left &&(x<=current_right)&&(y>=current_top))
-        {
-            Add_word(d3.select(this).attr('id'),word)
-        }
-
-    })
-    d3.select(this.parentNode).style('position','static').style('z-index',0)
-}
-
-function Add_word(node_id,word){
+export function initial_right_content() {
     let nodelist= require('../Specification/Node.js')
-    let data_order=0
-    let node_index=parseInt(node_id.substr(node_id.length-1,1))
-    //如果有的话 把该搜索词的标签删掉
-    for(let i=0;i<nodelist.data.length;i++)
-    {
-        let titles=nodelist.data[i].name.split('_')
-        if(titles.indexOf(word)!=-1)
-        {
-            titles.splice(titles.indexOf(word),1)
-            if(titles.length==0){
-                data_order=i;
-            let delete_node_id=nodelist.data[i].order//搜索词原来的标签id的order部分
-            if(node_index==delete_node_id)
-            {return;}
-             if(node_index>delete_node_id)
-             {
-                 node_index--;
-             }
-                 nodelist.delete_node_byOrder(delete_node_id);
-            }
-            else{
-                if(titles.length!=1){
-                    getMerge_data(titles.join('_')).then(function(merge_data){
-        merge_data.order=nodelist.data[i].order
-            nodelist.data[i]=merge_data
-        nodelist.node_rendering(merge_data,nodelist.data[i].order)
+    nodelist.container.select('.right_content').remove()
+    let legend_list = [{
+        id: 'Relevance_Information',
+        name: 'Relevance Information:',
+        color:['#7a0177','#c51b8a','#f768a1','#fa9fb5','#fcc5c0','#feebe2']
+  }]
+    let right_content = nodelist.container.append('div').classed('right_content', true)
+    right_content.append('div').classed('add_condition_node', true).text('+').on('click', add_condition_node)
+    legend_list.map((x, y) => {
+    let legend = d3.select('#Specification_view')
+        .append('div')
+        .classed('legend', true)
+        .attr('id', x.id)
+        .style('position','fixed')
+        .style('right','70px')
+        .style('top','380px')
+        .style('padding','0 10px')
+    legend.append('div').classed('text', true).text(x.name)
+    let content = legend.append('div').classed('content', true)
+    content.append('div').classed('max', true).text(0)
+    x.color.map((color, i) => {
+        content.append('div').classed('color_bar', true)
+                .style('background', color)
+    })
+    content.append('div').classed('min', true).text(0)
+  })
+}
+
+export function init_slider(svg, text) {
+  let margin = {
+      right: 10,
+      left: 10
+    },
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height");
+
+  var x = d3.scaleLinear().domain([0, 1])
+    .range([0, width]).clamp(true);
+
+  var slider = svg.append("g")
+    .attr("class", "slider")
+    .attr("transform", "translate(" + margin.left + "," + height / 2 + ")");
+
+  slider.append("line")
+    .attr("class", "track")
+    .attr("x1", x.range()[0])
+    .attr("x2", x.range()[1])
+    .select(function() {
+      return this.parentNode.appendChild(this.cloneNode(true));
+    })
+    .attr("class", "track-inset")
+    .select(function() {
+      return this.parentNode.appendChild(this.cloneNode(true));
+    })
+    .attr("class", "track-overlay")
+    .call(d3.drag()
+      .on("start.interrupt", function() {
+        slider.interrupt();
+      })
+      .on("start drag", function() {
+        hue(x.invert(d3.event.x), handle);
+      }));
+
+  let handle = slider.insert("circle", ".track-overlay")
+    .attr("class", "handle")
+    .attr("r", 4);
+
+  hue(1, handle)
+
+  function hue(h, handle) {
+    text.text(d3.format(".2f")(h))
+    handle.attr("cx", x(h));
+  }
+}
+
+export function renderingwordslist(mergenode) {
+  let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
+    .data(function(d) {
+      let heightset = []
+      for (let i = 0; i < d.data.length; i++) {
+        heightset.push(d.data[i].data.length)
+          let same_word=-1;
+        for (let j = 0; j < d.data[i].data.length; j++) {
+          if(d.data[i].name==d.data[i].data[j].name)
+          {
+              same_word=j
+          }
+          else
+              d.data[i].data[j].index = (i, j)
+        }
+      }
+      return d.data
+    }, (d, i) => d.name)
+
+  allwords.exit().remove()
+  let addwords = allwords.enter().append("div").classed("Worddiv", true)
+    .attr('id', function(d, i) {
+      d.data.sort(function(a, b) {
+        return b.val - a.val
+      })
+
+      return 'Worddiv' + (i + 1)
+    })
+    .style("border", "1px dashed rgb(232, 232, 232)")
+    .style("padding", "3px 0")
+    .style("margin", "2px")
+
+
+  let mergewords = addwords.merge(allwords)
+  mergewords.style("top", (d, i) => `${i*24}px`)
+
+  let addwordtitle = addwords.append("div").classed("wordtitle", true)
+  addwords.append("div").classed("wordsubtitle", true);
+  addwords.append("div").classed("nei_words", true);
+  let show_hide_div = addwordtitle.append('div').classed('hide_nei_words', true).style("background-image","url(../icon/tri.png)").attr("isshow",true)
+  show_hide_div.on('click', show_hide)
+  addwordtitle.append('div').classed('real_wordtitle', true).text((d, i) => d.name)
+    .append('div').classed('delete', true).text('X').style('margin-right', '5px').on('click', function(d, i) {
+        let nodelist= require('../Specification/Node.js')
+      let subtitle = d.name;
+      let node_order = d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
+      node_order = parseInt(node_order.substr(node_order.length - 1, 1))
+      let words = d3.select('#condition_node' + node_order).select('.title').select('.text').text().split('_')
+      words.splice(words.indexOf(subtitle), 1)
+      if (words.length == 0) {
+        nodelist.delete_node_byOrder(node_order)
+      }
+      if (words.length == 1) {
+        let data = get_data(words[0])
+        data.order = node_order
+        nodelist.data[node_order - 1] = data
+        nodelist.node_rendering(data, node_order);
+      }
+      if (words.length > 1) {
+        getMerge_data(words.join('_')).then(function(merge_data) {
+          merge_data.order = node_order
+          nodelist.data[node_order - 1] = merge_data
+          nodelist.node_rendering(merge_data, node_order)
         })
+        //nodelist.node_rendering(),node_order)
+      }
+    });
+  let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d) {
+    return d.data
+  })
+
+  allneiwords.exit().remove()
+  let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
+      .each(function(d){
+          let real_word=d3.select(this.parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text()
+          real_word=real_word.substr(0,real_word.length-1)
+          if(d.name==real_word)
+          {
+              $(this).remove();
+          }
+      })
+  addneiwords.append('div').classed('wordsval',true)
+      addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
+  let mergeneiwords = addneiwords.merge(allneiwords)
+  mergeneiwords.style("top", (d, i) => `${i*24}px`)
+  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*120}px`)
+  mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*72+'px')
+
+  return show_hide_div
+}
+
+export function renderingPOIlist(mergenode, max_num = 20) {
+    //locationlistdiv
+    // by ykj
+  // 列表现实的前 max_num  poi 存储在 POIS 中
+  let POIS = []
+//当前标签中POI列表的最大值和最小值，用于归一化来显示POI的div长度
+    let poi_max=0
+    let poi_min=0;
+
+  if(max_num==0)
+  {
+      mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
+      return
+  }
+  let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
+    .data(function(d) {
+      let textcolorscale = 0
+
+      // data
+      let pois = []
+      let poi_map = {}
+
+
+      for (let i = 0; i < d.data.length; i++) {
+          let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
+        for (let j = 0; j < d.data[i].data.length; j++) {
+            for (let m = 0; m < d.data[i].data[j].data.length; m++) {
+                let poi=d.data[i].data[j].data[m]
+                if(cur_max_map.hasOwnProperty(poi.name))
+                {
+                    if(cur_max_map[poi.name].val<poi.val)
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
-                else{
-                    let data =get_data(titles[0])
-        data.order=nodelist.data[i].order
-            nodelist.data[i]=data
-    nodelist.node_rendering(data,nodelist.data[i].order);
+                else
+                {
+                    cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
             }
+
         }
-    }
-    //得到该搜索词的data覆盖原卡片数据
-     for(let i=0;i<nodelist.data.length;i++){
-if(nodelist.data[i].order==node_index)
-{
-    if(nodelist.data[i].name=='')
-    {
-        let data =get_data(word)
-        data.order=node_index
-            nodelist.data[node_index-1]=data
-    nodelist.node_rendering(data,node_index);
-    }
-    else{
-        //let merge_data = merge(nodelist.data[i].name+"_"+word)
-        getMerge_data(nodelist.data[i].name+"_"+word).then(function(merge_data){
-        merge_data.order=node_index
-            nodelist.data[node_index-1]=merge_data
-        nodelist.node_rendering(merge_data,node_index);
+        for(let k in cur_max_map) {
+            let poi_name = cur_max_map[k].poi.name
+            if (poi_map.hasOwnProperty(poi_name)) {
+              let index = poi_map[poi_name]
+              if(pois[index].poi.val < cur_max_map[k].poi.val)
+                  pois[index].poi.val = cur_max_map[k].poi.val
+            } else {
+                if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
+                {
+                    poi_map[poi_name] = pois.length
+                    let j=parseInt(cur_max_map[k]['S'])
+              pois.push({
+                index: pois.length,
+                poi: cur_max_map[k].poi,
+                words: {
+                  F: (i, d.data[i].name),
+                  S: (j, d.data[i].data[j].name)
+                },
+              })
+                }
+            }
+          }
+      }
+
+      //sort by val
+      pois.sort(function(a, b) {
+        return b.poi.val - a.poi.val
+      })
+        poi_max=pois[0].poi.val
+        poi_min=pois[pois.length-1].poi.val
+
+        if(pois.length<max_num)
+        {
+        mergenode.each(function(){
+            d3.select(this.parentNode.parentNode.parentNode).select('.max_node_num').select('.node_num').property('value',pois.length)
         })
-
-    }
-    break;
-}
-     }
-}
-
-export function change_time(operate,time){//operate:add,delete
-    if(operate=='delete')
-        delete_time(time)
-    else
-        add_time(time)
-change_tag_time()
-}
-function delete_time(time){
-
-    let nodelist= require('../Specification/Node.js')
-    if(nodelist.time[1]['y']!='' ||(nodelist.time[1]['month']!='')||(nodelist.time[1]['d']!=''))
-        nodelist.time[1]={'y':'','month':'','d':'','o':'','m':''}
-        else
-            nodelist.time[0]={'y':'','month':'','d':'','o':'','m':''}
-    /*let word_time_map={'年':'y','月':'month','日':'d'}//,'时':'o','分':'m'}
-    let old_time=nodelist.time
-    let time_type= word_time_map[time[time.length-1]]
-        if(old_time[1].hasOwnProperty(time_type)&&(old_time[1][time_type]==''))//终止的时间包含该时间信息
-        {
-            delete old_time[1][time_type]
         }
-        else
-            delete old_time[0][time_type]*/
-    }
-function add_time(time){
-    let nodelist= require('../Specification/Node.js')
-    let word_time_map={'年':'y','月':'month','日':'d','时':'o','分':'m'}
-    let old_time=nodelist.time
-    let time_type= word_time_map[time[time.length-1]]
-        let num=time.substr(0,time.length-1)
-    if(num.length==1)
-        num='0'+num
+      else
+          pois = pois.slice(0, max_num)
+        d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
+      textcolorscale = pois[0].poi.val
+      //update data index and color
+      for (let i = 0; i < pois.length; i++) {
+        pois[i].order = i
+        pois[i].color = pois[i].poi.val > textcolorscale / 2 ? "white" : "rgb(28,28,28)"
+      }
 
-        if(old_time[0].hasOwnProperty(time_type)&&(old_time[0][time_type]==''))//起始时间不包含该时间信息
-        {
-old_time[0][time_type]=num
-        }
-        else
-            old_time[1][time_type]=num
-    }
-function change_tag_time(){
-    let nodelist= require('../Specification/Node.js')
-    let str_time=['','']
-    let year_order=['y','month','d']
 
-    nodelist.time.forEach(function(time,index){
-        year_order.forEach((t)=>{
-        if(time.hasOwnProperty(t)&&(time[t]!=''))
-        {
-            str_time[index]+=time[t]
-        if(t!='d')
-            str_time[index]+='.'
-        }
+
+      // by ykj
+      // 用于向后台返回数据
+      POIS = pois.slice()
+      let node_name = d.name
+        let nodelist= require('../Specification/Node.js')
+      nodelist.searchSiteList.set(node_name , POIS)
+
+
+      return pois
+    }, function(d) {
+      return d.poi.name;
     })
-        str_time[index]+=' '
-        if(str_time[1]=='')
-            str_time[1]=str_time[0].split(' ')[0]+' '
-    if(time.hasOwnProperty('o')&&(time['o']!=''))
-    {
-        str_time[index]+=(time['o']+':')
-        if(time.hasOwnProperty('m')&&(time['m']!=''))
-             str_time[index]+=time['m']
-        else
-             str_time[index]+='00'
-    }
-    else{
-        if(str_time[0].split(' ')[0]!='')
-        {if(index==0)
-            str_time[index]+='00:00'
-        else
-            str_time[index]+='23:59'}
-    }
-    })
-    d3.selectAll('.starttime')
-        .property('value', str_time[0])
-        .each(function(){
-            let nodelist= require('../Specification/Node.js')
-            let time_w=''
-            if(nodelist.time[0]['y']!='')
-                time_w+=(nodelist.time[0]['y']+"年")
-             if(nodelist.time[0]['month']!='')
-                time_w+=(nodelist.time[0]['month']+"月")
-                if(nodelist.time[0]['d']!='')
-                time_w+=(nodelist.time[0]['d']+"日")
-d3.select(this.parentNode)
-    .select('.textcon')
-    .select('.text')
-    .text(time_w)
-        })
-    d3.selectAll('.endtime')
-        .property('value', str_time[1])
-    /*.each(function(){
-            let nodelist= require('../Specification/Node.js')
 
-d3.select(this.parentNode)
-    .select('.textcon')
-    .text(time_w)
-        })*/
+
+
+  allPOI.exit().remove()
+ let addPOI = allPOI.enter().append("div").classed("POIrect", true)
+     addPOI.append('div').classed('POIdiv',true)
+    addPOI.append('div').classed('POIval',true)
+         addPOI.append('div').classed('POIname',true)
+    let POIs=allPOI.merge(addPOI)
+    .style("top", d => `${d.order*27}px`)
+    .attr('val', d => d.poi.val)
+    .on('mouseenter', (d) => {
+      drawPoiInMap( [d.poi] )
+    })
+    .on('mouseleave', (d) => {
+      removePoiInMap()
+    })
+      POIs.selectAll('.POIdiv')
+        .style('width',d=> (parseFloat((parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)))*70+'px')
+    POIs.selectAll('.POIval')
+        .text(d=> parseFloat(d.poi.val).toFixed(2))//(parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)
+      POIs.selectAll('.POIname')
+        .text(d=>d.poi.name)
+  d3.select('#'+mergenode.attr('id').replace('locationlistdiv','condition_node'))
+      .select('.title')
+      .on('mouseenter', function(d) {
+      let _pois_show_in_map = POIS.map((p)=>p.poi)
+      drawPoiInMap( _pois_show_in_map )
+    })
+    .on('mouseleave', function() {
+      removePoiInMap()
+    })
 }
 
-export function change_cur_time(){
-    let nodelist= require('../Specification/Node.js')
-    let str_time=['','']
-    let year_order=['y','month','d']
-
-    nodelist.time.forEach(function(time,index){
-        year_order.forEach((t)=>{
-        if(time.hasOwnProperty(t)&&(time[t]!=''))
-        {
-            str_time[index]+=time[t]
-        if(t=='d')
-            str_time[index]+=' '
-        else
-            str_time[index]+='.'
-        }
-    })
-        if(str_time[1]=='')
-            str_time[1]=str_time[0].split(' ')[0]
-
-    if(str_time[index]!='')
-    {
-         str_time[index]+=' '
-        if(time.hasOwnProperty('o')&&(time['o']!=''))
-    {
-        str_time[index]+=(time['o']+':')
-        if(time.hasOwnProperty('m')&&(time['m']!=''))
-             str_time[index]+=time['m']
-        else
-             str_time[index]+='00'
-    }
-    else{
-        if(index==0)
-            str_time[index]+='00:00'
-        else
-            str_time[index]+='23:59'
-    }
-    }
-    })
-    d3.select(this).select('.starttime')
-        .property('value', str_time[0])
-        .each(function(){
-            let nodelist= require('../Specification/Node.js')
-            let time_w=''
-            if(nodelist.time[0]['y']!='')
-                time_w+=(nodelist.time[0]['y']+"年")
-             if(nodelist.time[0]['month']!='')
-                time_w+=(nodelist.time[0]['month']+"月")
-                if(nodelist.time[0]['d']!='')
-                time_w+=(nodelist.time[0]['d']+"日")
-d3.select(this.parentNode)
-    .select('.textcon')
-    .select('.text')
-    .text(time_w)
-        })
-    d3.select(this).select('.endtime')
-        .property('value', str_time[1])
-    /*.each(function(){
-            let nodelist= require('../Specification/Node.js')
-
-d3.select(this.parentNode)
-    .select('.textcon')
-    .text(time_w)
-        })*/
-}
-export function merge_time_tab(){
-    let order=['年','月','日']
-    let key=['y','month','d']
-    let time_value=''
+export function fresh_list_width() { //condition_node_list的宽度
      let nodelist= require('../Specification/Node.js')
-      key.forEach((d,index)=>{
-        if(nodelist.time[0].hasOwnProperty(d)&&(nodelist.time[0][d]!=''))
-            time_value+=(nodelist.time[0][d]+order[index])
-     })
-let merge=false
-         d3.select('.search-container').selectAll('.word-tab')
-         .each(function(){
-             let word_type = d3.select(this).select('.tab-image-container').select('img').attr('word_type')
-              let v= d3.select(this).select('.tab-text-container').select('input').attr('value')
-             if(word_type=='t'){
-                 if(!merge)
-             {
-d3.select(this).select('.tab-text-container').select('input').attr('value',time_value).style('width',function(){
-   return time_value.length*10+"px"
-})
-                 textData.forEach((d)=>{
-                if(d[0]==v)
-                    d[0]=time_value
-                 })
-                 merge=true
-             }
-             else
-             {
-                  d3.select(this).remove()
-             textData.forEach((d,index)=>{
-                if(d[0]==v)
-                    textData.splice(index,1)
-            })
-             }
-             }
-         })
-/*if(time_tabs.length>1)
-{
-    time_tabs.forEach((d,index)=>{
-        let v=d.select('.tab-text-container').select('input')
-                .attr('value')
-        if(index==0)
-        {
-            d.select('.tab-text-container').select('input')
-                .attr('value',time_value)
-                .attr('old_value',time_value)
-            textData.forEach((d)=>{
-                if(d[0]==v)
-                    d[0]=time_value
-            })
-        }
-        else
-        {
-           textData.forEach((d,index)=>{
-                if(d[0]==v)
-                    textData.splice(index,1)
-            })
-            d.remove()
-        }
-    })
-}*/
-
-}
-export function change_tab(old_name,new_name){
-    //let name=d3.select(this).text()
-         let find=false
-         textData.forEach((d,index)=>{
-             if(d[0]==old_name &&!find)
-             {
-                 let nodelist = require('../Specification/Node.js')
-                 if(new_name=='')//删除该搜索词并删除标签
-                 {
-                     textData.splice(index,1)
-                     addParticle(new_name)
-                     nodelist.delete_node_byName(old_name);
-                 }
-                else{//更新标签
-                     d[0]=new_name
-                     let find=false
-                     nodelist.data.forEach((d,index)=>{
-                        if(d.name==old_name &&(!find))
-                        {
-                            d.name=new_name
-                         addParticle(new_name,[index,d.order])
-                            find=true
-                        }
-
-               })
-                     if(!find)
-                        {
-                            nodelist.delete_node_byName(old_name);
-                            addParticle(new_name)
-
-                        }
-                     find=true;
-                    //为新word创建标签卡
-                 }
-
-             }
-         })
-
-}
-
-export function change_time_div(index){
-    let time = d3.select(this).property('value').split(' ')[0].split('.')
-    let nodelist= require('../Specification/Node.js')
-    if(time[0])
-        nodelist.time[index]['y']=time[0]
-    if(time[1])
-        nodelist.time[index]['month']=time[1]
-    if(time[2])
-        nodelist.time[index]['d']=time[2]
-
-            let time_w=''
-            if(nodelist.time[index]['y']!='')
-                time_w+=(nodelist.time[0]['y']+"年")
-             if(nodelist.time[index]['month']!='')
-                time_w+=(nodelist.time[0]['month']+"月")
-                if(nodelist.time[index]['d']!='')
-                time_w+=(nodelist.time[0]['d']+"日")
-    d3.select(this.parentNode)
-    .select('.textcon')
-    .text(time_w)
+  let current_width = nodelist.data.length * 652 + 50;
+  let spe_width = parseInt(document.getElementById('Specification_view').offsetWidth)
+  let width = current_width > spe_width ? current_width : spe_width
+  nodelist.container.style('width', width + 'px');
 }

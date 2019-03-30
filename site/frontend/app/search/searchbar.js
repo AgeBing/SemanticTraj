@@ -21,7 +21,7 @@ import {
     change_time,
     change_tab,
     merge_time_tab,
-} from "../Specification/node_operate";
+} from "../Specification/word_tabs.js";
 import {draw as drawPoiInMap, remove as removePoiInMap} from "../map/poi";
 
 export let textData = []
@@ -159,7 +159,7 @@ if(filter_words.indexOf(d[0])!=-1)
       // 只有名称才会被添加
         let find=false;
       o.forEach((d) => {
-          if(d[0]==change_name&&(d[1].indexOf('n')!= -1  || d[1] =='id'))
+          if(d[0]==name&&(d[1].indexOf('n')== -1  && d[1] !='id')&&(param.length!=0))
           {
               let nodelist= require('../Specification/Node.js')
               nodelist.delete_node_byOrder(param[1])
@@ -206,19 +206,19 @@ function removeParticle() {
 
 function addPOI(_name,param=[]) {//append or insert:
     let nodelist= require('../Specification/Node.js')
-                nodelist.data.forEach((d,index)=>{
+               /* nodelist.data.forEach((d,index)=>{
                     if(d.name==name)
                         addPOI(name,index,d.order)
                 })
-     for(var i=0; i<textData.length; i++){
+     /!*for(var i=0; i<textData.length; i++){
             for(var j=i+1; j<textData.length; j++){
                 if(textData[i][0]==textData[j][0]){         //第一个等同于第二个，splice方法删除第二个
                     textData.splice(j,1);
                     j--;
                 }
             }
-        }
-
+        }*!/*/
+let find=false
   //数组去重//当前元素，在原始数组中的第一个索引==当前索引值，否则返回当前元素
   QueryUtil.get_poi_layer(textData)
     .then(results => {
@@ -242,12 +242,13 @@ function addPOI(_name,param=[]) {//append or insert:
         })
 
 
-        if (_name == name) {
+        if (_name == name &&(!find)) {
           let nodelist = require('../Specification/Node.js')
             nodelist.append_node({
                     name,
                     data
                   },param)
+            find=true;
         }
 
         name2POIMap.set(name, {

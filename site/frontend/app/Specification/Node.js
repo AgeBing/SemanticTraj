@@ -25,14 +25,24 @@ import {
 } from './node_interaction.js'
 import {
   add_condition_node,
-   // change_time_div,
-    change_cur_time,
+   initial_right_content,
+    init_slider,
+    renderingwordslist,
+    renderingPOIlist,
+    fresh_list_width,
 } from './node_operate.js'
+import {
+     change_cur_time,
+} from "./word_tabs.js"
 import {
   getMerge_data,
   get_data
 } from "../search/searchbar";
-
+import {
+    initial_siteScore,
+    max_value_POI,
+}
+from './data_processing.js'
 import {
   draw as drawPoiInMap,
   remove as removePoiInMap
@@ -44,6 +54,9 @@ import $ from "jquery";
 let nodelist = {
   container: d3.select("#condition_node_list"),
   data: [],
+    //poi包含relation_val:当前POI与对应的搜索词的初始相似度
+    // max_val:单个搜索词时max_val等同于val，搜索词合并后等于poi与各个搜索词的max val的总和
+    // val:当前POI与他所对应的搜索词的相似度，初始val=relation_val,之后会随参数调整而变化
   order: [],
 
   siteScore: new Map() ,
@@ -58,241 +71,7 @@ export let poi_colordomain = {
   max: 0,
   min: 0
 }
-export function renderingwordslist(mergenode) {
-  let allwords = mergenode.select(".spatial_words").selectAll(".Worddiv")
-    .data(function(d) {
-      let heightset = []
-      for (let i = 0; i < d.data.length; i++) {
-        heightset.push(d.data[i].data.length)
-          let same_word=-1;
-        for (let j = 0; j < d.data[i].data.length; j++) {
-          if(d.data[i].name==d.data[i].data[j].name)
-          {
-              same_word=j
-          }
-          else
-              d.data[i].data[j].index = (i, j)
-        }
-      }
-      return d.data
-    }, (d, i) => d.name)
 
-  allwords.exit().remove()
-  let addwords = allwords.enter().append("div").classed("Worddiv", true)
-    .attr('id', function(d, i) {
-      d.data.sort(function(a, b) {
-        return b.val - a.val
-      })
-
-      return 'Worddiv' + (i + 1)
-    })
-    .style("border", "1px dashed rgb(232, 232, 232)")
-    .style("padding", "3px 0")
-    .style("margin", "2px")
-
-
-  let mergewords = addwords.merge(allwords)
-  mergewords.style("top", (d, i) => `${i*24}px`)
-
-  let addwordtitle = addwords.append("div").classed("wordtitle", true)
-  addwords.append("div").classed("wordsubtitle", true);
-  addwords.append("div").classed("nei_words", true);
-  let show_hide_div = addwordtitle.append('div').classed('hide_nei_words', true).style("background-image","url(../icon/tri.png)").attr("isshow",true)
-  show_hide_div.on('click', show_hide)
-  addwordtitle.append('div').classed('real_wordtitle', true).text((d, i) => d.name)
-    .append('div').classed('delete', true).text('X').style('margin-right', '5px').on('click', function(d, i) {
-      let subtitle = d.name;
-      let node_order = d3.select(this.parentNode.parentNode.parentNode.parentNode.parentNode).attr('id');
-      node_order = parseInt(node_order.substr(node_order.length - 1, 1))
-      let words = d3.select('#condition_node' + node_order).select('.title').select('.text').text().split('_')
-      words.splice(words.indexOf(subtitle), 1)
-      if (words.length == 0) {
-        nodelist.delete_node_byOrder(node_order)
-      }
-      if (words.length == 1) {
-        let data = get_data(words[0])
-        data.order = node_order
-        nodelist.data[node_order - 1] = data
-        nodelist.node_rendering(data, node_order);
-      }
-      if (words.length > 1) {
-        getMerge_data(words.join('_')).then(function(merge_data) {
-          merge_data.order = node_order
-          nodelist.data[node_order - 1] = merge_data
-          nodelist.node_rendering(merge_data, node_order)
-        })
-        //nodelist.node_rendering(),node_order)
-      }
-    });
-  let allneiwords = mergewords.select(".nei_words").selectAll(".neiwordsdiv").data(function(d) {
-    return d.data
-  })
-
-  allneiwords.exit().remove()
-  let addneiwords = allneiwords.enter().append("div").classed("neiwordsdiv", true)
-      .each(function(d){
-          let real_word=d3.select(this.parentNode.parentNode).select('.wordtitle').select('.real_wordtitle').text()
-          real_word=real_word.substr(0,real_word.length-1)
-          if(d.name==real_word)
-          {
-              $(this).remove();
-          }
-      })
-  addneiwords.append('div').classed('wordsval',true)
-      addneiwords.append('div').classed('neiwordsdiv_word',true)//addneiwords
-  let mergeneiwords = addneiwords.merge(allneiwords)
-  mergeneiwords.style("top", (d, i) => `${i*24}px`)
-  mergeneiwords.selectAll('.neiwordsdiv_word').text(d=>d.name).style('width',d=>`${parseFloat(d.val)*120}px`)
-  mergeneiwords.selectAll('.wordsval').text(d => parseFloat(d.val).toFixed(2)).style('width','4px').style('right',d=>parseFloat(d.val)*72+'px')
-
-  return show_hide_div
-}
-
-export function renderingPOIlist(mergenode, max_num = 20) {
-    //locationlistdiv
-    // by ykj
-  // 列表现实的前 max_num  poi 存储在 POIS 中
-  let POIS = []
-    let poi_max=0
-    let poi_min=0;
-  if(max_num==0)
-  {
-      mergenode.select(".spatial_POIs").selectAll(".POIrect").remove()
-      return
-  }
-  let allPOI = mergenode.select(".spatial_POIs").selectAll(".POIrect")
-    .data(function(d) {
-      let textcolorscale = 0
-
-      // data
-      let pois = []
-      let poi_map = {}
-      
-      
-      for (let i = 0; i < d.data.length; i++) {
-          let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
-        for (let j = 0; j < d.data[i].data.length; j++) {
-            for (let m = 0; m < d.data[i].data[j].data.length; m++) {
-                let poi=d.data[i].data[j].data[m]
-                if(cur_max_map.hasOwnProperty(poi.name))
-                {
-                    if(cur_max_map[poi.name].val<poi.val)
-                    cur_max_map[poi.name]={'poi':poi,'S':j}
-                }
-                else
-                {
-                    cur_max_map[poi.name]={'poi':poi,'S':j}
-                }
-            }
-
-        }
-        for(let k in cur_max_map) {
-            let poi_name = cur_max_map[k].poi.name
-            if (poi_map.hasOwnProperty(poi_name)) {
-              let index = poi_map[poi_name]
-              if(pois[index].poi.val < cur_max_map[k].poi.val)
-                  pois[index].poi.val = cur_max_map[k].poi.val
-            } else {
-                if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
-                {
-                    poi_map[poi_name] = pois.length
-                    let j=parseInt(cur_max_map[k]['S'])
-              pois.push({
-                index: pois.length,
-                poi: cur_max_map[k].poi,
-                words: {
-                  F: (i, d.data[i].name),
-                  S: (j, d.data[i].data[j].name)
-                },
-              })
-                }
-            }
-          }
-      }
-
-      //sort by val
-      pois.sort(function(a, b) {
-        return b.poi.val - a.poi.val
-      })
-        poi_max=pois[0].poi.val
-        poi_min=pois[pois.length-1].poi.val
-       /* let dis=pois[0].poi.val-pois[pois.length-1].poi.val
-        pois.forEach((item)=>{
-item.poi.val=(item.poi.val-pois[pois.length-1].poi.val)/dis
-      })*/
-
-        if(pois.length<max_num)
-        {
-        mergenode.each(function(){
-            d3.select(this.parentNode.parentNode.parentNode).select('.max_node_num').select('.node_num').property('value',pois.length)
-        })
-        }
-      else
-          pois = pois.slice(0, max_num)
-d3.select('#condition_node' + d.order).attr('max_val', pois[0].poi.val).attr('min_val', pois[pois.length - 1].poi.val)
-      //poi_colordomain.max = poi_colordomain.max > pois[0].poi.val ? poi_colordomain.max : pois[0].poi.val
-      //poi_colordomain.min = (poi_colordomain.min > pois[0].poi.val || poi_colordomain.min == 0) ? pois[pois.length - 1].poi.val : poi_colordomain.min
-      //refresh_POI_length()
-      textcolorscale = pois[0].poi.val
-      //update data index and color
-      for (let i = 0; i < pois.length; i++) {
-        pois[i].order = i
-        pois[i].color = pois[i].poi.val > textcolorscale / 2 ? "white" : "rgb(28,28,28)"
-        pois[i].background = POI_colorscale(pois[i].poi.val)
-      }
-
-
-
-      // by ykj
-      // 用于向后台返回数据
-      POIS = pois.slice()
-      let node_name = d.name
-      nodelist.searchSiteList.set(node_name , POIS)
-
-
-     /* //reorder
-      pois.sort(function(a, b) {
-        return a.poi.index - b.poi.index
-      })*/
-      return pois
-    }, function(d) {
-      return d.poi.name;
-    })
-
-
-
-  allPOI.exit().remove()
- let addPOI = allPOI.enter().append("div").classed("POIrect", true)
-     addPOI.append('div').classed('POIdiv',true)
-    addPOI.append('div').classed('POIval',true)
-         addPOI.append('div').classed('POIname',true)
-    let POIs=allPOI.merge(addPOI)//addPOI.merge(allPOI)
-    .style("top", d => `${d.order*27}px`)
-    .attr('val', d => d.poi.val)
-        //.style('width',d=> (parseFloat(d.poi.val)/poi_colordomain.max)*60+'px')
-        //.style('background','red')
-    .on('mouseenter', (d) => {
-      drawPoiInMap( [d.poi] )
-    })
-    .on('mouseleave', (d) => {
-      removePoiInMap()
-    })
-      POIs.selectAll('.POIdiv')
-        .style('width',d=> (parseFloat((parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)))*70+'px')
-    POIs.selectAll('.POIval')
-        .text(d=> parseFloat(d.poi.val).toFixed(2))//(parseFloat(d.poi.val)-poi_min)/(poi_max-poi_min)
-      POIs.selectAll('.POIname')
-        .text(d=>d.poi.name)
-  d3.select('#'+mergenode.attr('id').replace('locationlistdiv','condition_node'))
-      .select('.title')
-      .on('mouseenter', function(d) {
-      let _pois_show_in_map = POIS.map((p)=>p.poi)
-      drawPoiInMap( _pois_show_in_map )
-    })
-    .on('mouseleave', function() {
-      removePoiInMap()
-    })
-}
 
 nodelist.reOrder = function refresh_list(a, current_node_id) {
   let alpha = a;
@@ -314,112 +93,14 @@ nodelist.reOrder = function refresh_list(a, current_node_id) {
   calTrajsOrder() //重新调整轨迹的order
 }
 
-function addslide(container, containername, mergecontainer) {
-  container.append("div").attr("id", `${containername}_name`)
-    .style("font-size", "13px")
-    .style("text-align", "center").text(containername)
-
-  let slider = container.append("div").style("height", "20px")
-  let svg = slider.append("svg").attr("id", `${containername}_slider`).classed("slide", true)
-    .attr("width", "130").attr("height", "20")
-    .style("color", "#545454")
-    .style("float", "left")
-  let text = slider.append("div").attr("id", `${containername}_text`).text("1")
-    .style("float", "left")
-    .style("font-size", "12px")
-    .style("line-height", "20px")
-    .style("padding", "0 5px")
-    .style("width", "30px")
-  init_slider(svg, text)
-
-
-}
-
-// <svg width="130" height="25"></svg>
-function init_slider(svg, text) {
-  let margin = {
-      right: 10,
-      left: 10
-    },
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height");
-
-  var x = d3.scaleLinear().domain([0, 1])
-    .range([0, width]).clamp(true);
-
-  var slider = svg.append("g")
-    .attr("class", "slider")
-    .attr("transform", "translate(" + margin.left + "," + height / 2 + ")");
-
-  slider.append("line")
-    .attr("class", "track")
-    .attr("x1", x.range()[0])
-    .attr("x2", x.range()[1])
-    .select(function() {
-      return this.parentNode.appendChild(this.cloneNode(true));
-    })
-    .attr("class", "track-inset")
-    .select(function() {
-      return this.parentNode.appendChild(this.cloneNode(true));
-    })
-    .attr("class", "track-overlay")
-    .call(d3.drag()
-      .on("start.interrupt", function() {
-        slider.interrupt();
-      })
-      .on("start drag", function() {
-        hue(x.invert(d3.event.x), handle);
-      }));
-
-  let handle = slider.insert("circle", ".track-overlay")
-    .attr("class", "handle")
-    .attr("r", 4);
-
-  hue(1, handle)
-
-  function hue(h, handle) {
-    text.text(d3.format(".2f")(h))
-    handle.attr("cx", x(h));
-  }
-}
 
 
 module.exports = nodelist;
 
-export function initial_right_content() {
-  nodelist.container.select('.right_content').remove()
-  let legend_list = [{
-    id: 'Relevance_Information',
-    name: 'Relevance Information:',
-   //color:['#b30000','#e34a33','#fc8d59','#fdbb84','#fdd49e','#fef0d9']
-      //color:['#a50f15','#de2d26','#fb6a4a','#fc9272','#fcbba1','#fee5d9']
-      // color:['#810f7c','#88419d','#8c6bb1','#8c96c6','#9ebcda','#bfd3e6']
-      color:['#7a0177','#c51b8a','#f768a1','#fa9fb5','#fcc5c0','#feebe2']
-  }]
-  // let height = parseInt($('#Specification_view').css('height'))
-  let right_content = nodelist.container.append('div').classed('right_content', true) //.style('height',height+'px').style('left',left+'px');//.style('left',document.getElementById('Specification_view').offsetWidth);
-  right_content.append('div').classed('add_condition_node', true).text('+').on('click', add_condition_node) //./style('height',height-100+'px');
-  legend_list.map((x, y) => {
-    let legend = d3.select('#Specification_view').append('div').classed('legend', true).attr('id', x.id)
-        .style('position','fixed')
-    .style('right','70px')
-          .style('top','380px')
-          .style('padding','0 10px')
-    legend.append('div').classed('text', true).text(x.name)
-    let content = legend.append('div').classed('content', true)
-    content.append('div').classed('max', true).text(0)
-    x.color.map((color, i) => {
-      content.append('div').classed('color_bar', true)
-          .style('background', color)
-    })
-    content.append('div').classed('min', true).text(0)
-  })
-}
+
 
 nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1则index为1
-
-  d3.select('#condition_node' + index).remove();
-
+    d3.select('#condition_node' + index).remove();
   for (let i = 0; i < nodelist.data.length; i++) {
     if (nodelist.data[i].order == index) {
 
@@ -431,10 +112,6 @@ nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1�
         let target_index = nodelist.order.indexOf("condition_node" + nodelist.data[j].order)
         nodelist.order[target_index] = 'condition_node' + (nodelist.data[j].order - 1)
         nodelist.data[j].order = nodelist.data[j].order - 1;
-        //line_data['condition_node'+nodelist.data[j].order]=line_data['condition_node'+(nodelist.data[j].order+1)]
-        /*if(nodelist.data[j].order==nodelist.data.length){
-            line_data.splice(line_data.indexOf('condition_node'+nodelist.data[j].order))
-        }*/
       }
       break;
     }
@@ -443,23 +120,15 @@ nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1�
   let current_order = nodelist.order.indexOf("condition_node" + index)
   for (let m = current_order; m < nodelist.order.length - 1; m++) {
     nodelist.order[m] = nodelist.order[m + 1];
-    d3.select('#' + nodelist.order[m]).style('left', 652 * m + 'px').select('.title').select('.constraints_order').text(m + 1);
+    d3.select('#' + nodelist.order[m]).style('left', 670 * m + 'px').select('.title').select('.constraints_order').text(m + 1);
   }
   nodelist.order.pop(); //最后一个没用，删掉
   fresh_list_width();
   refresh_path_color()
-    refresh_POI_length()
+    //refresh_POI_length()
   initial_siteScore(nodelist) //更新sitescore
     removePoiInMap()//清空map中的POI
 }
-
-export function fresh_list_width() { //condition_node_list的宽度
-  let current_width = nodelist.data.length * 652 + 50;
-  let spe_width = parseInt(document.getElementById('Specification_view').offsetWidth)
-  let width = current_width > spe_width ? current_width : spe_width
-  nodelist.container.style('width', width + 'px');
-}
-
 nodelist.node_rendering = function(initial_node_data, index) {
     removePoiInMap()
   if (initial_node_data.data.length != 0)
@@ -497,7 +166,7 @@ nodelist.node_rendering = function(initial_node_data, index) {
           right: []
         };
       })
-    current_node.style("left", d => `${652*(index-1)}px`)
+    current_node.style("left", d => `${692*(index-1)}px`)
   }
 
   //title
@@ -753,9 +422,6 @@ spatial_cc.append("div").classed("POIback", true)
     })
   })
 }
-
-
-
 nodelist.append_node = function(data,param=[]) {
     if(param.length==0)
     {
@@ -779,104 +445,24 @@ nodelist.delete_node_byName = function(name) {
   }
 }
 
-function normalization(initial_data) {
-  initial_data.data.forEach((second_word) => {
-    let max_val = 0;
-    let min_val = 0;
-    second_word.data.forEach((third_word) => {
-      third_word.data.forEach((poi) => {
-        max_val = poi.val > max_val ? poi.val : max_val
-        min_val = (poi.val < min_val || min_val == 0) ? poi.val : min_val
-      })
-    })
-    let dis = max_val - min_val
-    if (dis != 0) {
-      second_word.data.forEach((third_word) => {
-        third_word.data.forEach((poi) => {
-          poi.val = (poi.val - min_val) / (dis)
-        })
-      })
-    }
-  })
-}
 
-function initial_siteScore(initial_data, alpha = 1,param=false) {
-    //若alpha=1则说明基于nodelist更新sitescore，反之则是仅对当前标签的数据进行poi中val的更新(simT和alpha)，然后更新sitescore.
-    //param为true表示alpha来自参数面板
-  let unify_data = {}
-  if (param)
-    unify_data = {
-      data: [initial_data]
-    } //使各个部分的结构层数都一样
-  else
-    unify_data = initial_data
+function addslide(container, containername, mergecontainer) {
+  container.append("div").attr("id", `${containername}_name`)
+    .style("font-size", "13px")
+    .style("text-align", "center").text(containername)
 
-  unify_data.data.forEach(first_word => {
-    first_word.data.forEach(second_word => {
-      second_word.data.forEach(third_word => {
-        third_word.data.forEach(poi => {
-          if (param)
-            poi.val = poi.relation_val * alpha + poi.simT
-          let scores = nodelist.siteScore.get(poi.site_id)
-          if (!scores) {
-            scores = new Map()
-            scores.set(poi.id, poi.val)
-            nodelist.siteScore.set(poi.site_id, scores)
-          } else {
-            let bef_poi_val = scores.get(poi.id)
-            if (!bef_poi_val) {
-              scores.set(poi.id, poi.val)
-            } else {
-              scores.set(poi.id, poi.val > bef_poi_val ? poi.val : bef_poi_val)
-            }
-          }
-        })
-      })
-    })
-  })
-}
+  let slider = container.append("div").style("height", "20px")
+  let svg = slider.append("svg").attr("id", `${containername}_slider`).classed("slide", true)
+    .attr("width", "130").attr("height", "20")
+    .style("color", "#545454")
+    .style("float", "left")
+  let text = slider.append("div").attr("id", `${containername}_text`).text("1")
+    .style("float", "left")
+    .style("font-size", "12px")
+    .style("line-height", "20px")
+    .style("padding", "0 5px")
+    .style("width", "30px")
+  init_slider(svg, text)
 
 
-export function max_value_POI(d){
-    let poi_map={}
-    let pois=[]
-     for (let i = 0; i < d.data.length; i++) {
-          let cur_max_map={}//用于存储当前关键词的各个POI的val的分别最大值
-        for (let j = 0; j < d.data[i].data.length; j++) {
-            for (let m = 0; m < d.data[i].data[j].data.length; m++) {
-                let poi=d.data[i].data[j].data[m]
-                if(cur_max_map.hasOwnProperty(poi.name))
-                {
-                    if(cur_max_map[poi.name].val<poi.val)
-                    cur_max_map[poi.name]={'poi':poi,'S':j}
-                }
-                else
-                {
-                    cur_max_map[poi.name]={'poi':poi,'S':j}
-                }
-            }
-
-        }
-        for(let k in cur_max_map) {
-            let poi_name = cur_max_map[k].poi.name
-            if (poi_map.hasOwnProperty(poi_name)) {
-              let index = poi_map[poi_name]
-              pois[index].poi.val += cur_max_map[k].poi.val
-            } else {
-                if(cur_max_map[k].poi.latitude>27.9248561995 &&cur_max_map[k].poi.latitude<28.0769120675 &&cur_max_map[k].poi.longitude>120.5833650410&&cur_max_map[k].poi.longitude<120.7579719628)
-                {
-                    poi_map[poi_name] = pois.length
-                    let j=parseInt(cur_max_map[k]['S'])
-              pois.push({
-                index: pois.length,
-                poi: cur_max_map[k].poi,
-                words: {
-                  F: (i, d.data[i].name),
-                  S: (j, d.data[i].data[j].name)
-                },
-              })
-                }
-            }
-          }
-      }
 }
