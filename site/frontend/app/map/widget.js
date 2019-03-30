@@ -46,7 +46,7 @@ function bindOpacityChangeEvent(){
 	    .slider( "option", "min", 0)
 	    .slider( "option", "max", 20)
 	    .slider( "option", "step", 1)
-	    .slider( "value", 4 )
+	    .slider( "value", 0 )
 
         let opa = Config.picTrajOpacity
         let opacityText =   ( opa===Math.floor(opa) ? opa : opa.toFixed(2))
