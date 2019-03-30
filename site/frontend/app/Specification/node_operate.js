@@ -312,3 +312,11 @@ export function renderingPOIlist(mergenode, max_num = 20) {
       removePoiInMap()
     })
 }
+
+export function fresh_list_width() { //condition_node_list的宽度
+     let nodelist= require('../Specification/Node.js')
+  let current_width = nodelist.data.length * 652 + 50;
+  let spe_width = parseInt(document.getElementById('Specification_view').offsetWidth)
+  let width = current_width > spe_width ? current_width : spe_width
+  nodelist.container.style('width', width + 'px');
+}

@@ -206,18 +206,18 @@ function removeParticle() {
 
 function addPOI(_name,param=[]) {//append or insert:
     let nodelist= require('../Specification/Node.js')
-                nodelist.data.forEach((d,index)=>{
+               /* nodelist.data.forEach((d,index)=>{
                     if(d.name==name)
                         addPOI(name,index,d.order)
                 })
-     /*for(var i=0; i<textData.length; i++){
+     /!*for(var i=0; i<textData.length; i++){
             for(var j=i+1; j<textData.length; j++){
                 if(textData[i][0]==textData[j][0]){         //第一个等同于第二个，splice方法删除第二个
                     textData.splice(j,1);
                     j--;
                 }
             }
-        }*/
+        }*!/*/
 let find=false
   //数组去重//当前元素，在原始数组中的第一个索引==当前索引值，否则返回当前元素
   QueryUtil.get_poi_layer(textData)
