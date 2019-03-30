@@ -2,12 +2,13 @@ import $ from "jquery";
 import {addParticle, get_data, getMerge_data, textData} from "../search/searchbar";
 
 export function word_tab_start(){
-    d3.select(this.parentNode).style('position','absolute').style('z-index',10000)
+    //d3.select(this.parentNode).style('position','absolute').style('z-index',10000)
 }
 export function word_tab_move(){
     let left=$(this.parentNode.parentNode)[0].getBoundingClientRect().left+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().left
     let top=$(this.parentNode.parentNode)[0].getBoundingClientRect().top+$(this.parentNode.parentNode.parentNode)[0].getBoundingClientRect().top
-    d3.select(this.parentNode).style('left',(d3.event.sourceEvent.pageX-left)+'px').style('top',(d3.event.sourceEvent.pageY-top)+'px')
+    if((d3.event.sourceEvent.pageX-left)>10||(d3.event.sourceEvent.pageY-top)>10)
+    d3.select(this.parentNode).style('position','absolute').style('z-index',10000).style('left',(d3.event.sourceEvent.pageX-left)+'px').style('top',(d3.event.sourceEvent.pageY-top)+'px')
    }
 
 export function word_tab_end(){
