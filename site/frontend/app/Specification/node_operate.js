@@ -213,6 +213,7 @@ export function renderingPOIlist(mergenode, max_num = 20) {
                 }
                 else
                 {
+                    if(poi.name!='医学院')
                     cur_max_map[poi.name]={'poi':poi,'S':j}
                 }
             }

@@ -120,7 +120,7 @@ nodelist.delete_node_byOrder = function(index) { //例如删除condition_node1�
   let current_order = nodelist.order.indexOf("condition_node" + index)
   for (let m = current_order; m < nodelist.order.length - 1; m++) {
     nodelist.order[m] = nodelist.order[m + 1];
-    d3.select('#' + nodelist.order[m]).style('left', 670 * m + 'px').select('.title').select('.constraints_order').text(m + 1);
+    d3.select('#' + nodelist.order[m]).style('left', 692 * m + 'px').select('.title').select('.constraints_order').text(m + 1);
   }
   nodelist.order.pop(); //最后一个没用，删掉
   fresh_list_width();
