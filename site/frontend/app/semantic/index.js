@@ -1,6 +1,8 @@
 import { drawHexagon } from './hexagon.js'
 import { Hexa } from './hexa.js'
-export let ifSample = false 
+export let ifSamplePoint = false 
+export let ifSampleLine = false 
+
 
 
 let objsH = new Map()
@@ -44,10 +46,25 @@ export function addHexa(traj) {
 
 
 
-d3.select('#semantic-view').select('.switch-btn').on('mousedown',btnHandler)
-function btnHandler(){
+d3.select('#semantic-view').select('#sample-line').select('.switch-btn').on('mousedown',btnLineHandler)
+function btnLineHandler(){
 	let checked = d3.select('#semantic-view').select('.switch-btn').property('checked')
-	ifSample = !ifSample
+	ifSampleLine = !ifSampleLine
+
+
+	for(let pid of objsH.keys()) {
+		let traj = objsH.get(pid).data
+		let h = objsH.get(pid).obj
+		
+		if(ifSampleLine)  h.showLinks()
+		else h.hideLinks()
+	}
+}
+
+d3.select('#semantic-view').select('#sample-point').select('.switch-btn').on('mousedown',btnPointHandler)
+function btnPointHandler(){
+	let checked = d3.select('#semantic-view').select('.switch-btn').property('checked')
+	ifSamplePoint = !ifSamplePoint
 
 	// 重新绘制
 	for(let pid of objsH.keys()) {
@@ -56,6 +73,7 @@ function btnHandler(){
 		h.destroy()
 		addHexa(traj)
 	}
+
 }
 
 

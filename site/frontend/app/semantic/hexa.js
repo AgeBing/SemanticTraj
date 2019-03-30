@@ -1,7 +1,8 @@
 
 import { transDatas,coorCenter  } from  './config.js'
+import { duration as transitionDuration } from '../timeline/config.js'
 import { Particle } from './particle.js'
-import { ifSample } from './index.js'
+import { ifSamplePoint,ifSampleLine } from './index.js'
 import { hl_SemanticTraj ,uhl_SemanticTraj } from '../highlight/index.js'
 
 
@@ -35,7 +36,7 @@ class Hexa{
 		let g = svg.append("g")
 			.attr('class','nodes'+pid)
 		let self = this
-		let generateNodeNum = ((ifSample == true)? stopPointsIndex.length: points.length)
+		let generateNodeNum = ((ifSamplePoint == true)? stopPointsIndex.length: points.length)
 
 	    for(let i = 0;i < generateNodeNum ; i++){
 	        g.append('circle')
@@ -51,7 +52,7 @@ class Hexa{
 		let { points  } = this.data
 		let { stopPointsIndex } = this
 		let Ps 
-		if( !ifSample ){
+		if( !ifSamplePoint ){
 			Ps  =  points.map((d,i)=>{
 				let p = new Particle()
 				p.init(d,i)
@@ -102,18 +103,6 @@ class Hexa{
 					.y(d => d.y)
 					.curve(d3.curveNatural)
 
-		// let cps = [Ps[0].getXY()]
-		// for(let i = 1 ;i < Ps.length - 1;i++){
-		// 	let last = Ps[i - 1].getXY(),
-		// 		now  = Ps[i].getXY(),
-		// 		next = Ps[i + 1].getXY(),
-		// 		center = {
-  //               	x : Math.floor( next.x * cn + (1-cn)*now.x ),
-  //               	y : Math.floor( next.y * cn + (1-cn)*now.y )
-  //           	}
-  //           cps.push(center)
-		// }
-
 		let cps = []
 		for(let i = 0 ;i < Ps.length;i++){
 			cps.push( Ps[i].getXY())
@@ -124,6 +113,23 @@ class Hexa{
 			.attr('d', function(d) { return curveLine(cps);	})
 
 		// console.log(cps)
+		if(!ifSampleLine ) this.hideLinks()
+		else  this.showLinks()
+
+	}
+	showLinks(){
+		let { g } = this
+		g.select('path')
+			.transition()
+			.duration(transitionDuration)
+			.style('opacity',0.5)
+	}
+	hideLinks(){
+		let { g } = this
+		g.select('path')
+			.transition()
+			.duration(transitionDuration)
+			.style('opacity',0)
 	}
 	enterHandler(){
 		let { pid } = this.data
@@ -164,7 +170,7 @@ class Hexa{
 		let { Ps , g ,alive , stopPointsIndex  } = this
 		let { pid }  = this.data
 
-		if( ifSample ){
+		if( ifSamplePoint ){
 			stopPointsIndex.forEach((val,i)=>{   // val 为 index
 				if(val == index){
 				   	 g.select('circle:nth-child('+(i+1)+')')
