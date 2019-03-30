@@ -19,6 +19,8 @@ import { draw as drawHexa } from './semantic/index.js'
 
 
 import { mock as mockList } from '../mock/setData.js'
+
+// import { mock_sites , mock_sites_origin ,mock_traj_ids   }  from '../mock/case1'
 import { mock_sites , mock_sites_origin ,mock_traj_ids   }  from '../mock/case2'
 
 
@@ -38,7 +40,6 @@ let mockTrajIds = []
 // 初始化
 CaseMockFlag = true
 datamanager.init().then(o => SearchBar.init())
-
 
 // mockList()
 
@@ -332,9 +333,9 @@ export function MockSearchSite(searchSitesArr,names){
 	*/
 
 
-	if( names.indexOf('温州_医科_大学_药学院') != -1 ){
+	if( names.indexOf('温州_大学') != -1 ){
 		console.log(names)
-		searchSitesArr[0] = mock_sites[0]
+		mockTrajIds = mock_traj_ids[0]
 	}
 
 }
