@@ -301,7 +301,6 @@ export function MockSearchSite(searchSitesArr,names){
 
 
 
-	/*
 	if( names.indexOf('江心屿') != -1 && names.indexOf('物华天宝')!=-1){
 
 		let jxyOrder = names.indexOf('江心屿')
@@ -330,7 +329,6 @@ export function MockSearchSite(searchSitesArr,names){
 	if(names.indexOf('景点')!= -1) {
 		mockTrajIds = mock_traj_ids[0]
 	}
-	*/
 
 
 	if( names.indexOf('温州_大学') != -1 ){

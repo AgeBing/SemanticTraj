@@ -27,7 +27,7 @@ export function pquery(myData) {
 export function getSites() {
   let data = {
     reqType: "queryDb",
-    operate: "select",
+    operate: "select",panel up-panel
     column: "id, longitude, latitude, vertice, neighbor, base_station",
     table: "site",
     limit: `where id >= 0 and id <= 28746`, //  all stations in 温州
